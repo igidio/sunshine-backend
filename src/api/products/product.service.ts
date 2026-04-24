@@ -1,6 +1,8 @@
+import { product_repository } from "./products.repository"
+
 export const product_service = {
 	get_all_products: async () => {
-		return "Get all products"
+		return product_repository.find_all()
 	},
 	create_product: async (body: any) => {
 		return "Create a new product"
