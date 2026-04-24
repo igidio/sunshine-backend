@@ -1,13 +1,25 @@
+import { InferInsertModel, InferSelectModel } from "drizzle-orm";
 import { int, mysqlTable, serial, timestamp, varchar, mysqlEnum } from "drizzle-orm/mysql-core";
 
 
-export const users_table = mysqlTable("users", {
-	id: int().autoincrement(),
+export const table_users = mysqlTable("user", {
+  id: int("id").autoincrement().primaryKey(),
 	username: varchar({ length: 255 }).unique().notNull(),
 	password: varchar({ length: 255 }).notNull(),
-	email: varchar({ length: 255 }).unique(),
+	email: varchar({ length: 255 }).unique().notNull(),
 	email_verified_at: timestamp(),
 	create_at: timestamp().defaultNow(),
-	update_at: timestamp().defaultNow().onUpdateNow(),
 	role: mysqlEnum("user_role", ["superuser", "admin", "employer"]).default("employer").notNull()
 });
+
+export const table_profile = mysqlTable("profile", {
+	id: int("id").autoincrement().primaryKey(),
+	user_id: int("user_id").notNull().references(() => table_users.id),
+	first_name: varchar({ length: 255 }).notNull(),
+	last_name: varchar({ length: 255 }).notNull(),
+	phone_number: varchar({ length: 20 }),
+	address: varchar({ length: 255 }),
+	create_at: timestamp().defaultNow(),
+	update_at: timestamp().defaultNow().onUpdateNow()
+});
+
