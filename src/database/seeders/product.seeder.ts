@@ -1,7 +1,7 @@
 import type { InferInsertModel } from "drizzle-orm";
-import { table_product } from "../schema";
+import { product_schema } from "~/api/product/product.schema";
 
-type Product = InferInsertModel<typeof table_product>;
+type Product = InferInsertModel<typeof product_schema>;
 
 const data: Product[] = [
 	{
@@ -148,5 +148,5 @@ const data: Product[] = [
 
 export default {
 	data,
-	type: table_product
+	type: product_schema
 };
