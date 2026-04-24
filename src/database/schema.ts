@@ -1,4 +1,4 @@
-import { decimal, int, mysqlTable, timestamp, varchar, mysqlEnum } from "drizzle-orm/mysql-core";
+import { decimal, int, mysqlTable, timestamp, varchar, mysqlEnum, real } from "drizzle-orm/mysql-core";
 
 export const table_users = mysqlTable("user", {
   id: int("id").autoincrement().primaryKey(),
@@ -7,7 +7,9 @@ export const table_users = mysqlTable("user", {
   email: varchar({ length: 255 }).unique().notNull(),
   email_verified_at: timestamp(),
   create_at: timestamp().defaultNow(),
-  role: mysqlEnum("user_role", ["superuser", "admin", "employer"]).default("employer").notNull()
+  role: mysqlEnum("user_role", ["superuser", "admin", "employer"])
+    .default("employer")
+    .notNull()
 });
 
 export const table_profile = mysqlTable("profile", {
@@ -25,7 +27,7 @@ export const table_product = mysqlTable("product", {
   id: int("id").autoincrement().primaryKey(),
   name: varchar({ length: 255 }).notNull(),
   description: varchar({ length: 1024 }).notNull(),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  price: real({ precision: 10, scale: 2 }).notNull(),
   category_id: int("category_id").notNull(),
   image: varchar({ length: 1024 }),
   created_at: timestamp().defaultNow(),
