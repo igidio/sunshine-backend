@@ -1,4 +1,4 @@
-import { product_repository } from "./products.repository"
+import { product_repository } from "./product.repository"
 
 export const product_service = {
 	get_all_products: async () => {
