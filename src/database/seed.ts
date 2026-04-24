@@ -1,17 +1,16 @@
 import { getTableName } from "drizzle-orm"
 import db from "."
 import user_seeder from "./seeders/user.seeder"
-import { MySqlTableWithColumns } from "drizzle-orm/mysql-core"
-import { Seeder } from "./types"
-
-
+import type { MySqlTableWithColumns } from "drizzle-orm/mysql-core"
+import type { Seeder } from "./types"
+import logger from "~/config/pino"
 
 const seed_database = async <T extends MySqlTableWithColumns<any>>(seeder: Seeder<T>) => {
 	const table_name = getTableName(seeder.type);
 	try {
 		await db.insert(seeder.type).values(seeder.data).execute()
 	} catch (error) {
-		console.error(`Error seeding database '${table_name}':`, (error as any)["cause"]["sqlMessage"])
+		logger.error(`Error seeding database '${table_name}': ${(error as any)["cause"]["sqlMessage"]}`)
 	}
 }
 
