@@ -8,6 +8,7 @@
     "seed": "bun src/database/seed.ts"
   },
   "dependencies": {
+    "@elysia/jwt": "^1.4.2",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "drizzle-orm": "^0.45.2",
     "elysia": "latest",
