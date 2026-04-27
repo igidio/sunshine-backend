@@ -3,16 +3,19 @@ import { z } from 'zod'
 interface Env_vars {
 	port: number;
 	db_url: string;
+	jwt_secret: string;
 }
 
 const env_schema = z.object({
 	port: z.coerce.number().default(3000),
 	db_url: z.url(),
+	jwt_secret: z.string().min(1)
 });
 
 const parseResult = env_schema.safeParse({
 	port: process.env.DB_PORT,
-	db_url: process.env.DB_URL
+	db_url: process.env.DB_URL,
+	jwt_secret: process.env.JWT_SECRET
 });
 
 if (!parseResult.success) {
