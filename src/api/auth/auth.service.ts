@@ -25,10 +25,10 @@ export const auth_service = {
 		}
 	},
 
-	refresh: async (bearer: string, jwt: JwtDecorator) => {
-		const is_valid = await jwt.verify(bearer);
-		if (is_valid) {
-			const new_token = await jwt.sign({ id: 1 });
+	refresh: async (bearer: string, jwt_refresh: JwtDecorator, jwt: JwtDecorator) => {
+		const payload = await jwt_refresh.verify(bearer);
+		if (payload) {
+			const new_token = await jwt.sign(payload);
 			return { access_token: new_token };
 		} else {
 			return { error: "Invalid refresh token" };

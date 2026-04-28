@@ -45,5 +45,11 @@ export const auth_routes = new Elysia({
 		}
 		return await auth_service.verify(bearer, jwt);
 	})
+	.post("/refresh", async ({ jwt, jwt_refresh, bearer }) => {
+		if (!bearer) {
+			return { error: "No refresh token provided" };
+		}		
+		return await auth_service.refresh(bearer, jwt_refresh, jwt);
+	})
 
 	;
