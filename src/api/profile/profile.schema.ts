@@ -1,5 +1,4 @@
-import { int, mysqlTable, timestamp, varchar, mysqlEnum, real, date } from "drizzle-orm/mysql-core";
-import { user_schema } from "../user/user.schema";
+import { int, mysqlTable, timestamp, varchar, date } from "drizzle-orm/mysql-core";
 
 export const profile_schema = mysqlTable("profile", {
 	id: int("id").autoincrement().primaryKey(),
