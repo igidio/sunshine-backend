@@ -1,5 +1,5 @@
 import type z from "zod";
-import { profile_schema, type profile_insert } from "./profle.schema";
+import { profile_schema, type profile_insert } from "./profile.schema";
 import db from "~/database";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 

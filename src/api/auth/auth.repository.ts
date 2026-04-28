@@ -1,6 +1,6 @@
 import db from "~/database"
 import type { user_insert } from "../user/user.schema"
-import type { profile_insert } from "../profile/profle.schema"
+import type { profile_insert } from "../profile/profile.schema"
 import { user_repository } from "../user/user.repository"
 import { profile_repository } from "../profile/profile.repository";
 import type { Optional } from "~/helpers/custom_types";
