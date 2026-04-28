@@ -8,5 +8,10 @@ const plugin_jwt = new Elysia()
 		secret: envs.jwt_secret,
 		exp: "1h"
 	}))
+	.use(jwt({
+		name: "jwt_refresh",
+		secret: envs.jwt_refresh,
+		exp: "7d"
+	}))
 
 export default plugin_jwt;
