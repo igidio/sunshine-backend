@@ -1,5 +1,5 @@
 import { decimal, int, mysqlTable, timestamp, varchar, mysqlEnum, real } from "drizzle-orm/mysql-core";
-import type { usersSync } from "drizzle-orm/neon";
+import { profile_schema } from "../profile/profile.schema";
 
 export const user_roles = ["superuser", "admin", "employer"] as const;
 export type UserRole = (typeof user_roles)[number];
@@ -14,7 +14,9 @@ export const user_schema = mysqlTable("user", {
 	create_at: timestamp().defaultNow(),
 	role: mysqlEnum("user_role", user_roles)
 		.default("employer")
-		.notNull()
+		.notNull(),
+	profile_id: int("profile_id").notNull().references(() => profile_schema.id),
+
 });
 
 export type user_insert = typeof user_schema.$inferInsert;
