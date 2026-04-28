@@ -4,6 +4,7 @@ import z from "zod";
 import plugin_jwt from "~/plugins/jwt";
 import { user_dto, user_login_dto } from "../user/user.dto";
 import { profile_dto } from "../profile/profile.dto";
+import { auth_service } from "./auth.service";
 
 export const auth_routes = new Elysia({
 	prefix: "/auth"
@@ -25,7 +26,8 @@ export const auth_routes = new Elysia({
 		body: user_login_dto
 	})
 	.post("/signup", async ({ body, set }) => {
-		return "Signup route";
+		await auth_service.signup(body);
+		return "Signup successful";
 	}, {
 		body: z.object({
 			user: user_dto,
