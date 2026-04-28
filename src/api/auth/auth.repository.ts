@@ -13,17 +13,13 @@ export const auth_repository = {
 		return await db.transaction(async (tx) => {
 
 				const user = await user_repository.create(body.user, tx);
-				console.log("user");
-
 				if (!user[0] || !user[0].id) {
 					throw new Error("Failed to create user");
 				}
-
 				const profile_body: profile_insert = {
 					...body.profile,
 					user_id: user[0].id,
 				}
-
 				const profile = await profile_repository.create(profile_body, tx);
 				return { user, profile };
 
