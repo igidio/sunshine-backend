@@ -10,6 +10,7 @@ export const user_schema = mysqlTable("user", {
 	password: varchar({ length: 255 }).notNull(),
 	email: varchar({ length: 255 }).unique().notNull(),
 	email_verified_at: timestamp(),
+	phone_number: varchar({ length: 20 }),
 	create_at: timestamp().defaultNow(),
 	role: mysqlEnum("user_role", user_roles)
 		.default("employer")
