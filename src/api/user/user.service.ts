@@ -1,14 +1,8 @@
-const user_service = {
+import type z from "zod"
+
+export const user_service = {
 	get_all_users: async () => {
 		return "Get all users"
-	},
-	create_user: async (body: {
-		username: string,
-		password: string,
-		email: string,
-		role?: "superuser" | "admin" | "employer"
-	}) => {
-		return "Create a new user"
 	},
 	get_user_by_id: async (id: string) => {
 		return `Get user with id ${id}`
