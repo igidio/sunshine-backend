@@ -1,27 +1,35 @@
 import { getTableName } from "drizzle-orm"
+import { reset } from "drizzle-seed";
+import type { AnyMySqlTable } from "drizzle-orm/mysql-core"
+
 import db from "."
-import user_seeder from "./seeders/user.seeder"
-import type { MySqlTableWithColumns } from "drizzle-orm/mysql-core"
-import type { Seeder } from "./types"
 import logger from "~/config/pino"
-import productSeeder from "./seeders/product.seeder"
+import type { Seeder } from "./types"
+import profile_seeder from "./seeders/profile.seeder"
+import user_seeder from "./seeders/user.seeder"
+import product_seeder from "./seeders/product.seeder"
+import * as schema from "./schema"
 
-const seed_database = async <T extends MySqlTableWithColumns<any>>(seeder: Seeder<T>) => {
-	const table_name = getTableName(seeder.type);
+const seed_database = async (seeder: Seeder<AnyMySqlTable>) => {
+	const table_name = await getTableName(seeder.type);
+	await db.insert(seeder.type).values(seeder.data).execute()
+	logger.info(`table '${table_name}' seeded`);
+}
+
+async function main() {
 	try {
-		await db.insert(seeder.type).values(seeder.data).execute()
+		await reset(db, schema);
+		await seed_database(profile_seeder)
+		await seed_database(user_seeder)
+		await seed_database(product_seeder)
+
+		logger.info("Database seeded successfully");
 	} catch (error) {
-		logger.error(`Error seeding database '${table_name}': ${(error as any)["cause"]["sqlMessage"]}`)
+		logger.error(`Error seeding database: ${(error as any)["cause"]["sqlMessage"]}`)
+	} finally {
+		db.$client.end()
 	}
+
 }
 
-try {
-	await seed_database(user_seeder)
-	await seed_database(productSeeder)
-
-	console.log("finished")
-} catch (error) {
-
-} finally {
-	db.$client.end()
-}
+main()
