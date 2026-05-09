@@ -27,3 +27,10 @@ export const sale_treatment_detail_schema = mysqlTable("sale_treatment_detail", 
   staff_id: int("staff_id").notNull().references(() => user_schema.id),
   price: real({ precision: 10, scale: 2 }).notNull(),
 });
+
+export type sale_insert = typeof sale_schema.$inferInsert;
+export type sale_select = typeof sale_schema.$inferSelect;
+export type sale_product_detail_insert = typeof sale_product_detail_schema.$inferInsert;
+export type sale_product_detail_select = typeof sale_product_detail_schema.$inferSelect;
+export type sale_treatment_detail_insert = typeof sale_treatment_detail_schema.$inferInsert;
+export type sale_treatment_detail_select = typeof sale_treatment_detail_schema.$inferSelect;

@@ -48,6 +48,19 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.sale_schema.id.through(r.sale_product_detail_schema.sale_id),
     }),
     sale_details: r.many.sale_product_detail_schema(),
+    category: r.one.category_schema({
+      from: r.product_schema.category_id,
+      to: r.category_schema.id,
+    }),
+    stock: r.one.stock_schema({
+      from: r.product_schema.id,
+      to: r.stock_schema.product_id,
+    }),
+    additions: r.many.addition_schema(),
+    suppliers: r.many.user_schema({
+      from: r.product_schema.id.through(r.addition_schema.product_id),
+      to: r.supplier_schema.id.through(r.addition_schema.supplier_id),
+    }),
   },
 
   treatment_schema: {
@@ -81,6 +94,31 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.user_schema.id,
     }),
   },
+  category_schema: {
+    products: r.many.product_schema(),
+  },
+  stock_schema: {
+    product: r.one.product_schema({
+      from: r.stock_schema.product_id,
+      to: r.product_schema.id,
+    }),
+  },
+    supplier_schema: {
+    additions: r.many.addition_schema(),
+    products: r.many.product_schema({
+      from: r.supplier_schema.id.through(r.addition_schema.supplier_id),
+      to: r.product_schema.id.through(r.addition_schema.product_id),
+    }),
+  },
+    addition_schema: {
+    supplier: r.one.supplier_schema({
+      from: r.addition_schema.supplier_id,
+      to: r.supplier_schema.id,
+    }),
 
-
+    product: r.one.product_schema({
+      from: r.addition_schema.product_id,
+      to: r.product_schema.id,
+    }),
+  },
 }))
