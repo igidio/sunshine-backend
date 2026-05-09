@@ -4,149 +4,169 @@ import { product_schema } from "~/modules/product/product.schema";
 type Product = InferInsertModel<typeof product_schema>;
 
 const data: Product[] = [
-	{
-		name: "Product 1",
-		description: "Description for Product 1",
-		category_id: 1,
-		price: 19.99,
-		image: "https://example.com/product1.jpg"
-	},
-	{
-		name: "Product 2",
-		description: "Description for Product 2",
-		category_id: 2,
-		price: 29.99,
-		image: "https://example.com/product2.jpg"
-	},
-	{
-		name: "Product 3",
-		description: "Description for Product 3",
-		category_id: 1,
-		price: 9.99,
-		image: "https://example.com/product3.jpg"
-	},
-	{
-		name: "Product 4",
-		description: "Description for Product 4",
-		category_id: 3,
-		price: 49.99,
-		image: "https://example.com/product4.jpg"
-	},
-	{
-		name: "Product 5",
-		description: "Description for Product 5",
-		category_id: 2,
-		price: 12.5,
-		image: "https://example.com/product5.jpg"
-	},
-	{
-		name: "Product 6",
-		description: "Description for Product 6",
-		category_id: 3,
-		price: 39.99,
-		image: "https://example.com/product6.jpg"
-	},
-	{
-		name: "Product 7",
-		description: "Description for Product 7",
-		category_id: 1,
-		price: 24.99,
-		image: "https://example.com/product7.jpg"
-	},
-	{
-		name: "Product 8",
-		description: "Description for Product 8",
-		category_id: 4,
-		price: 59.99,
-		image: "https://example.com/product8.jpg"
-	},
-	{
-		name: "Product 9",
-		description: "Description for Product 9",
-		category_id: 4,
-		price: 34.99,
-		image: "https://example.com/product9.jpg"
-	},
-	{
-		name: "Product 10",
-		description: "Description for Product 10",
-		category_id: 5,
-		price: 15.0,
-		image: "https://example.com/product10.jpg"
-	},
-	{
-		name: "Product 11",
-		description: "Description for Product 11",
-		category_id: 2,
-		price: 22.99,
-		image: "https://example.com/product11.jpg"
-	},
-	{
-		name: "Product 12",
-		description: "Description for Product 12",
-		category_id: 3,
-		price: 18.75,
-		image: "https://example.com/product12.jpg"
-	},
-	{
-		name: "Product 13",
-		description: "Description for Product 13",
-		category_id: 5,
-		price: 27.5,
-		image: "https://example.com/product13.jpg"
-	},
-	{
-		name: "Product 14",
-		description: "Description for Product 14",
-		category_id: 1,
-		price: 44.0,
-		image: "https://example.com/product14.jpg"
-	},
-	{
-		name: "Product 15",
-		description: "Description for Product 15",
-		category_id: 4,
-		price: 8.99,
-		image: "https://example.com/product15.jpg"
-	},
-	{
-		name: "Product 16",
-		description: "Description for Product 16",
-		category_id: 2,
-		price: 31.99,
-		image: "https://example.com/product16.jpg"
-	},
-	{
-		name: "Product 17",
-		description: "Description for Product 17",
-		category_id: 5,
-		price: 52.5,
-		image: "https://example.com/product17.jpg"
-	},
-	{
-		name: "Product 18",
-		description: "Description for Product 18",
-		category_id: 1,
-		price: 11.99,
-		image: "https://example.com/product18.jpg"
-	},
-	{
-		name: "Product 19",
-		description: "Description for Product 19",
-		category_id: 3,
-		price: 71.0,
-		image: "https://example.com/product19.jpg"
-	},
-	{
-		name: "Product 20",
-		description: "Description for Product 20",
-		category_id: 4,
-		price: 65.5,
-		image: "https://example.com/product20.jpg"
-	}
-]
+  {
+    name: "Crema hidratante",
+    description: "Crema para hidratar la piel",
+    price: 19.99,
+    category_id: 1,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Shampoo",
+    description: "Shampoo para el cabello",
+    price: 9.99,
+    category_id: 3,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Acondicionador",
+    description: "Acondicionador para el cabello",
+    price: 8.99,
+    category_id: 3,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Gel de baño",
+    description: "Gel para el baño",
+    price: 7.99,
+    category_id: 6,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Loción corporal",
+    description: "Loción para el cuerpo",
+    price: 12.99,
+    category_id: 6,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Perfume",
+    description: "Fragancia y perfume",
+    price: 29.99,
+    category_id: 4,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Esmalte de uñas",
+    description: "Esmalte para las uñas",
+    price: 4.99,
+    category_id: 5,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Mascarilla facial",
+    description: "Mascarilla para el rostro",
+    price: 5.99,
+    category_id: 7,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Protector solar",
+    description: "Protector solar para la piel",
+    price: 14.99,
+    category_id: 9,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Aceite esencial",
+    description: "Aceite esencial para aromaterapia",
+    price: 9.99,
+    category_id: 10,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Cepillo de dientes",
+    description: "Cepillo para el cuidado dental",
+    price: 3.99,
+    category_id: 8,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Crema de manos",
+    description: "Crema para hidratar las manos",
+    price: 6.99,
+    category_id: 1,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Serum facial",
+    description: "Serum para el cuidado del rostro",
+    price: 24.99,
+    category_id: 7,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Exfoliante corporal",
+    description: "Exfoliante para el cuerpo",
+    price: 11.99,
+    category_id: 6,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Tónico facial",
+    description: "Tónico para el rostro",
+    price: 13.99,
+    category_id: 7,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Bálsamo labial",
+    description: "Bálsamo para los labios",
+    price: 2.99,
+    category_id: 1,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Crema antiarrugas",
+    description: "Crema para reducir arrugas",
+    price: 21.99,
+    category_id: 1,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Desmaquillante",
+    description: "Producto para remover maquillaje",
+    price: 7.99,
+    category_id: 2,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Mascarilla capilar",
+    description: "Mascarilla para el cabello",
+    price: 15.99,
+    category_id: 3,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+  {
+    name: "Crema para pies",
+    description: "Crema para el cuidado de los pies",
+    price: 8.99,
+    category_id: 12,
+    created_at: new Date(),
+    updated_at: new Date(),
+  },
+];
 
 export default {
-	data,
-	type: product_schema
+  data,
+  type: product_schema,
 };
