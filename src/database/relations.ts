@@ -57,7 +57,7 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.stock_schema.product_id,
     }),
     additions: r.many.addition_schema(),
-    suppliers: r.many.user_schema({
+    suppliers: r.many.supplier_schema({
       from: r.product_schema.id.through(r.addition_schema.product_id),
       to: r.supplier_schema.id.through(r.addition_schema.supplier_id),
     }),
@@ -103,14 +103,14 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.product_schema.id,
     }),
   },
-    supplier_schema: {
+  supplier_schema: {
     additions: r.many.addition_schema(),
     products: r.many.product_schema({
       from: r.supplier_schema.id.through(r.addition_schema.supplier_id),
       to: r.product_schema.id.through(r.addition_schema.product_id),
     }),
   },
-    addition_schema: {
+  addition_schema: {
     supplier: r.one.supplier_schema({
       from: r.addition_schema.supplier_id,
       to: r.supplier_schema.id,
