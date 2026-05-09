@@ -17,13 +17,14 @@ export const relations = defineRelations(schemas, (r) => ({
       from: r.user_schema.profile_id,
       to: r.profile_schema.id
     }),
-    appointments: r.many.appointment_schema(),
   },
   customer_schema: {
     profile: r.one.profile_schema({
       from: r.customer_schema.profile_id,
       to: r.profile_schema.id
     }),
+    appointments: r.many.appointment_schema(),
+
   },
   sale_schema: {
     products: r.many.product_schema({
