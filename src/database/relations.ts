@@ -24,5 +24,63 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.profile_schema.id
     }),
   },
+  sale_schema: {
+    products: r.many.product_schema({
+      from: r.sale_schema.id.through(r.sale_product_detail_schema.sale_id),
+      to: r.product_schema.id.through(r.sale_product_detail_schema.product_id),
+    }),
+    treatments: r.many.treatment_schema({
+      from: r.sale_schema.id.through(r.sale_treatment_detail_schema.sale_id),
+      to: r.treatment_schema.id.through(r.sale_treatment_detail_schema.treatment_id),
+    }),
+
+    product_details: r.many.sale_product_detail_schema(),
+    treatment_details: r.many.sale_treatment_detail_schema(),
+
+    customer: r.one.customer_schema({
+      from: r.sale_schema.customer_id,
+      to: r.customer_schema.id,
+    }),
+  },
+  product_schema: {
+    sales: r.many.sale_schema({
+      from: r.product_schema.id.through(r.sale_product_detail_schema.product_id),
+      to: r.sale_schema.id.through(r.sale_product_detail_schema.sale_id),
+    }),
+    sale_details: r.many.sale_product_detail_schema(),
+  },
+
+  treatment_schema: {
+    sales: r.many.sale_schema({
+      from: r.treatment_schema.id.through(r.sale_treatment_detail_schema.treatment_id),
+      to: r.sale_schema.id.through(r.sale_treatment_detail_schema.sale_id),
+    }),
+    sale_details: r.many.sale_treatment_detail_schema(),
+  },
+  sale_product_detail_schema: {
+    sale: r.one.sale_schema({
+      from: r.sale_product_detail_schema.sale_id,
+      to: r.sale_schema.id,
+    }),
+    product: r.one.product_schema({
+      from: r.sale_product_detail_schema.product_id,
+      to: r.product_schema.id,
+    }),
+  },
+  sale_treatment_detail_schema: {
+    sale: r.one.sale_schema({
+      from: r.sale_treatment_detail_schema.sale_id,
+      to: r.sale_schema.id,
+    }),
+    treatment: r.one.treatment_schema({
+      from: r.sale_treatment_detail_schema.treatment_id,
+      to: r.treatment_schema.id,
+    }),
+    staff: r.one.user_schema({
+      from: r.sale_treatment_detail_schema.staff_id,
+      to: r.user_schema.id,
+    }),
+  },
+
 
 }))

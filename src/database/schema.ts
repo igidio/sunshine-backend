@@ -1,6 +1,7 @@
 import { customer_schema } from "~/modules/customer/customer.schema";
 import { product_schema } from "~/modules/product/product.schema"
 import { profile_schema } from "~/modules/profile/profile.schema";
+import { sale_product_detail_schema, sale_schema, sale_treatment_detail_schema } from "~/modules/sale/sale.schema";
 import { treatment_schema } from "~/modules/treatment/treatment.schema";
 import { user_schema } from "~/modules/user/user.schema";
 
@@ -9,6 +10,9 @@ export {
   profile_schema,
   product_schema,
   customer_schema,
-  treatment_schema
+  treatment_schema,
+  sale_schema,
+  sale_product_detail_schema,
+  sale_treatment_detail_schema
 }
 
