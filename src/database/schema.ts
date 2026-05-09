@@ -1,8 +1,8 @@
-import { customer_schema } from "~/api/customer/customer.schema";
-import { product_schema } from "~/api/product/product.schema"
-import { profile_schema } from "~/api/profile/profile.schema";
-import { treatment_schema } from "~/api/treatment/treatment.schema";
-import { user_schema } from "~/api/user/user.schema";
+import { customer_schema } from "~/modules/customer/customer.schema";
+import { product_schema } from "~/modules/product/product.schema"
+import { profile_schema } from "~/modules/profile/profile.schema";
+import { treatment_schema } from "~/modules/treatment/treatment.schema";
+import { user_schema } from "~/modules/user/user.schema";
 
 export {
   user_schema,

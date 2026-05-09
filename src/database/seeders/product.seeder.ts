@@ -1,5 +1,5 @@
 import type { InferInsertModel } from "drizzle-orm";
-import { product_schema } from "~/api/product/product.schema";
+import { product_schema } from "~/modules/product/product.schema";
 
 type Product = InferInsertModel<typeof product_schema>;
 

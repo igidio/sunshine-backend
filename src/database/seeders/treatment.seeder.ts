@@ -1,4 +1,5 @@
-import { treatment_schema, type treatment_insert } from "~/api/treatment/treatment.schema";
+import type { treatment_insert } from "~/modules/treatment/treatment.schema";
+import { treatment_schema } from "../schema";
 
 const data: treatment_insert[] = [
   {

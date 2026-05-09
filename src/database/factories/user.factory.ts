@@ -1,5 +1,5 @@
 import { fakerES as faker } from '@faker-js/faker';
-import type { user_insert, UserRole } from "~/api/user/user.schema";
+import type { user_insert, UserRole } from "~/modules/user/user.schema";
 
 export const create_faker_user = ({
 	profile_id,

@@ -2,6 +2,7 @@ import type { InferInsertModel } from "drizzle-orm";
 import { user_schema } from "../schema";
 import { BcryptHelper } from "~/helpers/bcrypt";
 import { create_faker_user } from "../factories/user.factory";
+import type { user_insert } from "~/modules/user/user.schema";
 
 type User = InferInsertModel<typeof user_schema>;
 
@@ -14,7 +15,7 @@ const users_with_hashed_passwords = async (users: User[]) => {
 	}))
 }
 
-const data: User[] = [
+const data: user_insert[] = [
 	{
 		username: "claudia",
 		password: "password",

@@ -1,4 +1,4 @@
-import { customer_schema, type customer_insert } from "~/api/customer/customer.schema";
+import { customer_schema, type customer_insert } from "~/modules/customer/customer.schema";
 
 const generate = (start: number, amount: number): customer_insert[] => {
 	const data: customer_insert[] = [];

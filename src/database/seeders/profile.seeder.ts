@@ -1,5 +1,5 @@
 import type { InferInsertModel } from "drizzle-orm";
-import { profile_schema } from "~/api/profile/profile.schema";
+import { profile_schema } from "~/modules/profile/profile.schema";
 import { create_faker_profile } from "../factories/profile.factory";
 
 type Profile = InferInsertModel<typeof profile_schema>;

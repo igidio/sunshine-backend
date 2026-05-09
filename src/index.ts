@@ -1,8 +1,8 @@
 import { Elysia } from "elysia";
 import { envs } from "./config/envs";
-import product_routes from "./api/product/product.routes";
-import { auth_routes } from "./api/auth/auth.routes";
 import { plugin_error } from "./plugins/error";
+import { auth_routes } from "./modules/auth/auth.routes";
+import product_routes from "./modules/product/product.routes";
 
 const app = new Elysia()
 .error({
