@@ -23,11 +23,11 @@ export const auth_service = {
 	sign_in: async (email_or_username: string, password: string) => {
 		const user = await user_repository.select_one_by_username_or_email(email_or_username);
 		if (!user) {
-			throw new ServerError(error_messages.invalid_credentials, 401);
+			throw new ServerError(error_messages.invalid_credentials, 400);
 		}
 		const is_match = await BcryptHelper.match_password(password, user.password);
 		if (!is_match) {
-			throw new ServerError(error_messages.invalid_password, 401);
+			throw new ServerError(error_messages.invalid_password, 400);
 		}
 		return user;
 	},

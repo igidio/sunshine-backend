@@ -1,7 +1,7 @@
-import { decimal, int, mysqlTable, timestamp, varchar, mysqlEnum, real } from "drizzle-orm/mysql-core";
+import { int, mysqlTable, timestamp, varchar, mysqlEnum } from "drizzle-orm/mysql-core";
 import { profile_schema } from "../profile/profile.schema";
 
-export const user_roles = ["superuser", "admin", "employer"] as const;
+export const user_roles = ["superuser", "admin", "employer", "customer"] as const;
 export type UserRole = (typeof user_roles)[number];
 
 export const user_schema = mysqlTable("user", {
