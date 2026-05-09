@@ -17,6 +17,7 @@ export const relations = defineRelations(schemas, (r) => ({
       from: r.user_schema.profile_id,
       to: r.profile_schema.id
     }),
+    appointments: r.many.appointment_schema(),
   },
   customer_schema: {
     profile: r.one.profile_schema({
@@ -61,8 +62,15 @@ export const relations = defineRelations(schemas, (r) => ({
       from: r.product_schema.id.through(r.addition_schema.product_id),
       to: r.supplier_schema.id.through(r.addition_schema.supplier_id),
     }),
+    images: r.many.product_image_schema(),
   },
 
+  product_image_schema: {
+    product: r.one.product_schema({
+      from: r.product_image_schema.product_id,
+      to: r.product_schema.id,
+    }),
+  },
   treatment_schema: {
     sales: r.many.sale_schema({
       from: r.treatment_schema.id.through(r.sale_treatment_detail_schema.treatment_id),
@@ -119,6 +127,12 @@ export const relations = defineRelations(schemas, (r) => ({
     product: r.one.product_schema({
       from: r.addition_schema.product_id,
       to: r.product_schema.id,
+    }),
+  },
+  appointment_schema: {
+    customer: r.one.customer_schema({
+      from: r.appointment_schema.customer_id,
+      to: r.customer_schema.id,
     }),
   },
 }))

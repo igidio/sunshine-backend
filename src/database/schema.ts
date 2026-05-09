@@ -1,7 +1,9 @@
 import { addition_schema } from "~/modules/addition/addition.schema";
+import { appointment_schema } from "~/modules/appointment/appointment.schema";
 import { category_schema } from "~/modules/category/category.schema";
 import { customer_schema } from "~/modules/customer/customer.schema";
 import { product_schema } from "~/modules/product/product.schema"
+import { product_image_schema } from "~/modules/product/product_image.schema";
 import { profile_schema } from "~/modules/profile/profile.schema";
 import { sale_product_detail_schema, sale_schema, sale_treatment_detail_schema } from "~/modules/sale/sale.schema";
 import { stock_schema } from "~/modules/stock/stock.schema";
@@ -22,5 +24,7 @@ export {
   stock_schema,
   addition_schema,
   supplier_schema,
+  appointment_schema,
+  product_image_schema,
 }
 
