@@ -1,6 +1,7 @@
 import type { InferInsertModel } from "drizzle-orm";
 import { user_schema } from "../schema";
 import { BcryptHelper } from "~/helpers/bcrypt";
+import { create_faker_user } from "../factories/user.factory";
 
 type User = InferInsertModel<typeof user_schema>;
 
@@ -19,46 +20,51 @@ const data: User[] = [
 		password: "password",
 		email: "claudia@mail.com",
 		profile_id: 1,
-		role: "admin",
-		phone_number: "612345678",
+		role: "superuser",
+		phone_number: "76543210",
 		email_verified_at: new Date(),
 	},
 	{
 		username: "carlos.garcia",
 		password: "password2",
-		email: "carlos.garcia@example.com",
+		email: "carlos_garcia@mail.com",
 		profile_id: 2,
-		role: "employer",
-		phone_number: "613456789",
+		role: "admin",
+		phone_number: "70000003",
 		email_verified_at: new Date(),
 	},
 	{
 		username: "marina.sanchez",
 		password: "password3",
-		email: "marina.sanchez@example.com",
+		email: "marina_sanchez@mail.com",
 		profile_id: 3,
 		role: "employer",
-		phone_number: "614567890",
+		phone_number: "70000002",
 		email_verified_at: new Date(),
 	},
 	{
 		username: "diego.fernandez",
 		password: "password4",
-		email: "diego.fernandez@example.com",
+		email: "diego_fernandez@mail.com",
 		profile_id: 4,
 		role: "employer",
-		phone_number: "615678901",
+		phone_number: "70000001",
 		email_verified_at: new Date(),
 	},
 	{
 		username: "lucia.ramirez",
 		password: "password5",
-		email: "lucia.ramirez@example.com",
+		email: "lucia_ramirez@mail.com",
 		profile_id: 5,
 		role: "admin",
-		phone_number: "616789012",
+		phone_number: "70000000",
 		email_verified_at: new Date(),
 	},
+	create_faker_user({ profile_id: 6, role: "customer", generate_phone: false }),
+	create_faker_user({ profile_id: 7, role: "customer", generate_phone: false }),
+	create_faker_user({ profile_id: 8, role: "customer", generate_phone: false }),
+	create_faker_user({ profile_id: 9, role: "customer", generate_phone: false }),
+	create_faker_user({ profile_id: 10, role: "customer", generate_phone: false }),
 ]
 
 export default {

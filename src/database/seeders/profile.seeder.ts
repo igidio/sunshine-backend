@@ -1,5 +1,6 @@
 import type { InferInsertModel } from "drizzle-orm";
 import { profile_schema } from "~/api/profile/profile.schema";
+import { create_faker_profile } from "../factories/profile.factory";
 
 type Profile = InferInsertModel<typeof profile_schema>;
 
@@ -34,6 +35,11 @@ const data: Profile[] = [
 		birth_date: new Date("1990-09-09"),
 		address: "Avenida del Sol 46",
 	},
+	create_faker_profile(),
+	create_faker_profile(),
+	create_faker_profile(),
+	create_faker_profile(),
+	create_faker_profile(),
 ];
 
 export default {
