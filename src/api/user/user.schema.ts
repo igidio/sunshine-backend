@@ -16,7 +16,8 @@ export const user_schema = mysqlTable("user", {
 		.default("employer")
 		.notNull(),
 	profile_id: int("profile_id").notNull().references(() => profile_schema.id),
-
+	updated_at: timestamp().defaultNow().onUpdateNow(),
+	disabled_at: timestamp(),
 });
 
 export type user_insert = typeof user_schema.$inferInsert;

@@ -8,5 +8,6 @@ export const product_schema = mysqlTable("product", {
   category_id: int("category_id").notNull(),
   image: varchar({ length: 1024 }),
   created_at: timestamp().defaultNow(),
-  updated_at: timestamp().defaultNow().onUpdateNow()
+  updated_at: timestamp().defaultNow().onUpdateNow(),
+  deleted_at: timestamp(),
 });

@@ -4,6 +4,8 @@ import { create_faker_profile } from "../factories/profile.factory";
 
 type Profile = InferInsertModel<typeof profile_schema>;
 
+const faker_profiles = Array.from({ length: 10 }, () => create_faker_profile());
+
 const data: Profile[] = [
 	{
 		first_name: "Claudia",
@@ -35,11 +37,7 @@ const data: Profile[] = [
 		birth_date: new Date("1990-09-09"),
 		address: "Avenida del Sol 46",
 	},
-	create_faker_profile(),
-	create_faker_profile(),
-	create_faker_profile(),
-	create_faker_profile(),
-	create_faker_profile(),
+	...faker_profiles,
 ];
 
 export default {

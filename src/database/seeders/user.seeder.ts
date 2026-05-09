@@ -70,4 +70,4 @@ const data: User[] = [
 export default {
 	data: await users_with_hashed_passwords(data),
 	type: user_schema
-};
+}
