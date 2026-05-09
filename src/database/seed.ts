@@ -7,12 +7,18 @@ import logger from "~/config/pino"
 import type { Seeder } from "./types"
 import profile_seeder from "./seeders/profile.seeder"
 import user_seeder from "./seeders/user.seeder"
+import category_seeder from "./seeders/category.seeder"
 import product_seeder from "./seeders/product.seeder"
 import customer_seeder from "./seeders/customer.seeder"
 import treatment_seeder from "./seeders/treatment.seeder"
-import * as schema from "./schema"
+import supplier_seeder from "./seeders/supplier.seeder"
+import addition_seeder from "./seeders/addition.seeder"
+import stock_seeder from "./seeders/stock.seeder"
+import sale_seeder from "./seeders/sale.seeder"
+import sale_product_detail_seeder from "./seeders/sale_product_detail.seeder"
+import sale_treatment_detail_seeder from "./seeders/sale_treatment_detail.seeder"
 import appointment_seeder from "./seeders/appointment.seeder";
-import category_seeder from "./seeders/category.seeder";
+import * as schema from "./schema"
 
 const seed_database = async (seeder: Seeder<AnyMySqlTable>) => {
 	const table_name = await getTableName(seeder.type);
@@ -29,6 +35,12 @@ async function main() {
 		await seed_database(product_seeder)
 		await seed_database(customer_seeder)
 		await seed_database(treatment_seeder)
+		await seed_database(supplier_seeder)
+		await seed_database(addition_seeder)
+		await seed_database(stock_seeder)
+		await seed_database(sale_seeder)
+		await seed_database(sale_product_detail_seeder)
+		await seed_database(sale_treatment_detail_seeder)
 		await seed_database(appointment_seeder)
 
 		logger.info("Database seeded successfully");
