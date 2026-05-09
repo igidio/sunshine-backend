@@ -9,6 +9,7 @@ import profile_seeder from "./seeders/profile.seeder"
 import user_seeder from "./seeders/user.seeder"
 import product_seeder from "./seeders/product.seeder"
 import customer_seeder from "./seeders/customer.seeder"
+import treatment_seeder from "./seeders/treatment.seeder"
 import * as schema from "./schema"
 
 const seed_database = async (seeder: Seeder<AnyMySqlTable>) => {
@@ -24,6 +25,7 @@ async function main() {
 		await seed_database(user_seeder)
 		await seed_database(product_seeder)
 		await seed_database(customer_seeder)
+		await seed_database(treatment_seeder)
 
 		logger.info("Database seeded successfully");
 	} catch (error) {

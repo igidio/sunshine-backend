@@ -1,4 +1,4 @@
-import { int, mysqlTable, real, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlTable, real, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 export const treatment_schema = mysqlTable("treatment", {
   id: int("id").autoincrement().primaryKey(),
@@ -6,6 +6,9 @@ export const treatment_schema = mysqlTable("treatment", {
   description: varchar({ length: 2000 }).notNull(),
   price: real({ precision: 10, scale: 2 }).notNull(),
   duration: int("duration_minutes").notNull(),
+	created_at: timestamp().defaultNow(),
+	updated_at: timestamp().defaultNow().onUpdateNow(),
+	deleted_at: timestamp(),
 });
 
 export type treatment_insert = typeof treatment_schema.$inferInsert;
