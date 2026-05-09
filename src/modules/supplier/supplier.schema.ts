@@ -5,7 +5,7 @@ export const supplier_schema = mysqlTable("supplier", {
 	name: varchar({ length: 255 }).notNull(),
 	description: varchar({ length: 1000 }).notNull(),
 	phone_number: varchar({ length: 20 }).notNull(),
-	image_url: varchar({ length: 2000 }).notNull(),
+	image_url: varchar({ length: 2000 }),
 	email: varchar({ length: 255 }).notNull(),
 	address: varchar({ length: 255 }).notNull(),
 	created_at: datetime().defaultNow(),
