@@ -3,6 +3,10 @@ import type { user_dto } from "../user/user.dto";
 import type { profile_dto } from "../profile/profile.dto";
 import { auth_repository } from "./auth.repository";
 import jwt from "@elysia/jwt";
+import { user_repository } from "../user/user.repository";
+import { BcryptHelper } from "~/helpers/bcrypt";
+import { error_messages } from "~/data/error_messages";
+import { ServerError } from "~/classes/server_error";
 
 type JwtDecorator = ReturnType<typeof jwt>["decorator"]["jwt"];
 
@@ -16,12 +20,33 @@ export const auth_service = {
 		return auth_repository.create_user(body);
 	},
 
+	sign_in: async (email_or_username: string, password: string) => {
+		const user = await user_repository.select_one_by_username_or_email(email_or_username);
+		if (!user) {
+			throw new ServerError(error_messages.invalid_credentials, 401);
+		}
+		const is_match = await BcryptHelper.match_password(password, user.password);
+		if (!is_match) {
+			throw new ServerError(error_messages.invalid_password, 401);
+		}
+		return user;
+	},
+
 	verify: async (bearer: string, jwt: JwtDecorator) => {
 		const is_valid = await jwt.verify(bearer);
 		if (is_valid) {
 			return { valid: true };
 		} else {
 			return { valid: false };
+		}
+	},
+
+	get_authenticated_user: async (bearer: string, jwt: JwtDecorator) => {
+		const payload = await jwt.verify(bearer);
+		if (payload) {
+			return { user: payload };
+		} else {
+			return { error: "Invalid token" };
 		}
 	},
 

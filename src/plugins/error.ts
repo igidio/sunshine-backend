@@ -1,34 +1,18 @@
 import { DrizzleError, DrizzleQueryError } from "drizzle-orm";
 import Elysia, { ValidationError } from "elysia";
 
-export const plugin_error = new Elysia().onError(({ error }) => {
+export const plugin_error = new Elysia().onError(({ error, set }) => {
 	
-	if (error instanceof Error) {
-		if (error instanceof DrizzleQueryError) {
-			return {
-				message: "Database query error",
-				details: error.cause?.message,
-				code: "DATABASE_QUERY_ERROR"
-			}
-		}
-		if (error instanceof DrizzleError) {
-			return {
-				message: "Database error",
-				details: error,
-				code: "DATABASE_ERROR"
-			}
-		}
-		if (error instanceof ValidationError) {
-			return {
-				message: "Validation failed",
-				details: error.customError,
-				code: "VALIDATION_ERROR"
-			}	
-		}
-		return {
-			message: "An unexpected error occurred",
-			details: error,
-			code: "UNEXPECTED_ERROR"
-		}
+
+	const error_message = (error as any)["message"];
+	const error_status = (error as any)["status"] || 500;
+	set.status = error_status;
+	return {
+		message: error_message,
+		type: error instanceof ValidationError ? "validation_error" :
+			error instanceof DrizzleQueryError ? "database_query_error" :
+				error instanceof DrizzleError ? "database_error" :
+					"server_error",
+		status: error_status
 	}
 }).as('global')

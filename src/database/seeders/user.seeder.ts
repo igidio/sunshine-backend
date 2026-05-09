@@ -1,7 +1,17 @@
 import type { InferInsertModel } from "drizzle-orm";
 import { user_schema } from "../schema";
+import { BcryptHelper } from "~/helpers/bcrypt";
 
 type User = InferInsertModel<typeof user_schema>;
+
+const users_with_hashed_passwords = async (users: User[]) => {
+	return await Promise.all(users.map(async (user) => {
+		return {
+			...user,
+			password: await BcryptHelper.hash_password(user.password)
+		}
+	}))
+}
 
 const data: User[] = [
 	{
@@ -52,6 +62,6 @@ const data: User[] = [
 ]
 
 export default {
-	data,
+	data: await users_with_hashed_passwords(data),
 	type: user_schema
 };

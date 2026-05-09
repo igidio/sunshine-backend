@@ -1,9 +1,10 @@
 import db from "~/database"
-import type { user_insert } from "../user/user.schema"
+import { user_schema, type user_insert } from "../user/user.schema"
 import type { profile_insert } from "../profile/profile.schema"
 import { user_repository } from "../user/user.repository"
 import { profile_repository } from "../profile/profile.repository";
 import type { Optional } from "~/helpers/custom_types";
+import { and, eq } from "drizzle-orm";
 
 export const auth_repository = {
 	create_user: async (body: {
@@ -26,5 +27,10 @@ export const auth_repository = {
 			return { user, profile };
 
 		});
+	},
+	sign_in: async (email: string, password: string) => {
+		return await db.select()
+			.from(user_schema)
+			.where(and( eq(user_schema.email, email), eq(user_schema.password, password)))
 	}
 }
