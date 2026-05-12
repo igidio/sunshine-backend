@@ -1,4 +1,8 @@
 export const error_messages = {
 	invalid_credentials: "Las credenciales proporcionadas no son correctas. Por favor, verifica tu email y contraseña e intenta nuevamente.",
 	invalid_password: "La contraseña proporcionada es incorrecta. Por favor, verifica tu contraseña e intenta nuevamente.",
+	server_url_not_defined: "El URL del servidor no está definido. Por favor, asegúrate de que la variable de entorno SERVER_URL esté configurada correctamente.",
+	openai_api_key_not_defined: "La clave API del modelo de lenguaje no está definida. Por favor, asegúrate de que la variable de entorno OPENAI_API_KEY esté configurada correctamente.",
+	openai_language_model_not_defined: "El modelo de lenguaje no está definido. Por favor, asegúrate de que la variable de entorno OPENAI_LANGUAGE_MODEL esté configurada correctamente.",
+	openai_tool_model_not_defined: "El modelo de herramientas no está definido. Por favor, asegúrate de que la variable de entorno OPENAI_TOOL_MODEL esté configurada correctamente."
 }
