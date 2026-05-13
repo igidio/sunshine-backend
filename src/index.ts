@@ -5,6 +5,7 @@ import { auth_routes } from "./modules/auth/auth.routes";
 import product_routes from "./modules/product/product.routes";
 import { chat_routes } from "./modules/chat/chat.routes";
 import plugin_mcp from "./plugins/mcp";
+import { notification_routes } from "./modules/sse/sse.routes";
 const app = new Elysia()
   .error({
     Error
@@ -14,6 +15,7 @@ const app = new Elysia()
   .use(auth_routes)
   .use(product_routes)
   .use(chat_routes)
+  .use(notification_routes)
   .get("/", () => "Hello Elysia").listen(envs.port);
 
 console.log(

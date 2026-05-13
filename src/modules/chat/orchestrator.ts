@@ -4,6 +4,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { envs } from "../../config/envs";
 import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
+import { global_events } from "~/helpers/event_bus";
 
 const openai = new OpenAI({
   baseURL: envs.openai_base_url,
@@ -87,6 +88,8 @@ export class ChatOrchestrator {
       const function_args = JSON.parse(tool_call.function.arguments);
 
       console.log(`Ejecutando herramienta MCP: ${function_name}`, function_args);
+      // send notification of tool execution
+      global_events.emit('new_notification', `Ejecutando herramienta: ${function_name}`);
 
       try {
         const result = await client.callTool({
