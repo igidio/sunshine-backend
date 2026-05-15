@@ -8,7 +8,6 @@ export const plugin_auth = new Elysia()
 	.use(plugin_jwt)
 	.use(bearer())
 	.macro({
-
 		auth: {
 			resolve: async ({ jwt, bearer }) => {
 				if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
@@ -18,6 +17,4 @@ export const plugin_auth = new Elysia()
 				return { user: auth_header };
 			},
 		}
-
-
 	})
