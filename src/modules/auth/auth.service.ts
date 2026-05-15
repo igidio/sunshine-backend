@@ -42,26 +42,26 @@ export const auth_service = {
 	},
 
 	get_authenticated_user: async (bearer: string, jwt: JwtDecorator) => {
-		const payload = await jwt.verify(bearer);
+		const payload = await jwt.verify(bearer);		
 		if (payload) {
 			return { user: payload };
 		} else {
-			return { error: "Invalid token" };
+			throw new ServerError(error_messages.invalid_token, 401);
 		}
 	},
 
-	refresh: async (bearer: string, jwt_refresh: JwtDecorator, jwt: JwtDecorator) => {
-		const payload = await jwt_refresh.verify(bearer);
+	refresh: async (token: string, jwt_refresh: JwtDecorator, jwt: JwtDecorator) => {
+		const payload = await jwt_refresh.verify(token);
 		if (payload) {
-			const { remember_me, ex, iat, ...rest } = payload as any;
+			const { remember_me, exp, iat, ...rest } = payload as any;
 			const new_token = await jwt.sign(rest);
 			let refresh_token;
 			if (remember_me) {
-				refresh_token = await jwt_refresh.sign({...rest, remember_me: true });
+				refresh_token = await jwt_refresh.sign({...rest, remember_me });
 			}
 			return { access_token: new_token, refresh_token };
 		} else {
-			return { error: "Invalid refresh token" };
+			throw new ServerError(error_messages.invalid_token, 400);
 		}
 	}
 }

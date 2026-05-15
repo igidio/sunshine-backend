@@ -1,7 +1,7 @@
 import db from "~/database"
 import { user_schema, type user_insert } from "./user.schema"
 import type { MySql2Database } from "drizzle-orm/mysql2";
-import { eq, or } from "drizzle-orm";
+import { eq, getColumns, or } from "drizzle-orm";
 
 
 export const user_repository = {
@@ -10,7 +10,8 @@ export const user_repository = {
 		return await database.insert(user_schema).values(body);
 	},
 	select_one: async (id: number) => {
-		return await db.select().from(user_schema).where(eq(user_schema.id, id))
+		const { password, ...columns } = getColumns(user_schema);
+		return await db.select(columns).from(user_schema).where(eq(user_schema.id, id))
 	},
 	select_one_by_username_or_email: async (email_or_username: string) => {
 		const results = await db.select().from(user_schema).where(
