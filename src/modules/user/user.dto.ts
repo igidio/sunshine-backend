@@ -11,5 +11,6 @@ export const user_dto = z.object({
 
 export const user_login_dto = z.object({
 	username_or_email: z.string().min(1),
-	password
+	password,
+	remember_me: z.boolean().optional()
 })
