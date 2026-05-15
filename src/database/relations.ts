@@ -136,4 +136,10 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.customer_schema.id,
     }),
   },
+  notification_schema: {
+    user: r.one.user_schema({
+      from: r.notification_schema.user_id,
+      to: r.user_schema.id,
+    }),
+  }
 }))

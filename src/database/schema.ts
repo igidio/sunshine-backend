@@ -2,6 +2,7 @@ import { addition_schema } from "~/modules/addition/addition.schema";
 import { appointment_schema } from "~/modules/appointment/appointment.schema";
 import { category_schema } from "~/modules/category/category.schema";
 import { customer_schema } from "~/modules/customer/customer.schema";
+import { notification_schema } from "~/modules/notification/notification.schema";
 import { product_schema } from "~/modules/product/product.schema"
 import { product_image_schema } from "~/modules/product/product_image.schema";
 import { profile_schema } from "~/modules/profile/profile.schema";
@@ -26,5 +27,6 @@ export {
   supplier_schema,
   appointment_schema,
   product_image_schema,
+  notification_schema,
 }
 
