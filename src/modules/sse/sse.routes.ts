@@ -1,7 +1,7 @@
 import Elysia, { sse, type SSEPayload } from "elysia";
 import { notification_broadcaster } from "~/helpers/event_bus";
 
-export const notification_routes = new Elysia({
+export const sse_routes = new Elysia({
 	prefix: "/sse"
 }).get("/", async function* () {
 	yield sse("Conexión establecida");
