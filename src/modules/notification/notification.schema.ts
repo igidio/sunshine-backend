@@ -11,7 +11,7 @@ export const notification_schema = mysqlTable("notification", {
 	message: text("message").notNull(),
 	created_at: timestamp("created_at").defaultNow(),
 	deleted_at: timestamp("deleted_at"),
-	readed_at: timestamp("readed_at"),
+	read_at: timestamp("readed_at"),
 	goto_url: text("goto_url"),
 	type: mysqlEnum("type", notification_types).default("info").notNull(),
 });

@@ -18,3 +18,27 @@ export const notification_routes = new Elysia({
 		}),
 		auth: true,
 	})
+
+	.delete("/:id", ({ params }) => {
+		return notification_service.delete(params.id);
+	}, {
+		params: z.object({
+			id: z.coerce.number(),
+		}),
+		auth: true,
+	})
+
+	.post("/:id/read", ({ params }) => {
+		return notification_service.mark_as_read(params.id);
+	}, {
+		params: z.object({
+			id: z.coerce.number(),
+		}),
+		auth: true,
+	})
+
+	.post("/read-all", ({ user }) => {
+		return notification_service.mark_all_as_read(user.id);
+	}, {
+		auth: true,
+	})
