@@ -37,7 +37,7 @@ export const notification_routes = new Elysia({
 		auth: true,
 	})
 
-	.post("/read-all", ({ user }) => {
+	.post("/read_all", ({ user }) => {
 		return notification_service.mark_all_as_read(user.id);
 	}, {
 		auth: true,
