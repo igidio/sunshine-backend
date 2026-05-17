@@ -10,6 +10,7 @@ export const supplier_schema = mysqlTable("supplier", {
 	address: varchar({ length: 255 }).notNull(),
 	created_at: datetime().defaultNow(),
 	updated_at: datetime().defaultNow().onUpdateNow(),
+	disabled_at: datetime(),
 	deleted_at: datetime(),
 });
 

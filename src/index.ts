@@ -7,6 +7,7 @@ import { chat_routes } from "./modules/chat/chat.routes";
 import plugin_mcp from "./plugins/mcp";
 import { sse_routes } from "./modules/sse/sse.routes";
 import { notification_routes } from "./modules/notification/notification.routes";
+import { supplier_routes } from "./modules/supplier/supplier.routes";
 const app = new Elysia()
   .error({
     Error
@@ -18,6 +19,7 @@ const app = new Elysia()
   .use(chat_routes)
   .use(sse_routes)
   .use(notification_routes)
+  .use(supplier_routes)
   .get("/", () => "Hello Elysia").listen(envs.port);
 
 console.log(
