@@ -51,22 +51,25 @@ const build_where = (pagination: ReadSupplierDto): SQL | undefined => {
 export const supplier_repository = {
 
 	get: async (pagination: ReadSupplierDto) => {
-		return db.query.supplier_schema.findMany({
+		return await db.query.supplier_schema.findMany({
 			columns: {
 				deleted_at: false,
 			},
 			orderBy: {
 				...pagination.sort_by && { [pagination.sort_by]: pagination.order }
 			},
+			limit: pagination.limit,
+			offset: pagination.offset,
 			where: build_where_query(pagination),
 		});
 	},
 	count: async (pagination: ReadSupplierDto) => {
-		return db.select({ total: count() })
+		const [result] = await db.select({ total: count() })
 			.from(supplier_schema)
 			.where(build_where(pagination));
+		return result!.total;
 	},
-	
+
 	create: async (data: supplier_insert) => {
 		const [result] = await db.insert(supplier_schema).values(data).$returningId();
 		return result;

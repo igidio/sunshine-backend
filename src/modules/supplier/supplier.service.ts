@@ -9,7 +9,15 @@ export const supplier_service = {
 	get: async (params: ReadSupplierDto) => {
 
 		const count = await supplier_repository.count(params);
-		return await supplier_repository.get(params);
+		const data = await supplier_repository.get(params);
+
+		return {
+			count,
+			data,
+			limit: params.limit,
+			offset: params.offset,
+			is_last_page: params.offset + params.limit >= count
+		};
 
 	},
 
