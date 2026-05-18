@@ -11,7 +11,8 @@ export const user_repository = {
 	},
 	select_one: async (id: number) => {
 		const { password, ...columns } = getColumns(user_schema);
-		return await db.select(columns).from(user_schema).where(eq(user_schema.id, id))
+		const user = await db.select(columns).from(user_schema).where(eq(user_schema.id, id));
+		return user[0];
 	},
 	select_one_by_username_or_email: async (email_or_username: string) => {
 		const results = await db.select().from(user_schema).where(

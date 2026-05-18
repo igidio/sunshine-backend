@@ -11,4 +11,5 @@ export const error_messages = {
 	invalid_token: "El token proporcionado no es válido o ha expirado. Por favor, verifica tu token e intenta nuevamente.",
 	// user
 	user_not_found: "Usuario no encontrado. Por favor, verifica el ID del usuario e intenta nuevamente.",
+	user_forbidden: "No tienes permisos para acceder a este recurso. Por favor, verifica tus permisos e intenta nuevamente.",
 }
