@@ -1,8 +1,13 @@
 import { int, mysqlTable, timestamp, varchar, mysqlEnum } from "drizzle-orm/mysql-core";
 import { profile_schema } from "../profile/profile.schema";
+import { permission } from "process";
+import { text } from "drizzle-orm/mssql-core";
 
 export const user_roles = ["superuser", "admin", "employer", "customer"] as const;
 export type UserRole = (typeof user_roles)[number];
+
+// Available permissions for users
+// SUPPLIER, PRODUCT
 
 export const user_schema = mysqlTable("user", {
 	id: int("id").autoincrement().primaryKey(),
@@ -18,6 +23,7 @@ export const user_schema = mysqlTable("user", {
 	profile_id: int("profile_id").notNull().references(() => profile_schema.id),
 	updated_at: timestamp().defaultNow().onUpdateNow(),
 	disabled_at: timestamp(),
+	permissions: text("permissions").notNull().default(""),
 });
 
 export type user_insert = typeof user_schema.$inferInsert;

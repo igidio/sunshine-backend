@@ -42,6 +42,7 @@ const data: user_insert[] = [
 		role: "employer",
 		phone_number: "70000002",
 		email_verified_at: new Date(),
+		permissions: '["SUPPLIER","PRODUCT"]',
 	},
 	{
 		username: "diego.fernandez",
@@ -51,6 +52,7 @@ const data: user_insert[] = [
 		role: "employer",
 		phone_number: "70000001",
 		email_verified_at: new Date(),
+		permissions: '["SUPPLIER","PRODUCT"]',
 	},
 	{
 		username: "lucia.ramirez",
