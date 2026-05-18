@@ -2,16 +2,18 @@ import Elysia from "elysia";
 import { plugin_auth } from "~/plugins/auth";
 import { supplier_service } from "./supplier.service";
 import z from "zod";
+import { ReadSupplierDtoSchema } from "./supplier.dto";
 
 export const supplier_routes = new Elysia({
 	prefix: "/supplier"
 })
 	.use(plugin_auth)
 
-	.get("/", ({ user }) => {
-		return supplier_service.get();
+	.get("/", ({ user, query }) => {
+		return supplier_service.get(query);
 	}, {
 		auth: true,
+		query: ReadSupplierDtoSchema
 	})
 
 	.post("/", ({ body }) => {
