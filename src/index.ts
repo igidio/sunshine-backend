@@ -8,10 +8,13 @@ import plugin_mcp from "./plugins/mcp";
 import { sse_routes } from "./modules/sse/sse.routes";
 import { notification_routes } from "./modules/notification/notification.routes";
 import { supplier_routes } from "./modules/supplier/supplier.routes";
+import staticPlugin from "@elysiajs/static";
 const app = new Elysia()
-  .error({
-    Error
-  })
+  .error({ Error })
+  .use(staticPlugin({
+    assets: "public",
+    prefix: "/"
+  }))
   .use(plugin_error)
   .use(plugin_mcp)
   .use(auth_routes)
