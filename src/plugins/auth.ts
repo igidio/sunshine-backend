@@ -15,7 +15,7 @@ export const plugin_auth = new Elysia()
 			resolve: async ({ jwt, bearer }) => {
 				if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
 				const auth_header = await jwt.verify(bearer);
-				if (!auth_header) throw new ServerError(error_messages.invalid_token, 400);
+				if (!auth_header) throw new ServerError(error_messages.invalid_token, 401);
 
 				return { user: auth_header };
 			},
