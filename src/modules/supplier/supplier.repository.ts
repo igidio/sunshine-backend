@@ -2,7 +2,7 @@ import db from "~/database"
 import { supplier_schema, type supplier_insert } from "./supplier.schema";
 import type { ReadSupplierDto } from "./supplier.dto";
 import type { ModelWhere } from "~/helpers/types";
-import { and, count, isNotNull, isNull, like, or, SQL } from "drizzle-orm";
+import { and, count, eq, isNotNull, isNull, like, or, SQL } from "drizzle-orm";
 
 type SupplierWhereConfig = ModelWhere<'supplier_schema'>;
 
@@ -50,7 +50,7 @@ const build_where = (pagination: ReadSupplierDto): SQL | undefined => {
 
 export const supplier_repository = {
 
-	get: async (pagination: ReadSupplierDto) => {
+	find_all: async (pagination: ReadSupplierDto) => {
 		return await db.query.supplier_schema.findMany({
 			columns: {
 				deleted_at: false,
@@ -63,6 +63,16 @@ export const supplier_repository = {
 			where: build_where_query(pagination),
 		});
 	},
+
+	find_one: async (id: number) => {
+		const result = await db.query.supplier_schema.findFirst({
+			where: {
+				id
+			}
+		});
+		return result;
+	},
+
 	count: async (pagination: ReadSupplierDto) => {
 		const [result] = await db.select({ total: count() })
 			.from(supplier_schema)
@@ -73,5 +83,31 @@ export const supplier_repository = {
 	create: async (data: supplier_insert) => {
 		const [result] = await db.insert(supplier_schema).values(data).$returningId();
 		return result;
+	},
+
+
+	update: async (id: number, data: Partial<supplier_insert>) => {		
+		const [result] = await db
+			.update(supplier_schema)
+			.set(data)
+			.where(and(eq(supplier_schema.id, id), isNull(supplier_schema.deleted_at)))
+			.execute();
+		return result;
+	},
+
+	delete: async (id: number) => {
+		return await db
+			.update(supplier_schema)
+			.set({ deleted_at: new Date() })
+			.where(and(eq(supplier_schema.id, id), isNull(supplier_schema.deleted_at)))
+			.execute();
+	},
+
+	toggle_disable: async (id: number, disable: boolean) => {
+		return await db
+			.update(supplier_schema)
+			.set({ disabled_at: disable ? new Date() : null })
+			.where(and(eq(supplier_schema.id, id), isNull(supplier_schema.deleted_at)))
+			.execute();
 	}
 }
