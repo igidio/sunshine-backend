@@ -7,7 +7,6 @@ export const product_schema = mysqlTable("product", {
   name: varchar({ length: 255 }).notNull(),
   description: varchar({ length: 1024 }).notNull(),
   price: real({ precision: 10, scale: 2 }).notNull(),
-  image: varchar({ length: 1024 }),
   created_at: timestamp().defaultNow(),
   updated_at: timestamp().defaultNow().onUpdateNow(),
   deleted_at: timestamp(),
