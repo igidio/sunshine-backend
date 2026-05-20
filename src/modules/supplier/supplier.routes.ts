@@ -17,18 +17,19 @@ export const supplier_routes = new Elysia({
 		query: ReadSupplierDtoSchema
 	})
 
-	.post("/", async ({ body }) => {
-		let image_url: string | undefined = undefined;
+	.get("/:id", async ({ params }) => {
+		return await supplier_service.get_one(params.id);
+	}, {
+		auth: true,
+		params: z.object({
+			id: z.coerce.number()
+		})
+	})
 
-		if (body.image) {
-			const image = body.image;
-			const filename = `${Date.now()}-${image?.name}`;
-			const route = `public/uploads/${filename}`;
-			await Bun.write(route, image);
-			image_url = filename;
-		}
+	.post("/", async ({ body }) => {
 		const { image, ...service_body } = body;
-		return supplier_service.create({...service_body, image_url});
+		const image_url = await supplier_service.update_image(body.image);
+		return supplier_service.create({ ...service_body, image_url });
 	}, {
 		auth: true,
 		permission: "SUPPLIER",
@@ -36,17 +37,9 @@ export const supplier_routes = new Elysia({
 	})
 
 	.patch("/:id", async ({ body, params }) => {
-		let image_url: string | undefined = undefined;
-
-		if (body.image) {
-			const image = body.image;
-			const filename = `${Date.now()}-${image?.name}`;
-			const route = `public/uploads/${filename}`;
-			await Bun.write(route, image);
-			image_url = filename;
-		}
-		const { image, ...service_body } = body;			
-		return await supplier_service.update(params.id, {...service_body, image_url});
+		const { image, ...service_body } = body;
+		const image_url = await supplier_service.update_image(body.image);
+		return await supplier_service.update(params.id, { ...service_body, image_url });
 	}, {
 		auth: true,
 		permission: "SUPPLIER",

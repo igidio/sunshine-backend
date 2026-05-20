@@ -15,7 +15,7 @@ export interface CreateSupplierDto {
 	phone_number: string;
 	address: string;
 	description: string;
-	image_url?: string;
+	image_url?: string | null;
 }
 
 export const CreateSupplierDtoSchema = z.object({
@@ -28,5 +28,6 @@ export const CreateSupplierDtoSchema = z.object({
 		.file()
 		.max(500 * 1024, "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.")
 		.mime(["image/jpeg", "image/png", "image/webp"], "El formato de imagen proporcionado no es compatible. Por favor, asegúrate de que la imagen sea en formato JPEG o PNG e intenta nuevamente.")
+		.nullish()
 		.optional(),
 });

@@ -43,11 +43,16 @@ export const supplier_service = {
 	},
 
 	update: async (id: number, data: Partial<CreateSupplierDto>) => {
-		await Bun.sleep(2000);
+		//await Bun.sleep(2000);
 		const supplier = await supplier_repository.find_one(id);
 		if (!supplier) throw new ServerError(error_messages.supplier_not_found, 404);
 
+		console.log(supplier);
+		console.log(data);
+		console.log(null);
+
 		const result = await supplier_repository.update(id, data);
+		console.log(result);
 		if (!result || result.affectedRows === 0) throw new ServerError(error_messages.nothing_to_update, 400);
 
 		return { ...supplier, ...data };
@@ -60,4 +65,21 @@ export const supplier_service = {
 	toggle_disable: async (id: number, disable: boolean) => {
 		return await supplier_repository.toggle_disable(id, disable);
 	},
+
+	update_image: async (image: File | null | undefined) => {
+		let image_url: string | null | undefined = undefined;
+
+		const random_name = Math.random().toString(36).substring(2, 12);
+
+		if (image) {
+			const filename = `${Date.now()}-${random_name}.${image.name.split('.').pop()}`;
+
+			const route = `public/uploads/${filename}`;
+			await Bun.write(route, image);
+			image_url = filename;
+		} else if (image === null) {
+			image_url = null;
+		}
+		return image_url;
+	}
 }
