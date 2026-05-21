@@ -2,7 +2,8 @@ import db from "~/database"
 import type { ReadProductDto } from "./product.dto";
 import type { ModelWhere } from "~/helpers/types";
 import { and, count, eq, gte, isNotNull, isNull, like, lte, or, type SQL } from "drizzle-orm";
-import { product_schema } from "./product.schema";
+import { product_schema, type product_insert } from "./product.schema";
+import { product_image_schema, type product_image_insert } from "./product_image.schema";
 import { stock_schema } from "../stock/stock.schema";
 
 type ProductWhereConfig = ModelWhere<'product_schema'>;
@@ -93,6 +94,14 @@ export const product_repository = {
 
 	find_one: async (id: number) => {
 		return await db.query.product_schema.findFirst({
+			where: {
+				id: {
+					eq: id
+				},
+				deleted_at: {
+					isNull: true
+				}
+			},
 			with: {
 				images: true,
 				stock: true,
@@ -119,5 +128,40 @@ export const product_repository = {
 
 
 		return result!.total;
+	},
+
+	create: async (data: product_insert) => {
+		const [result] = await db.insert(product_schema).values(data).$returningId();
+		return result;
+	},
+
+	create_images: async (data: product_image_insert[]) => {
+		if (!data.length) return null;
+		return await db.insert(product_image_schema).values(data).execute();
+	},
+
+	update: async (id: number, data: Partial<product_insert>) => {
+		const [result] = await db
+			.update(product_schema)
+			.set(data)
+			.where(and(eq(product_schema.id, id), isNull(product_schema.deleted_at)))
+			.execute();
+		return result;
+	},
+
+	delete: async (id: number) => {
+		return await db
+			.update(product_schema)
+			.set({ deleted_at: new Date() })
+			.where(and(eq(product_schema.id, id), isNull(product_schema.deleted_at)))
+			.execute();
+	},
+
+	toggle_disable: async (id: number, disable: boolean) => {
+		return await db
+			.update(product_schema)
+			.set({ disabled_at: disable ? new Date() : null })
+			.where(and(eq(product_schema.id, id), isNull(product_schema.deleted_at)))
+			.execute();
 	}
 };

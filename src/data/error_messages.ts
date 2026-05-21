@@ -20,4 +20,6 @@ export const error_messages = {
 	supplier_not_found: "Proveedor no encontrado. Por favor, verifica el ID del proveedor e intenta nuevamente.",
 	supplier_image_too_large: "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.",
 	supplier_image_format_not_supported: "El formato de imagen proporcionado no es compatible. Por favor, asegúrate de que la imagen sea en formato JPEG o PNG e intenta nuevamente.",
+	// product
+	product_not_found: "Producto no encontrado. Por favor, verifica el ID del producto e intenta nuevamente.",
 }

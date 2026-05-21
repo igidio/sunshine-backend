@@ -18,20 +18,26 @@ export const ReadProductDtoSchema = PaginationTypeSchema.extend({
 });
 
 export interface CreateProductDto {
+	category_id: number;
 	name: string;
 	description: string;
 	price: number;
-	image_url?: string | null;
+	images?: File[] | null;
 }
 
 export const CreateProductDtoSchema = z.object({
+	category_id: z.coerce.number().int().positive(),
 	name: z.string().max(255),
 	description: z.string().max(1000),
-	price: z.number().nonnegative(),
-	image: z
-		.file()
-		.max(500 * 1024, "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.")
-		.mime(["image/jpeg", "image/png", "image/webp"], "El formato de imagen proporcionado no es compatible. Por favor, asegúrate de que la imagen sea en formato JPEG o PNG e intenta nuevamente.")
+	price: z.coerce.number().nonnegative(),
+	images: z
+		.array(
+			z
+				.file()
+				.max(500 * 1024, "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.")
+				.mime(["image/jpeg", "image/png", "image/webp"], "El formato de imagen proporcionado no es compatible. Por favor, asegúrate de que la imagen sea en formato JPEG o PNG e intenta nuevamente.")
+		)
+		.max(5, "Solo se permiten hasta 5 imágenes por producto.")
 		.nullish()
 		.optional(),
 });

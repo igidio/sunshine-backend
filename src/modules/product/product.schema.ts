@@ -12,3 +12,6 @@ export const product_schema = mysqlTable("product", {
   deleted_at: timestamp(),
   disabled_at: timestamp(),
 });
+
+export type product_insert = typeof product_schema.$inferInsert;
+export type product_select = typeof product_schema.$inferSelect;
