@@ -10,4 +10,5 @@ export const product_schema = mysqlTable("product", {
   created_at: timestamp().defaultNow(),
   updated_at: timestamp().defaultNow().onUpdateNow(),
   deleted_at: timestamp(),
+  disabled_at: timestamp(),
 });
