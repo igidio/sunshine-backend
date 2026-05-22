@@ -4,6 +4,7 @@ import { plugin_auth } from "~/plugins/auth";
 import z from "zod";
 import { CreateProductDtoSchema, ReadProductDtoSchema } from "./product.dto";
 import { error_messages } from "~/data/error_messages";
+import { ForceArrayPreprocess } from "~/helpers/types";
 
 export const product_routes = new Elysia({
 	prefix: "/product"
@@ -39,7 +40,9 @@ export const product_routes = new Elysia({
 	}, {
 		auth: true,
 		permission: "PRODUCT",
-		body: CreateProductDtoSchema.partial(),
+		body: z.object({
+			images_to_remove: ForceArrayPreprocess(z.coerce.number()).optional(),
+		}).extend(CreateProductDtoSchema.shape).partial(),
 		params: z.object({
 			id: z.coerce.number()
 		})

@@ -1,7 +1,7 @@
 import db from "~/database"
 import type { ReadProductDto } from "./product.dto";
 import type { ModelWhere } from "~/helpers/types";
-import { and, count, eq, gte, isNotNull, isNull, like, lte, or, type SQL } from "drizzle-orm";
+import { and, count, eq, gte, inArray, isNotNull, isNull, like, lte, or, type SQL } from "drizzle-orm";
 import { product_schema, type product_insert } from "./product.schema";
 import { product_image_schema, type product_image_insert } from "./product_image.schema";
 import { stock_schema } from "../stock/stock.schema";
@@ -138,6 +138,14 @@ export const product_repository = {
 	create_images: async (data: product_image_insert[]) => {
 		if (!data.length) return null;
 		return await db.insert(product_image_schema).values(data).execute();
+	},
+
+	remove_images: async (ids: number[]) => {
+		if (!ids.length) return null;
+		return await db
+			.delete(product_image_schema)
+			.where(and(inArray(product_image_schema.id, ids)))
+			.execute();
 	},
 
 	update: async (id: number, data: Partial<product_insert>) => {

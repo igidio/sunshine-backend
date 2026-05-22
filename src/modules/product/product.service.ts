@@ -40,6 +40,7 @@ export const product_service = {
 	update: async (id: number, data: Partial<CreateProductDto>) => {
 		const product = await product_repository.find_one(id);
 		if (!product) throw new ServerError(error_messages.product_not_found, 404);
+		console.log(data);
 
 		const { images, ...product_data } = data;
 		const has_product_data = Object.keys(product_data).length > 0;
@@ -51,6 +52,7 @@ export const product_service = {
 		}
 
 		await product_service.update_images(id, images);
+		(data.images_to_remove) && await product_service.remove_images(data.images_to_remove);
 		return await product_repository.find_one(id);
 	},
 
@@ -80,5 +82,9 @@ export const product_service = {
 		}
 
 		return await product_repository.create_images(uploads);
+	},
+
+	remove_images: async (ids: number[]) => {
+		return await product_repository.remove_images(ids);
 	}
 }

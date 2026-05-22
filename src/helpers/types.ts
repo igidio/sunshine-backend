@@ -1,4 +1,4 @@
-import z from "zod";
+import z, { type ZodTypeAny } from "zod";
 import type db from "~/database";
 
 export interface PaginationType {
@@ -20,3 +20,8 @@ export const PaginationTypeSchema = z.object({
 export type ModelWhere<T extends keyof typeof db.query> = NonNullable<
 	Parameters<(typeof db.query)[T]["findMany"]>[0]
 >["where"];
+
+export const ForceArrayPreprocess = <T extends ZodTypeAny>(schema: T) => z.preprocess(
+	(val) => (Array.isArray(val) ? val : [val]),
+	z.array(schema)
+);

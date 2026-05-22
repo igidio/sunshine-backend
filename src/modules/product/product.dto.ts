@@ -23,6 +23,7 @@ export interface CreateProductDto {
 	description: string;
 	price: number;
 	images?: File[] | null;
+	images_to_remove?: number[] | null;
 }
 
 export const CreateProductDtoSchema = z.object({
