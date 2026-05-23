@@ -8,6 +8,7 @@ import plugin_mcp from "./plugins/mcp";
 import { sse_routes } from "./modules/sse/sse.routes";
 import { notification_routes } from "./modules/notification/notification.routes";
 import { supplier_routes } from "./modules/supplier/supplier.routes";
+import { category_routes } from "./modules/category/category.routes";
 import staticPlugin from "@elysiajs/static";
 const app = new Elysia()
   .error({ Error })
@@ -23,6 +24,7 @@ const app = new Elysia()
   .use(sse_routes)
   .use(notification_routes)
   .use(supplier_routes)
+  .use(category_routes)
   .get("/", () => "Hello Elysia").listen(envs.port);
 
 console.log(

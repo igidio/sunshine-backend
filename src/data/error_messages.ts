@@ -22,4 +22,6 @@ export const error_messages = {
 	supplier_image_format_not_supported: "El formato de imagen proporcionado no es compatible. Por favor, asegúrate de que la imagen sea en formato JPEG o PNG e intenta nuevamente.",
 	// product
 	product_not_found: "Producto no encontrado. Por favor, verifica el ID del producto e intenta nuevamente.",
+	// category
+	category_not_found: "Categoria no encontrada. Por favor, verifica el ID de la categoria e intenta nuevamente.",
 }
