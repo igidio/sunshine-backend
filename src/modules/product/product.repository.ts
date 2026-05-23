@@ -27,6 +27,7 @@ export const build_where_query = (pagination: ReadProductDto): ProductWhereConfi
 				...(pagination.max_price !== undefined && { lte: pagination.max_price })
 			}
 		},
+		...( pagination.category_id !== undefined && { category_id: { eq: pagination.category_id } } )
 	}
 }
 
@@ -55,6 +56,9 @@ export const build_where = (pagination: ReadProductDto): SQL | undefined => {
 
 	if (pagination.max_price !== undefined)
 		conditions.push(lte(product_schema.price, pagination.max_price));
+
+	if (pagination.category_id !== undefined)
+		conditions.push(eq(product_schema.category_id, pagination.category_id));
 
 	return and(...conditions);
 };
@@ -113,19 +117,22 @@ export const product_repository = {
 
 	count: async (query: ReadProductDto) => {
 		const conditions: (SQL | undefined)[] = [build_where(query)];
+		const stockConditions: (SQL | undefined)[] = [isNull(stock_schema.deleted_at)];
 
 		if (query.min_stock !== undefined) {
-			conditions.push(gte(stock_schema.quantity, query.min_stock));
+			stockConditions.push(gte(stock_schema.quantity, query.min_stock));
 		}
 
 		if (query.max_stock !== undefined) {
-			conditions.push(lte(stock_schema.quantity, query.max_stock));
+			stockConditions.push(lte(stock_schema.quantity, query.max_stock));
 		}
+
+		conditions.push(and(...stockConditions));
 
 		const [result] = await db
 			.select({ total: count() })
 			.from(product_schema)
-			.innerJoin(stock_schema, eq(product_schema.id, stock_schema.product_id))
+			.leftJoin(stock_schema, eq(product_schema.id, stock_schema.product_id))
 			.where(and(...conditions));
 
 

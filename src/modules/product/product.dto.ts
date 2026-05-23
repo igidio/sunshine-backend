@@ -7,6 +7,7 @@ export interface ReadProductDto extends PaginationType {
 	max_price?: number;
 	min_stock?: number;
 	max_stock?: number;
+	category_id?: number;
 }
 
 export const ReadProductDtoSchema = PaginationTypeSchema.extend({
@@ -15,6 +16,7 @@ export const ReadProductDtoSchema = PaginationTypeSchema.extend({
 	max_price: z.coerce.number().nonnegative().optional(),
 	min_stock: z.coerce.number().int().nonnegative().optional(),
 	max_stock: z.coerce.number().int().nonnegative().optional(),
+	category_id: z.coerce.number().int().positive().optional(),
 });
 
 export interface CreateProductDto {
