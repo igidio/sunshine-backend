@@ -68,6 +68,7 @@ export const product_repository = {
 			},
 			with: {
 				images: true,
+				category: true,
 				stock: {
 					where: {
 						deleted_at: {
@@ -105,6 +106,7 @@ export const product_repository = {
 			with: {
 				images: true,
 				stock: true,
+				category: true,
 			}
 		})
 	},
