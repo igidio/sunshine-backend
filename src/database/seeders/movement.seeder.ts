@@ -178,7 +178,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(3),
   },
   {
-    stock_id: 21,
+    stock_id: 1,
     quantity: -6,
     type: "expired",
     notes: "Expired batch",
@@ -186,7 +186,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(2),
   },
   {
-    stock_id: 22,
+    stock_id: 2,
     quantity: -2,
     type: "lost",
     notes: "Missing",
@@ -194,7 +194,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(1),
   },
   {
-    stock_id: 23,
+    stock_id: 3,
     quantity: -8,
     type: "adjustment",
     notes: "Stock correction",
@@ -203,7 +203,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 3,
-    stock_id: 24,
+    stock_id: 4,
     quantity: 70,
     type: "purchase",
     notes: "Bulk purchase",
@@ -211,7 +211,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(2),
   },
   {
-    stock_id: 25,
+    stock_id: 5,
     quantity: -7,
     type: "internal_use",
     notes: "Demo units",

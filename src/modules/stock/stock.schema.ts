@@ -9,3 +9,6 @@ export const stock_schema = mysqlTable("stock", {
 	updated_at: datetime().defaultNow().onUpdateNow(),
 	deleted_at: datetime(),
 });
+
+export type stock_insert = typeof stock_schema.$inferInsert;
+export type stock_select = typeof stock_schema.$inferSelect;
