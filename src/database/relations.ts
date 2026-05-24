@@ -58,10 +58,10 @@ export const relations = defineRelations(schemas, (r) => ({
       from: r.product_schema.id,
       to: r.stock_schema.product_id,
     }),
-    additions: r.many.addition_schema(),
+    movement_schema: r.many.movement_schema(),
     suppliers: r.many.supplier_schema({
-      from: r.product_schema.id.through(r.addition_schema.product_id),
-      to: r.supplier_schema.id.through(r.addition_schema.supplier_id),
+      from: r.product_schema.id.through(r.movement_schema.product_id),
+      to: r.supplier_schema.id.through(r.movement_schema.supplier_id),
     }),
     images: r.many.product_image_schema(),
   },
@@ -113,20 +113,20 @@ export const relations = defineRelations(schemas, (r) => ({
     }),
   },
   supplier_schema: {
-    additions: r.many.addition_schema(),
+    movements: r.many.movement_schema(),
     products: r.many.product_schema({
-      from: r.supplier_schema.id.through(r.addition_schema.supplier_id),
-      to: r.product_schema.id.through(r.addition_schema.product_id),
+      from: r.supplier_schema.id.through(r.movement_schema.supplier_id),
+      to: r.product_schema.id.through(r.movement_schema.product_id),
     }),
   },
-  addition_schema: {
+  movement_schema: {
     supplier: r.one.supplier_schema({
-      from: r.addition_schema.supplier_id,
+      from: r.movement_schema.supplier_id,
       to: r.supplier_schema.id,
     }),
 
     product: r.one.product_schema({
-      from: r.addition_schema.product_id,
+      from: r.movement_schema.product_id,
       to: r.product_schema.id,
     }),
   },

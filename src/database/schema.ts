@@ -1,4 +1,4 @@
-import { addition_schema } from "~/modules/addition/addition.schema";
+import { movement_schema } from "~/modules/movement/movement.schema";
 import { appointment_schema } from "~/modules/appointment/appointment.schema";
 import { category_schema } from "~/modules/category/category.schema";
 import { customer_schema } from "~/modules/customer/customer.schema";
@@ -23,7 +23,7 @@ export {
   sale_treatment_detail_schema,
   category_schema,
   stock_schema,
-  addition_schema,
+  movement_schema,
   supplier_schema,
   appointment_schema,
   product_image_schema,
