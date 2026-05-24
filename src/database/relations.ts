@@ -60,7 +60,7 @@ export const relations = defineRelations(schemas, (r) => ({
     }),
     movement_schema: r.many.movement_schema(),
     suppliers: r.many.supplier_schema({
-      from: r.product_schema.id.through(r.movement_schema.product_id),
+      from: r.product_schema.id.through(r.movement_schema.stock_id),
       to: r.supplier_schema.id.through(r.movement_schema.supplier_id),
     }),
     images: r.many.product_image_schema(),
@@ -114,9 +114,9 @@ export const relations = defineRelations(schemas, (r) => ({
   },
   supplier_schema: {
     movements: r.many.movement_schema(),
-    products: r.many.product_schema({
+    products_by_stock: r.many.product_schema({
       from: r.supplier_schema.id.through(r.movement_schema.supplier_id),
-      to: r.product_schema.id.through(r.movement_schema.product_id),
+      to: r.product_schema.id.through(r.movement_schema.stock_id),
     }),
   },
   movement_schema: {
@@ -126,7 +126,7 @@ export const relations = defineRelations(schemas, (r) => ({
     }),
 
     product: r.one.product_schema({
-      from: r.movement_schema.product_id,
+      from: r.movement_schema.stock_id,
       to: r.product_schema.id,
     }),
   },

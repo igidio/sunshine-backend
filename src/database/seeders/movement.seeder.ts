@@ -4,7 +4,7 @@ import { movement_schema, type movement_insert } from "~/modules/movement/moveme
 const data: movement_insert[] = [
   {
     supplier_id: 1,
-    product_id: 1,
+    stock_id: 1,
     quantity: 50,
     type: "purchase",
     notes: "Initial stock",
@@ -13,7 +13,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 1,
-    product_id: 2,
+    stock_id: 2,
     quantity: 40,
     type: "purchase",
     notes: "Initial stock",
@@ -22,7 +22,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 2,
-    product_id: 3,
+    stock_id: 3,
     quantity: 30,
     type: "purchase",
     notes: "Initial stock",
@@ -31,7 +31,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 2,
-    product_id: 4,
+    stock_id: 4,
     quantity: 25,
     type: "purchase",
     notes: "Initial stock",
@@ -40,7 +40,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 2,
-    product_id: 5,
+    stock_id: 5,
     quantity: 20,
     type: "purchase",
     notes: "Initial stock",
@@ -49,7 +49,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 3,
-    product_id: 6,
+    stock_id: 6,
     quantity: 45,
     type: "purchase",
     notes: "Initial stock",
@@ -58,7 +58,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 3,
-    product_id: 7,
+    stock_id: 7,
     quantity: 35,
     type: "purchase",
     notes: "Initial stock",
@@ -67,7 +67,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 1,
-    product_id: 8,
+    stock_id: 8,
     quantity: 30,
     type: "purchase",
     notes: "Initial stock",
@@ -76,7 +76,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 1,
-    product_id: 9,
+    stock_id: 9,
     quantity: 20,
     type: "purchase",
     notes: "Initial stock",
@@ -85,7 +85,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 3,
-    product_id: 10,
+    stock_id: 10,
     quantity: 25,
     type: "purchase",
     notes: "Initial stock",
@@ -94,7 +94,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 3,
-    product_id: 11,
+    stock_id: 11,
     quantity: 40,
     type: "purchase",
     notes: "Initial stock",
@@ -103,7 +103,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 2,
-    product_id: 12,
+    stock_id: 12,
     quantity: 35,
     type: "purchase",
     notes: "Initial stock",
@@ -112,7 +112,7 @@ const data: movement_insert[] = [
   },
   // 15 nuevos registros
   {
-    product_id: 13,
+    stock_id: 13,
     quantity: -5,
     type: "expired",
     notes: "Expired items",
@@ -120,7 +120,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(10),
   },
   {
-    product_id: 14,
+    stock_id: 14,
     quantity: -3,
     type: "damaged",
     notes: "Damaged in transit",
@@ -128,7 +128,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(9),
   },
   {
-    product_id: 15,
+    stock_id: 15,
     quantity: -2,
     type: "lost",
     notes: "Lost during inventory",
@@ -136,7 +136,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(8),
   },
   {
-    product_id: 16,
+    stock_id: 16,
     quantity: -1,
     type: "internal_use",
     notes: "Used internally",
@@ -144,7 +144,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(7),
   },
   {
-    product_id: 17,
+    stock_id: 17,
     quantity: -10,
     type: "adjustment",
     notes: "Inventory correction",
@@ -153,7 +153,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 1,
-    product_id: 18,
+    stock_id: 18,
     quantity: 60,
     type: "purchase",
     notes: "Restock",
@@ -162,7 +162,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 2,
-    product_id: 19,
+    stock_id: 19,
     quantity: 55,
     type: "purchase",
     notes: "Restock",
@@ -170,7 +170,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(4),
   },
   {
-    product_id: 20,
+    stock_id: 20,
     quantity: -4,
     type: "damaged",
     notes: "Damaged on shelf",
@@ -178,7 +178,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(3),
   },
   {
-    product_id: 21,
+    stock_id: 21,
     quantity: -6,
     type: "expired",
     notes: "Expired batch",
@@ -186,7 +186,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(2),
   },
   {
-    product_id: 22,
+    stock_id: 22,
     quantity: -2,
     type: "lost",
     notes: "Missing",
@@ -194,7 +194,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(1),
   },
   {
-    product_id: 23,
+    stock_id: 23,
     quantity: -8,
     type: "adjustment",
     notes: "Stock correction",
@@ -203,7 +203,7 @@ const data: movement_insert[] = [
   },
   {
     supplier_id: 3,
-    product_id: 24,
+    stock_id: 24,
     quantity: 70,
     type: "purchase",
     notes: "Bulk purchase",
@@ -211,7 +211,7 @@ const data: movement_insert[] = [
     updated_at: days_ago(2),
   },
   {
-    product_id: 25,
+    stock_id: 25,
     quantity: -7,
     type: "internal_use",
     notes: "Demo units",
