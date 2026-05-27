@@ -3,6 +3,7 @@ import { product_repository } from "./product.repository"
 import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
 import type { product_image_insert } from "./product_image.schema";
+import { stock_service } from "../stock/stock.service";
 
 export const product_service = {
 	find_all: async (query: ReadProductDto) => {
@@ -33,6 +34,7 @@ export const product_service = {
 			price: data.price,
 		});
 		if (!result) throw new ServerError(error_messages.create_failed, 500);
+		await stock_service.create(result.id);
 		await product_service.update_images(result.id, data.images);
 		return await product_repository.find_one(result.id);
 	},
