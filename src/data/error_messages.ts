@@ -24,4 +24,9 @@ export const error_messages = {
 	product_not_found: "Producto no encontrado. Por favor, verifica el ID del producto e intenta nuevamente.",
 	// category
 	category_not_found: "Categoria no encontrada. Por favor, verifica el ID de la categoria e intenta nuevamente.",
+	// stock
+	stock_not_found: "Stock no encontrado. Por favor, verifica el ID del stock e intenta nuevamente.",
+	stock_insufficient: "El stock no puede quedar en negativo. Por favor, verifica la cantidad e intenta nuevamente.",
+	// movement
+	movement_not_found: "Movimiento no encontrado. Por favor, verifica el ID del movimiento e intenta nuevamente.",
 }
