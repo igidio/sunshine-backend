@@ -5,6 +5,7 @@ import { error_messages } from "~/data/error_messages";
 import type { permissions } from "~/data/permissions";
 import { auth_service } from "~/modules/auth/auth.service";
 import { user_service } from "~/modules/user/user.service";
+import type { UserRole } from "~/modules/user/user.schema";
 import plugin_jwt from "~/plugins/jwt";
 
 export const plugin_auth = new Elysia()
@@ -20,6 +21,18 @@ export const plugin_auth = new Elysia()
 				return { user: auth_header };
 			},
 		},
+		role: (allowed_roles: UserRole[]) => ({
+			resolve: async ({ jwt, bearer }) => {
+				const payload = await auth_service.get_authenticated_user(bearer!, jwt);
+				const user_role = payload.user.role as UserRole;
+				
+				if (!allowed_roles.includes(user_role)) {
+					throw new ServerError(error_messages.user_forbidden, 403);
+				}
+				
+				return { user: payload.user };
+			}
+		}),
 		permission: (permission: typeof permissions[number]) => ({
 			resolve: async ({jwt, bearer }) => {
 				const payload = await auth_service.get_authenticated_user(bearer!, jwt);

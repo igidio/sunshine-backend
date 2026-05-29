@@ -45,7 +45,7 @@ export const auth_routes = new Elysia({
 	.post("/info", async ({ jwt, bearer }) => {
 		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
 		const auth_info = await auth_service.get_authenticated_user(bearer, jwt);
-		return await user_service.get_user_by_id(auth_info.user.id);
+		return await user_service.find_one(auth_info.user.id);
 	})
 
 	.post("/refresh", async ({ jwt, jwt_refresh, bearer, body }) => {

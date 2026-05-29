@@ -10,6 +10,7 @@ import { notification_routes } from "./modules/notification/notification.routes"
 import { supplier_routes } from "./modules/supplier/supplier.routes";
 import { category_routes } from "./modules/category/category.routes";
 import { movement_routes } from "./modules/movement/movement.routes";
+import { user_routes } from "./modules/user/user.routes";
 import staticPlugin from "@elysiajs/static";
 const app = new Elysia()
   .error({ Error })
@@ -27,6 +28,7 @@ const app = new Elysia()
   .use(supplier_routes)
   .use(category_routes)
   .use(movement_routes)
+  .use(user_routes)
   .get("/", () => "Hello Elysia").listen(envs.port);
 
 console.log(
