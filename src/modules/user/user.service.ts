@@ -20,7 +20,7 @@ export const user_service = {
 		};
 	},
 	find_one: async (id: number) => {
-		const result = await user_repository.find_one(id);
+		const result = await user_repository.find_one({id});
 		if (!result) throw new ServerError(error_messages.user_not_found, 404);
 		return result;
 	},
@@ -28,7 +28,7 @@ export const user_service = {
 		const has_updates = Object.keys(data).length > 0;
 		if (!has_updates) throw new ServerError(error_messages.nothing_to_update, 400);
 		
-		const current_user = await user_repository.find_one(id);
+		const current_user = await user_repository.find_one({id});
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 		
 		const update_data = { ...data };
@@ -44,7 +44,7 @@ export const user_service = {
 		return await user_service.find_one(id);
 	},
 	toggle_disabled: async (id: number, data: z.infer<typeof ToggleDisabledUserDtoSchema>) => {
-		const current_user = await user_repository.find_one(id);
+		const current_user = await user_repository.find_one({id});
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 
 		let target_disabled_at: Date | null = null;
@@ -58,7 +58,7 @@ export const user_service = {
 		return await user_service.find_one(id);
 	},
 	set_permissions: async (id: number, data: z.infer<typeof SetPermissionsUserDtoSchema>) => {
-		const current_user = await user_repository.find_one(id);
+		const current_user = await user_repository.find_one({id});
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 
 		const permissions_string = JSON.stringify(data.permissions);
@@ -66,7 +66,7 @@ export const user_service = {
 		return await user_service.find_one(id);
 	},
 	check_permissions: async (id: number, permission: typeof permissions[number]) => {
-		const user = await user_repository.find_one(id);
+		const user = await user_repository.find_one({id});
 		if (!user) throw new ServerError(error_messages.user_not_found, 404);
 		if (["superuser", "admin"].includes(user.role)) return true;
 		if (user.role === "customer") {

@@ -13,9 +13,11 @@ export const customer_service = {
 		const is_last_page = pagination.offset + pagination.limit >= total_items;
 
 		return {
-			items,
-			total_items,
-			is_last_page
+			data: items,
+			count: total_items,
+			is_last_page,
+			limit: pagination.limit,
+			offset: pagination.offset,
 		};
 	},
 
@@ -28,13 +30,8 @@ export const customer_service = {
 	},
 
 	create: async (body: CreateCustomerDto) => {
-		return await db.transaction(async (tx) => {
-			const profile_result = await profile_repository.create({
-				first_name: body.first_name,
-				last_name: body.last_name,
-				birth_date: body.birth_date,
-				address: body.address || null
-			}, tx);
+		const customer = await db.transaction(async (tx) => {
+			const profile_result = await profile_repository.create(body, tx);
 
 			if (!profile_result[0] || !profile_result[0].id) {
 				throw new ServerError(error_messages.customer_create_failed, 500);
@@ -46,6 +43,11 @@ export const customer_service = {
 
 			return customer_result[0];
 		});
+		if (!customer || !customer.id) {
+			throw new ServerError(error_messages.customer_create_failed, 500);
+		}
+
+		return await customer_repository.find_one(customer?.id);
 	},
 
 	toggle_disabled: async (id: number) => {
@@ -65,8 +67,6 @@ export const customer_service = {
 		}
 
 		await customer_repository.delete(id);
-		// Note: we're only deleting the customer, not the associated profile. 
-		// If profile delete is needed, profile_repository.delete(customer.profile_id)
 		return { success: true };
 	}
 };

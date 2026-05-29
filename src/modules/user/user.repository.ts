@@ -70,12 +70,22 @@ export const user_repository = {
 		return result!.total;
 	},
 
-	find_one: async (id: number, tx?: DbTransaction) => {
+	find_one: async ({ id, username, email }: { id?: number, username?: string, email?: string }, tx?: DbTransaction, exclude_password: boolean = true) => {
 		const database = tx || db;
 		const user = await database.query.user_schema.findFirst({
-			columns: { password: false },
+			...(exclude_password ? { columns: { password: false } } : {}),
 			where: {
-				id: { eq: id },
+				OR: [
+					{
+						id: { eq: id },
+					},
+					{
+						username: { eq: username },
+					},
+					{
+						email: { eq: email },
+					},
+				]
 			}
 		});
 		return user;

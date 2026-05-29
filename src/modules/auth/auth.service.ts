@@ -21,7 +21,7 @@ export const auth_service = {
 	},
 
 	sign_in: async (email_or_username: string, password: string) => {
-		const user = await user_repository.select_one_by_username_or_email(email_or_username);
+		const user = await user_repository.find_one({ email: email_or_username, username: email_or_username }, undefined, false);
 		if (!user) {
 			throw new ServerError(error_messages.invalid_credentials, 400);
 		}
