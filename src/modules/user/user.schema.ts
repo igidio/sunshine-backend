@@ -6,9 +6,6 @@ import { text } from "drizzle-orm/mssql-core";
 export const user_roles = ["superuser", "admin", "employer", "customer"] as const;
 export type UserRole = (typeof user_roles)[number];
 
-// Available permissions for users
-// SUPPLIER, PRODUCT
-
 export const user_schema = mysqlTable("user", {
 	id: int("id").autoincrement().primaryKey(),
 	username: varchar({ length: 255 }).unique().notNull(),
@@ -16,7 +13,7 @@ export const user_schema = mysqlTable("user", {
 	email: varchar({ length: 255 }).unique().notNull(),
 	email_verified_at: timestamp(),
 	phone_number: varchar({ length: 20 }),
-	create_at: timestamp().defaultNow(),
+	created_at: timestamp().defaultNow(),
 	role: mysqlEnum("user_role", user_roles)
 		.default("employer")
 		.notNull(),
