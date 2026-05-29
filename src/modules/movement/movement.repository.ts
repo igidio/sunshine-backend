@@ -3,7 +3,7 @@ import { movement_schema, type movement_insert } from "./movement.schema";
 import type { ReadMovementDto } from "./movement.dto";
 import type { ModelWhere } from "~/helpers/types";
 import type { MySql2Database } from "drizzle-orm/mysql2";
-import { and, count, eq, isNull, like, or, type SQL } from "drizzle-orm";
+import { and, count, eq, gte, isNull, like, lte, or, type SQL } from "drizzle-orm";
 
 type MovementWhereConfig = ModelWhere<"movement_schema">;
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -17,8 +17,7 @@ const build_where_query = (pagination: ReadMovementDto): MovementWhereConfig => 
 		...(pagination.type && { type: { eq: pagination.type } }),
 		...(pagination.stock_id && { stock_id: { eq: pagination.stock_id } }),
 		...(pagination.supplier_id && { supplier_id: { eq: pagination.supplier_id } }),
-		...(pagination.from && { created_at: { gte: pagination.from } }),
-		...(pagination.to && { created_at: { lte: pagination.to } }),
+		...(pagination.from || pagination.to ? { AND: [{ created_at: { gte: pagination.from, lte: pagination.to } }] } : {}),
 		...(pagination.search && {
 			OR: [{ notes: { like: `%${pagination.search}%` } }],
 		}),
@@ -33,6 +32,9 @@ const build_where = (pagination: ReadMovementDto): SQL | undefined => {
 	if (pagination.type) conditions.push(eq(movement_schema.type, pagination.type));
 	if (pagination.stock_id) conditions.push(eq(movement_schema.stock_id, pagination.stock_id));
 	if (pagination.supplier_id) conditions.push(eq(movement_schema.supplier_id, pagination.supplier_id));
+	if (pagination.from) conditions.push(gte(movement_schema.created_at, pagination.from));
+	if (pagination.to) conditions.push(lte(movement_schema.created_at, pagination.to));
+
 	if (pagination.search) {
 		const searchFormatted = `%${pagination.search}%`;
 		conditions.push(or(like(movement_schema.notes, searchFormatted)));
