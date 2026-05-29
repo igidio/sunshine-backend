@@ -3,4 +3,5 @@ export const permissions = [
 	"PRODUCT",
 	"CATEGORY",
 	"MOVEMENT",
+	"CUSTOMER"
 ] as const;
