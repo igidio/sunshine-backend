@@ -6,6 +6,7 @@ import type { ReadUserDto } from "./user.dto";
 import type { ModelWhere } from "~/helpers/types";
 
 type UserWhereConfig = ModelWhere<"user_schema">;
+type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 const build_where_query = (pagination: ReadUserDto): UserWhereConfig => {
 	return {
@@ -23,7 +24,7 @@ const build_where = (pagination: ReadUserDto): SQL | undefined => {
 	const conditions: (SQL | undefined)[] = [];
 
 	if (pagination.role) conditions.push(eq(user_schema.role, pagination.role));
-	
+
 	if (pagination.search) {
 		const searchFormatted = `%${pagination.search}%`;
 		conditions.push(
@@ -42,17 +43,7 @@ export const user_repository = {
 		const database = tx || db;
 		return await database.insert(user_schema).values(body);
 	},
-	select_one: async (id: number) => {
-		const { password, ...columns } = getColumns(user_schema);
-		const user = await db.select(columns).from(user_schema).where(eq(user_schema.id, id));
-		return user[0];
-	},
-	select_one_by_username_or_email: async (email_or_username: string) => {
-		const results = await db.select().from(user_schema).where(
-			or(eq(user_schema.email, email_or_username), eq(user_schema.username, email_or_username))
-		).limit(1)
-		return results[0]
-	},
+
 	find_all: async (pagination: ReadUserDto) => {
 		const { password, ...columns } = getColumns(user_schema);
 		return await db.query.user_schema.findMany({
@@ -70,6 +61,7 @@ export const user_repository = {
 			where: build_where_query(pagination),
 		});
 	},
+
 	count: async (pagination: ReadUserDto) => {
 		const [result] = await db
 			.select({ total: count() })
@@ -77,12 +69,18 @@ export const user_repository = {
 			.where(build_where(pagination));
 		return result!.total;
 	},
-	find_one: async (id: number, tx?: MySql2Database) => {
+
+	find_one: async (id: number, tx?: DbTransaction) => {
 		const database = tx || db;
-		const { password, ...columns } = getColumns(user_schema);
-		const user = await database.select(columns).from(user_schema).where(eq(user_schema.id, id));
-		return user[0];
+		const user = await database.query.user_schema.findFirst({
+			columns: { password: false },
+			where: {
+				id: { eq: id },
+			}
+		});
+		return user;
 	},
+
 	update: async (id: number, data: Partial<user_insert>, tx?: MySql2Database) => {
 		const database = tx || db;
 		const [result] = await database
@@ -92,6 +90,7 @@ export const user_repository = {
 			.execute();
 		return result;
 	},
+
 	toggle_disabled: async (id: number, disabled_at: Date | null, tx?: MySql2Database) => {
 		const database = tx || db;
 		const [result] = await database
@@ -101,6 +100,7 @@ export const user_repository = {
 			.execute();
 		return result;
 	},
+
 	set_permissions: async (id: number, permissions: string, tx?: MySql2Database) => {
 		const database = tx || db;
 		const [result] = await database
