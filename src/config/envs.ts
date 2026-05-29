@@ -10,6 +10,8 @@ interface Env_vars {
 	openai_base_url?: string;
 	openai_language_model?: string;
 	openai_tool_model?: string;
+	use_mailer_service?: boolean;
+	mailer_url?: string;
 }
 
 const env_schema = z.object({
@@ -19,9 +21,11 @@ const env_schema = z.object({
 	jwt_secret: z.string().min(1),
 	jwt_refresh: z.string().min(1),
 	openai_api_key: z.string().min(1).optional(),
-	openai_base_url: z.string().url().optional(),
+	openai_base_url: z.url().optional(),
 	openai_language_model: z.string().optional(),
 	openai_tool_model: z.string().optional(),
+	use_mailer_service: z.coerce.boolean().optional(),
+	mailer_url: z.url().optional(),
 });
 
 const parseResult = env_schema.safeParse({
@@ -34,6 +38,8 @@ const parseResult = env_schema.safeParse({
 	openai_base_url: process.env.OPENAI_BASE_URL,
 	openai_language_model: process.env.OPENAI_LANGUAGE_MODEL,
 	openai_tool_model: process.env.OPENAI_TOOL_MODEL,
+	use_mailer_service: process.env.USE_MAILER_SERVICE,
+	mailer_url: process.env.MAILER_URL,
 });
 
 if (!parseResult.success) {
