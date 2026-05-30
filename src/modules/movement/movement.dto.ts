@@ -1,14 +1,6 @@
 import z from "zod";
-import { PaginationTypeSchema, type PaginationType } from "~/helpers/types";
-import { movement_type, type MovementType } from "./movement.schema";
-
-export interface ReadMovementDto extends PaginationType {
-	type?: MovementType;
-	stock_id?: number;
-	supplier_id?: number;
-	from?: Date;
-	to?: Date;
-}
+import { PaginationTypeSchema } from "~/helpers/types";
+import { movement_type } from "./movement.schema";
 
 export const ReadMovementDtoSchema = PaginationTypeSchema.extend({
 	type: z.enum(movement_type).optional(),
@@ -18,13 +10,8 @@ export const ReadMovementDtoSchema = PaginationTypeSchema.extend({
 	to: z.coerce.date().optional(),
 });
 
-export interface CreateMovementDto {
-	stock_id: number;
-	supplier_id?: number | null;
-	type?: MovementType;
-	quantity: number;
-	notes?: string | null;
-}
+export type ReadMovementDto = z.infer<typeof ReadMovementDtoSchema>;
+
 
 export const CreateMovementDtoSchema = z.object({
 	stock_id: z.coerce.number().int().positive(),
@@ -33,3 +20,9 @@ export const CreateMovementDtoSchema = z.object({
 	quantity: z.coerce.number().int(),
 	notes: z.string().max(2000).nullable().optional(),
 });
+
+export type CreateMovementDto = z.infer<typeof CreateMovementDtoSchema>;
+
+export const UpdateMovementDtoSchema = CreateMovementDtoSchema.partial()
+
+export type UpdateMovementDto = z.infer<typeof UpdateMovementDtoSchema>;

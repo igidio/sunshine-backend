@@ -1,14 +1,6 @@
 import z from "zod";
-import { PaginationTypeSchema, type PaginationType } from "~/helpers/types";
-
-export interface ReadProductDto extends PaginationType {
-	status?: 'active' | 'inactive';
-	min_price?: number;
-	max_price?: number;
-	min_stock?: number;
-	max_stock?: number;
-	category_id?: number;
-}
+import { error_messages } from "~/data/error_messages";
+import { ForceArrayPreprocess, PaginationTypeSchema, type PaginationType } from "~/helpers/types";
 
 export const ReadProductDtoSchema = PaginationTypeSchema.extend({
 	status: z.enum(['active', 'inactive']).optional(),
@@ -18,29 +10,34 @@ export const ReadProductDtoSchema = PaginationTypeSchema.extend({
 	max_stock: z.coerce.number().int().nonnegative().optional(),
 	category_id: z.coerce.number().int().positive().optional(),
 });
+export type ReadProductDto = z.infer<typeof ReadProductDtoSchema>;
 
-export interface CreateProductDto {
-	category_id: number;
-	name: string;
-	description: string;
-	price: number;
-	images?: File[] | null;
-	images_to_remove?: number[] | null;
-}
 
 export const CreateProductDtoSchema = z.object({
 	category_id: z.coerce.number().int().positive(),
 	name: z.string().max(255),
 	description: z.string().max(1000),
 	price: z.coerce.number().nonnegative(),
-	images: z
-		.array(
-			z
-				.file()
-				.max(500 * 1024, "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.")
-				.mime(["image/jpeg", "image/png", "image/webp"], "El formato de imagen proporcionado no es compatible. Por favor, asegúrate de que la imagen sea en formato JPEG o PNG e intenta nuevamente.")
-		)
-		.max(5, "Solo se permiten hasta 5 imágenes por producto.")
+	images: ForceArrayPreprocess(
+		z.file()
+			.max(500 * 1024, error_messages.invalid_image_size)
+			.mime(["image/jpeg", "image/png", "image/webp", "image/avif"], error_messages.invalid_image_format)
+	)
 		.nullish()
-		.optional(),
+		.optional().refine((files) => !files || (files.length >= 1 && files.length <= 5), {
+			message: error_messages.invalid_image_count,
+		}),
 });
+export type CreateProductDto = {
+	images_to_remove?: number[] | null;
+} & z.infer<typeof CreateProductDtoSchema>;
+
+export const UpdateProductDtoSchema = CreateProductDtoSchema.partial();
+
+export type UpdateProductDto = {
+	images_to_remove?: number[] | null;
+} & z.infer<typeof UpdateProductDtoSchema>;
+
+export const ImagesToRemoveDtoSchema = z.object({
+	images_to_remove: ForceArrayPreprocess(z.coerce.number()).optional(),
+}).extend(CreateProductDtoSchema.shape).partial();

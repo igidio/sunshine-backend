@@ -2,7 +2,8 @@ import Elysia from "elysia";
 import { plugin_auth } from "~/plugins/auth";
 import z from "zod";
 import { movement_service } from "./movement.service";
-import { CreateMovementDtoSchema, ReadMovementDtoSchema } from "./movement.dto";
+import { CreateMovementDtoSchema, ReadMovementDtoSchema, UpdateMovementDtoSchema } from "./movement.dto";
+import { IdSchema } from "~/helpers/types";
 
 export const movement_routes = new Elysia({
 	prefix: "/movement",
@@ -20,9 +21,7 @@ export const movement_routes = new Elysia({
 		return await movement_service.get_one(params.id);
 	}, {
 		auth: true,
-		params: z.object({
-			id: z.coerce.number(),
-		}),
+		params: IdSchema,
 	})
 
 	.post("/", async ({ body }) => {
@@ -38,10 +37,8 @@ export const movement_routes = new Elysia({
 	}, {
 		auth: true,
 		permission: "MOVEMENT",
-		body: CreateMovementDtoSchema.partial(),
-		params: z.object({
-			id: z.coerce.number(),
-		}),
+		body: UpdateMovementDtoSchema,
+		params: IdSchema,
 	})
 
 	.delete("/:id", async ({ params }) => {
@@ -49,7 +46,5 @@ export const movement_routes = new Elysia({
 	}, {
 		auth: true,
 		permission: "MOVEMENT",
-		params: z.object({
-			id: z.coerce.number(),
-		}),
+		params: IdSchema,
 	});

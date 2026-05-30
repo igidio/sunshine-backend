@@ -23,19 +23,23 @@ export interface ReadUserDto extends PaginationType {
 	role?: UserRole;
 }
 
+export type UpdateUserDto = Partial<CreateUserDto>
+
 export const ReadUserDtoSchema = PaginationTypeSchema.extend({
 	role: z.enum(user_roles).optional(),
 });
 
 export const UpdateUserDtoSchema = CreateUserDtoSchema.partial().extend({
 	role: z.enum(user_roles).optional(),
-});
+})
 
 export const ToggleDisabledUserDtoSchema = z.object({
 	disabled: z.boolean().optional(),
 });
+export type ToggleDisabledUserDto = z.infer<typeof ToggleDisabledUserDtoSchema>;
 
 export const SetPermissionsUserDtoSchema = z.object({
 	permissions: z.array(z.enum(permissions as unknown as [string, ...string[]])),
 });
+export  type SetPermissionsUserDto = z.infer<typeof SetPermissionsUserDtoSchema>;
 

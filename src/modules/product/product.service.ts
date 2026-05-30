@@ -1,4 +1,4 @@
-import type { CreateProductDto, ReadProductDto } from "./product.dto"
+import type { CreateProductDto, ReadProductDto, UpdateProductDto } from "./product.dto"
 import { product_repository } from "./product.repository"
 import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
@@ -7,7 +7,6 @@ import { stock_service } from "../stock/stock.service";
 
 export const product_service = {
 	find_all: async (query: ReadProductDto) => {
-
 		const count = await product_repository.count(query);
 		const data = await product_repository.find_all(query);
 		return {
@@ -27,22 +26,17 @@ export const product_service = {
 	},
 
 	create: async (data: CreateProductDto) => {
-		const result = await product_repository.create({
-			category_id: data.category_id,
-			name: data.name,
-			description: data.description,
-			price: data.price,
-		});
+		const result = await product_repository.create(data);
 		if (!result) throw new ServerError(error_messages.create_failed, 500);
+		
 		await stock_service.create(result.id);
 		await product_service.update_images(result.id, data.images);
 		return await product_repository.find_one(result.id);
 	},
 
-	update: async (id: number, data: Partial<CreateProductDto>) => {
+	update: async (id: number, data: UpdateProductDto) => {
 		const product = await product_repository.find_one(id);
 		if (!product) throw new ServerError(error_messages.product_not_found, 404);
-		console.log(data);
 
 		const { images, ...product_data } = data;
 		const has_product_data = Object.keys(product_data).length > 0;
@@ -82,7 +76,6 @@ export const product_service = {
 				image_url: filename,
 			});
 		}
-
 		return await product_repository.create_images(uploads);
 	},
 

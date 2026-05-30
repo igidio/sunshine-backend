@@ -102,10 +102,6 @@ export const customer_repository = {
 		return await runner.insert(customer_schema).values(body).$returningId();
 	},
 
-	/**
-	 * Toggle or explicitly set the disabled state.
-	 * If `disabled` is undefined, behaves like previous toggle (invert).
-	 */
 	toggle_disable: async (id: number, disabled?: boolean) => {
 		const customer = await customer_repository.find_one(id);
 		if (!customer) return;

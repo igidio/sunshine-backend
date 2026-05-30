@@ -1,6 +1,6 @@
 import db from "~/database";
 import { movement_repository } from "./movement.repository";
-import type { CreateMovementDto, ReadMovementDto } from "./movement.dto";
+import type { CreateMovementDto, ReadMovementDto, UpdateMovementDto } from "./movement.dto";
 import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
 import { stock_repository } from "../stock/stock.repository";
@@ -52,7 +52,7 @@ export const movement_service = {
 		return await movement_service.get_one(result.id);
 	},
 
-	update: async (id: number, data: Partial<CreateMovementDto>) => {
+	update: async (id: number, data: UpdateMovementDto) => {
 		const has_updates = Object.keys(data).length > 0;
 		if (!has_updates) throw new ServerError(error_messages.nothing_to_update, 400);
 
@@ -86,13 +86,7 @@ export const movement_service = {
 				}
 			}
 
-			const result = await movement_repository.update(id, {
-				stock_id: data.stock_id,
-				supplier_id: data.supplier_id,
-				type: data.type,
-				quantity: data.quantity,
-				notes: data.notes,
-			}, tx);
+			const result = await movement_repository.update(id, data, tx);
 
 			if (!result || result.affectedRows === 0) {
 				throw new ServerError(error_messages.nothing_to_update, 400);

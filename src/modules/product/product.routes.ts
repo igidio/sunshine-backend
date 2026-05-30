@@ -2,9 +2,9 @@ import Elysia from "elysia";
 import { product_service } from "./product.service";
 import { plugin_auth } from "~/plugins/auth";
 import z from "zod";
-import { CreateProductDtoSchema, ReadProductDtoSchema } from "./product.dto";
+import { CreateProductDtoSchema, ImagesToRemoveDtoSchema, ReadProductDtoSchema } from "./product.dto";
 import { error_messages } from "~/data/error_messages";
-import { ForceArrayPreprocess } from "~/helpers/types";
+import { IdSchema, StatusSchemaDto, ToggleStatusSchemaDto } from "~/helpers/types";
 
 export const product_routes = new Elysia({
 	prefix: "/product"
@@ -22,9 +22,7 @@ export const product_routes = new Elysia({
 		return await product_service.find_one(params.id)
 	}, {
 		auth: true,
-		params: z.object({
-			id: z.coerce.number()
-		})
+		params: IdSchema
 	})
 
 	.post("/", async ({ body }) => {
@@ -40,12 +38,8 @@ export const product_routes = new Elysia({
 	}, {
 		auth: true,
 		permission: "PRODUCT",
-		body: z.object({
-			images_to_remove: ForceArrayPreprocess(z.coerce.number()).optional(),
-		}).extend(CreateProductDtoSchema.shape).partial(),
-		params: z.object({
-			id: z.coerce.number()
-		})
+		body: ImagesToRemoveDtoSchema,
+		params: IdSchema
 	})
 
 	.delete("/:id", async ({ params }) => {
@@ -53,9 +47,7 @@ export const product_routes = new Elysia({
 	}, {
 		auth: true,
 		permission: "PRODUCT",
-		params: z.object({
-			id: z.coerce.number()
-		})
+		params: IdSchema
 	})
 
 	.patch("/:id/disable", async ({ body, params }) => {
@@ -73,12 +65,8 @@ export const product_routes = new Elysia({
 	}, {
 		auth: true,
 		permission: "PRODUCT",
-		body: z.object({
-			status: z.enum(["disable", "enable"]).optional()
-		}).optional(),
-		params: z.object({
-			id: z.coerce.number()
-		})
+		body: ToggleStatusSchemaDto.optional(),
+		params: IdSchema
 	})
 
 

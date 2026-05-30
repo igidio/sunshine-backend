@@ -3,8 +3,7 @@ import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
 import type { permissions } from "~/data/permissions";
 import { BcryptHelper } from "~/helpers/bcrypt";
-import type { ReadUserDto, UpdateUserDtoSchema, ToggleDisabledUserDtoSchema, SetPermissionsUserDtoSchema } from "./user.dto";
-import type z from "zod";
+import type { ReadUserDto, UpdateUserDto, ToggleDisabledUserDto, SetPermissionsUserDto } from "./user.dto";
 
 export const user_service = {
 	find: async (params: ReadUserDto) => {
@@ -24,7 +23,7 @@ export const user_service = {
 		if (!result) throw new ServerError(error_messages.user_not_found, 404);
 		return result;
 	},
-	update: async (id: number, data: z.infer<typeof UpdateUserDtoSchema>) => {
+	update: async (id: number, data: UpdateUserDto) => {
 		const has_updates = Object.keys(data).length > 0;
 		if (!has_updates) throw new ServerError(error_messages.nothing_to_update, 400);
 		
@@ -43,7 +42,7 @@ export const user_service = {
 
 		return await user_service.find_one(id);
 	},
-	toggle_disabled: async (id: number, data: z.infer<typeof ToggleDisabledUserDtoSchema>) => {
+	toggle_disabled: async (id: number, data: ToggleDisabledUserDto) => {
 		const current_user = await user_repository.find_one({id});
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 
@@ -57,7 +56,7 @@ export const user_service = {
 		await user_repository.toggle_disabled(id, target_disabled_at);
 		return await user_service.find_one(id);
 	},
-	set_permissions: async (id: number, data: z.infer<typeof SetPermissionsUserDtoSchema>) => {
+	set_permissions: async (id: number, data: SetPermissionsUserDto) => {
 		const current_user = await user_repository.find_one({id});
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 

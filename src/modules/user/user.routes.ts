@@ -8,6 +8,7 @@ import {
 	ToggleDisabledUserDtoSchema, 
 	SetPermissionsUserDtoSchema 
 } from "./user.dto";
+import { IdSchema } from "~/helpers/types";
 
 export const user_routes = new Elysia({
 	prefix: "/user",
@@ -25,9 +26,7 @@ export const user_routes = new Elysia({
 		return await user_service.find_one(params.id);
 	}, {
 		auth: true,
-		params: z.object({
-			id: z.coerce.number(),
-		}),
+		params: IdSchema,
 	})
 
 	.patch("/:id", async ({ body, params }) => {
@@ -35,9 +34,7 @@ export const user_routes = new Elysia({
 	}, {
 		auth: true,
 		body: UpdateUserDtoSchema,
-		params: z.object({
-			id: z.coerce.number(),
-		}),
+		params: IdSchema,
 	})
 
 	.put("/:id/toggle", async ({ body, params }) => {
@@ -46,9 +43,7 @@ export const user_routes = new Elysia({
 		auth: true,
 		role: ["superuser", "admin"],
 		body: ToggleDisabledUserDtoSchema,
-		params: z.object({
-			id: z.coerce.number(),
-		}),
+		params: IdSchema,
 	})
 
 	.patch("/:id/permissions", async ({ body, params }) => {
@@ -57,7 +52,5 @@ export const user_routes = new Elysia({
 		auth: true,
 		role: ["superuser", "admin"],
 		body: SetPermissionsUserDtoSchema,
-		params: z.object({
-			id: z.coerce.number(),
-		}),
+		params: IdSchema,
 	});
