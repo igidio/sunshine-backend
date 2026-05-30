@@ -15,6 +15,9 @@ export const error_messages = {
 	invalid_token: "El token proporcionado no es válido o ha expirado. Por favor, verifica tu token e intenta nuevamente.",
 	// zod (general)
 	invalid_date: "La fecha proporcionada no es válida. Por favor, verifica el formato de la fecha e intenta nuevamente.",
+	invalid_image_format: "El formato de imagen proporcionado no es compatible. Por favor, asegúrate de que la imagen sea en formato JPEG, AVIF o PNG e intenta nuevamente.",
+	invalid_image_size: "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.",
+	invalid_image_count: "El número de imágenes proporcionado no es válido. Por favor, asegúrate de proporcionar entre 1 y 5 imágenes e intenta nuevamente.",
 	// user
 	user_not_found: "Usuario no encontrado. Por favor, verifica el ID del usuario e intenta nuevamente.",
 	user_forbidden: "No tienes permisos para acceder a este recurso. Por favor, verifica tus permisos e intenta nuevamente.",
@@ -31,7 +34,7 @@ export const error_messages = {
 	stock_insufficient: "El stock no puede quedar en negativo. Por favor, verifica la cantidad e intenta nuevamente.",
 	// movement
 	movement_not_found: "Movimiento no encontrado. Por favor, verifica el ID del movimiento e intenta nuevamente.",
-        // customer
-        customer_not_found: "Cliente no encontrado. Por favor, verifica el ID del cliente e intenta nuevamente.",
-        customer_create_failed: "No se pudo crear el cliente.",
+	// customer
+	customer_not_found: "Cliente no encontrado. Por favor, verifica el ID del cliente e intenta nuevamente.",
+	customer_create_failed: "No se pudo crear el cliente.",
 }
