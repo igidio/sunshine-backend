@@ -4,7 +4,7 @@ export const profile_schema = mysqlTable("profile", {
 	id: int("id").autoincrement().primaryKey(),
 	first_name: varchar({ length: 255 }).notNull(),
 	last_name: varchar({ length: 255 }).notNull(),
-	birth_date: date("birth_date", {mode: "date"}).notNull(),	
+	birth_date: date("birth_date", {mode: "string"}).notNull(),	
 	address: varchar({ length: 255 }),
 	created_at: timestamp().defaultNow(),
 	updated_at: timestamp().defaultNow().onUpdateNow()

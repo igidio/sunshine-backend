@@ -72,8 +72,9 @@ export const customer_repository = {
 		return result[0]?.value || 0;
 	},
 
-	find_one: async (id: number) => {
-		const result = await db.query.customer_schema.findFirst({
+	find_one: async (id: number, tx?: DbTransaction) => {
+		const database = tx || db;
+		const result = await database.query.customer_schema.findFirst({
 			where: {
 				id: {
 					eq: id
@@ -86,18 +87,36 @@ export const customer_repository = {
 		return result;
 	},
 
+	update: async (id: number, data: Partial<customer_insert>, tx?: DbTransaction) => {
+		const runner = tx || db;
+		const [result] = await runner
+			.update(customer_schema)
+			.set(data)
+			.where(eq(customer_schema.id, id))
+			.execute();
+		return result;
+	},
+
 	create: async (body: customer_insert, tx?: DbTransaction) => {
 		const runner = tx || db;
 		return await runner.insert(customer_schema).values(body).$returningId();
 	},
 
-	toggle_disable: async (id: number) => {
+	/**
+	 * Toggle or explicitly set the disabled state.
+	 * If `disabled` is undefined, behaves like previous toggle (invert).
+	 */
+	toggle_disable: async (id: number, disabled?: boolean) => {
 		const customer = await customer_repository.find_one(id);
 		if (!customer) return;
+		let newDisabledAt: Date | null;
+		if (typeof disabled === 'boolean') {
+			newDisabledAt = disabled ? new Date() : null;
+		} else {
+			newDisabledAt = customer.disabled_at ? null : new Date();
+		}
 		await db.update(customer_schema)
-			.set({
-				disabled_at: customer.disabled_at ? null : new Date()
-			})
+			.set({ disabled_at: newDisabledAt })
 			.where(eq(customer_schema.id, id));
 	},
 

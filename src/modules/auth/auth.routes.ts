@@ -2,8 +2,8 @@
 import Elysia from "elysia";
 import z from "zod";
 import plugin_jwt from "~/plugins/jwt";
-import { user_dto, user_login_dto } from "../user/user.dto";
-import { profile_dto } from "../profile/profile.dto";
+import { CreateUserDtoSchema, UserLoginDtoSchema } from "../user/user.dto";
+import { CreateProfileDtoSchema } from "../profile/profile.dto";
 import { auth_service } from "./auth.service";
 import bearer from "@elysia/bearer";
 import { error_messages } from "~/data/error_messages";
@@ -24,7 +24,7 @@ export const auth_routes = new Elysia({
 		const refresh_token = await jwt_refresh.sign({ ...to_sign, remember_me });
 		return { "access_token": token, "refresh_token": refresh_token };
 	}, {
-		body: user_login_dto,
+		body: UserLoginDtoSchema,
 	})
 
 	.post("/signup", async ({ body, set }) => {
@@ -32,8 +32,8 @@ export const auth_routes = new Elysia({
 		return "Signup successful";
 	}, {
 		body: z.object({
-			user: user_dto,
-			profile: profile_dto,
+			user: CreateUserDtoSchema,
+			profile: CreateProfileDtoSchema,
 		})
 	})
 
