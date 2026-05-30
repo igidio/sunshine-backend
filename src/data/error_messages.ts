@@ -13,6 +13,8 @@ export const error_messages = {
 	// auth
 	no_token_provided: "No se proporcionó un token. Por favor, incluye un token en la cabecera de autorización e intenta nuevamente.",
 	invalid_token: "El token proporcionado no es válido o ha expirado. Por favor, verifica tu token e intenta nuevamente.",
+	// zod (general)
+	invalid_date: "La fecha proporcionada no es válida. Por favor, verifica el formato de la fecha e intenta nuevamente.",
 	// user
 	user_not_found: "Usuario no encontrado. Por favor, verifica el ID del usuario e intenta nuevamente.",
 	user_forbidden: "No tienes permisos para acceder a este recurso. Por favor, verifica tus permisos e intenta nuevamente.",
