@@ -21,6 +21,7 @@ export const error_messages = {
 	// user
 	user_not_found: "Usuario no encontrado. Por favor, verifica el ID del usuario e intenta nuevamente.",
 	user_forbidden: "No tienes permisos para acceder a este recurso. Por favor, verifica tus permisos e intenta nuevamente.",
+	user_disabled: "La cuenta ha sido deshabilitada. Por favor, contacta al soporte para más información.",
 	// supplier
 	supplier_not_found: "Proveedor no encontrado. Por favor, verifica el ID del proveedor e intenta nuevamente.",
 	supplier_image_too_large: "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.",
@@ -34,6 +35,8 @@ export const error_messages = {
 	stock_insufficient: "El stock no puede quedar en negativo. Por favor, verifica la cantidad e intenta nuevamente.",
 	// movement
 	movement_not_found: "Movimiento no encontrado. Por favor, verifica el ID del movimiento e intenta nuevamente.",
+	// treatment
+	treatment_not_found: "Tratamiento no encontrado. Por favor, verifica el ID del tratamiento e intenta nuevamente.",
 	// customer
 	customer_not_found: "Cliente no encontrado. Por favor, verifica el ID del cliente e intenta nuevamente.",
 	customer_create_failed: "No se pudo crear el cliente.",

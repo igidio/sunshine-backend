@@ -3,5 +3,6 @@ export const permissions = [
 	"PRODUCT",
 	"CATEGORY",
 	"MOVEMENT",
+	"TREATMENT",
 	"CUSTOMER"
 ] as const;
