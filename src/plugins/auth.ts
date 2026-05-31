@@ -17,15 +17,15 @@ export const plugin_auth = new Elysia()
 		const user = await user_service.find_one(payload.id);
 		if (!user) throw new ServerError(error_messages.user_not_found, 404);
 		if (user.disabled_at) throw new ServerError(error_messages.user_disabled, 403);
-		return { authenticated_user: user! };
+		return { user };
 	})
 	.macro({
 		auth: {
-			resolve: async ({ authenticated_user }) => { user: authenticated_user },
+			resolve: async ({ user }) => { user },
 		},
-		
+
 		role: (allowed_roles: UserRole[]) => ({
-			resolve: async ({ authenticated_user }) => {
+			resolve: async ({ user: authenticated_user }) => {
 				const user_role = authenticated_user?.role as UserRole;
 				if (!allowed_roles.includes(user_role)) throw new ServerError(error_messages.user_forbidden, 403);
 				return { user: authenticated_user };
@@ -33,7 +33,7 @@ export const plugin_auth = new Elysia()
 		}),
 
 		permission: (permission: typeof permissions[number]) => ({
-			resolve: async ({ authenticated_user }) => {
+			resolve: async ({ user: authenticated_user }) => {
 
 				const has_permission = await user_service.check_permissions(authenticated_user!.id, permission);
 				if (!has_permission) throw new ServerError(error_messages.user_forbidden, 403);

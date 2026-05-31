@@ -9,7 +9,7 @@ export const notification_routes = new Elysia({
 })
 	.use(plugin_auth)
 
-	.get("/", ({ user, query }) => {
+	.get("/", ({ query, user }) => {
 		return notification_service.get(user.id, query);
 	}, {
 		query: z.object({
