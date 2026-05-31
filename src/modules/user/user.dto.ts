@@ -1,5 +1,5 @@
 import z from "zod";
-import { PaginationTypeSchema, type PaginationType } from "~/helpers/types";
+import { PaginationTypeSchema, StatusSchemaDto, type PaginationType, type StatusDto } from "~/helpers/types";
 import { user_roles, type UserRole } from "./user.schema";
 import { permissions } from "~/data/permissions";
 
@@ -18,20 +18,19 @@ export const UserLoginDtoSchema = z.object({
 	password,
 	remember_me: z.boolean().optional()
 });
-
-export interface ReadUserDto extends PaginationType {
-	role?: UserRole;
-}
-
-export type UpdateUserDto = Partial<CreateUserDto>
+export type UserLoginDto = z.infer<typeof UserLoginDtoSchema>;
 
 export const ReadUserDtoSchema = PaginationTypeSchema.extend({
 	role: z.enum(user_roles).optional(),
+	status: StatusSchemaDto.shape.status.optional(),
 });
+export type ReadUserDto = z.infer<typeof ReadUserDtoSchema>;
+
 
 export const UpdateUserDtoSchema = CreateUserDtoSchema.partial().extend({
 	role: z.enum(user_roles).optional(),
 })
+export type UpdateUserDto = z.infer<typeof UpdateUserDtoSchema>;
 
 export const ToggleDisabledUserDtoSchema = z.object({
 	disabled: z.boolean().optional(),
@@ -41,5 +40,5 @@ export type ToggleDisabledUserDto = z.infer<typeof ToggleDisabledUserDtoSchema>;
 export const SetPermissionsUserDtoSchema = z.object({
 	permissions: z.array(z.enum(permissions as unknown as [string, ...string[]])),
 });
-export  type SetPermissionsUserDto = z.infer<typeof SetPermissionsUserDtoSchema>;
+export type SetPermissionsUserDto = z.infer<typeof SetPermissionsUserDtoSchema>;
 

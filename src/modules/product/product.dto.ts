@@ -1,9 +1,9 @@
 import z from "zod";
 import { error_messages } from "~/data/error_messages";
-import { ForceArrayPreprocess, PaginationTypeSchema, type PaginationType } from "~/helpers/types";
+import { ForceArrayPreprocess, PaginationTypeSchema, StatusSchemaDto } from "~/helpers/types";
 
 export const ReadProductDtoSchema = PaginationTypeSchema.extend({
-	status: z.enum(['active', 'inactive']).optional(),
+	status: StatusSchemaDto.shape.status.optional(),
 	min_price: z.coerce.number().nonnegative().optional(),
 	max_price: z.coerce.number().nonnegative().optional(),
 	min_stock: z.coerce.number().int().nonnegative().optional(),

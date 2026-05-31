@@ -10,6 +10,8 @@ type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 const build_where_query = (pagination: ReadUserDto): UserWhereConfig => {
 	return {
+		...(pagination.status === 'active' && { disabled_at: { isNull: true } }),
+		...(pagination.status === 'inactive' && { disabled_at: { isNotNull: true } }),
 		...(pagination.role && { role: { eq: pagination.role } }),
 		...(pagination.search && {
 			OR: [

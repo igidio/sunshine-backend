@@ -1,9 +1,9 @@
 import z from "zod";
 import { error_messages } from "~/data/error_messages";
-import { PaginationTypeSchema } from "~/helpers/types";
+import { PaginationTypeSchema, StatusSchemaDto } from "~/helpers/types";
 
 export const ReadSupplierDtoSchema = PaginationTypeSchema.extend({
-	status: z.enum(['active', 'inactive']).optional(),
+	status: StatusSchemaDto.shape.status.optional(),
 });
 
 export type ReadSupplierDto = z.infer<typeof ReadSupplierDtoSchema>;
