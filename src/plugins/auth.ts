@@ -23,15 +23,15 @@ export const plugin_auth = new Elysia()
 		auth: {
 			resolve: async ({ authenticated_user }) => { user: authenticated_user },
 		},
+		
 		role: (allowed_roles: UserRole[]) => ({
 			resolve: async ({ authenticated_user }) => {
 				const user_role = authenticated_user?.role as UserRole;
-
 				if (!allowed_roles.includes(user_role)) throw new ServerError(error_messages.user_forbidden, 403);
-
 				return { user: authenticated_user };
 			}
 		}),
+
 		permission: (permission: typeof permissions[number]) => ({
 			resolve: async ({ authenticated_user }) => {
 
