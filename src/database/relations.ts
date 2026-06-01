@@ -78,6 +78,7 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.sale_schema.id.through(r.sale_treatment_detail_schema.sale_id),
     }),
     sale_details: r.many.sale_treatment_detail_schema(),
+    appointments: r.many.appointment_schema(),
   },
   sale_product_detail_schema: {
     sale: r.one.sale_schema({
@@ -134,6 +135,10 @@ export const relations = defineRelations(schemas, (r) => ({
     customer: r.one.customer_schema({
       from: r.appointment_schema.customer_id,
       to: r.customer_schema.id,
+    }),
+    treatment: r.one.treatment_schema({
+      from: r.appointment_schema.treatment_id,
+      to: r.treatment_schema.id,
     }),
   },
   notification_schema: {
