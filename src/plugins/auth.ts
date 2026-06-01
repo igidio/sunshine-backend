@@ -34,10 +34,14 @@ export const plugin_auth = new Elysia()
 
 		permission: (permission: typeof permissions[number]) => ({
 			resolve: async ({ user: authenticated_user }) => {
+				const user = authenticated_user!;
+				if (user.role === "superuser" || user.role === "admin") {
+					return { user };
+				}
 
-				const has_permission = await user_service.check_permissions(authenticated_user!.id, permission);
+				const has_permission = await user_service.check_permissions(user.id, permission);
 				if (!has_permission) throw new ServerError(error_messages.user_forbidden, 403);
-				return { user: authenticated_user };
+				return { user };
 			}
 		})
 	})

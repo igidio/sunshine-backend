@@ -37,6 +37,10 @@ export const error_messages = {
 	movement_not_found: "Movimiento no encontrado. Por favor, verifica el ID del movimiento e intenta nuevamente.",
 	// treatment
 	treatment_not_found: "Tratamiento no encontrado. Por favor, verifica el ID del tratamiento e intenta nuevamente.",
+	// appointment
+	appointment_not_found: "Cita no encontrada. Por favor, verifica el ID de la cita e intenta nuevamente.",
+	appointment_conflict: "La cita no puede guardarse porque choca con otra cita programada. Por favor, ajusta la fecha u hora e intenta nuevamente.",
+	appointment_outside_hours: "La cita no puede guardarse porque está fuera del horario de atención. Por favor, ajusta la fecha u hora e intenta nuevamente.",
 	// customer
 	customer_not_found: "Cliente no encontrado. Por favor, verifica el ID del cliente e intenta nuevamente.",
 	customer_create_failed: "No se pudo crear el cliente.",
