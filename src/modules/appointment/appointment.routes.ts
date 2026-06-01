@@ -1,8 +1,8 @@
 import Elysia from "elysia";
 import { IdSchema } from "~/helpers/types";
 import { plugin_auth } from "~/plugins/auth";
-import { appointment_service } from "./appointment.service";
 import { CreateAppointmentDtoSchema, ReadAppointmentDtoSchema, UpdateAppointmentDtoSchema } from "./appointment.dto";
+import { appointment_service } from "./appointment.service";
 
 export const appointment_routes = new Elysia({
 	prefix: "/appointment",
@@ -10,7 +10,7 @@ export const appointment_routes = new Elysia({
 	.use(plugin_auth)
 
 	.get("/", async ({ query }) => {
-		return await appointment_service.find(query);
+		return appointment_service.find(query);
 	}, {
 		auth: true,
 		query: ReadAppointmentDtoSchema,

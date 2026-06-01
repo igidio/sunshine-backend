@@ -1,5 +1,5 @@
 import { fakerES as faker } from "@faker-js/faker";
-import { appointment_hours } from "~/modules/appointment/appointment_hours";
+import { appointment_days } from "~/modules/appointment/appointment.data";
 import type { appointment_insert } from "~/modules/appointment/appointment.schema";
 
 const format_time = (date: Date) =>
@@ -15,9 +15,9 @@ const apply_time = (date: Date, time: string) => {
   return result;
 };
 
-const is_weekend = (date: Date) => {
-  const day = date.getDay();
-  return day === 0 || day === 6;
+const get_seed_hours = (date: Date) => {
+  const weekday = date.getDay() === 0 ? 6 : date.getDay();
+  return appointment_days.find((item) => item.day === weekday)?.attention[0] ?? appointment_days[0].attention[0];
 };
 
 const max_appointment_duration = 120;
@@ -29,7 +29,7 @@ export const appointment_factory = (): appointment_insert => {
   });
   const formatted_date = date.toISOString().slice(0, 10);
 
-  const hours = is_weekend(date) ? appointment_hours.weekend : appointment_hours.weekday;
+  const hours = get_seed_hours(date);
   const latest_start = apply_time(date, hours.end);
   latest_start.setMinutes(latest_start.getMinutes() - max_appointment_duration);
 
@@ -38,7 +38,7 @@ export const appointment_factory = (): appointment_insert => {
     to: latest_start,
   });
   const duration = faker.number.int({ min: 20, max: 120 });
-  const time_start = format_time(hour);
+  const time_start = `${format_time(hour)}:00`;
   const time_end_date = new Date(hour);
   time_end_date.setMinutes(time_end_date.getMinutes() + duration);
 
@@ -47,7 +47,7 @@ export const appointment_factory = (): appointment_insert => {
     treatment_id: faker.number.int({ min: 1, max: 15 }),
     date: formatted_date,
     time_start,
-    time_end: format_time(time_end_date),
+    time_end: `${format_time(time_end_date)}:00`,
     notes: faker.lorem.paragraph(),
   };
 };
