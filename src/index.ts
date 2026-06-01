@@ -11,6 +11,7 @@ import { supplier_routes } from "./modules/supplier/supplier.routes";
 import { category_routes } from "./modules/category/category.routes";
 import { movement_routes } from "./modules/movement/movement.routes";
 import { treatment_routes } from "./modules/treatment/treatment.routes";
+import { appointment_routes } from "./modules/appointment/appointment.routes";
 import { user_routes } from "./modules/user/user.routes";
 import { customer_routes } from "./modules/customer/customer.routes";
 import staticPlugin from "@elysiajs/static";
@@ -31,6 +32,7 @@ const app = new Elysia()
   .use(category_routes)
   .use(movement_routes)
   .use(treatment_routes)
+  .use(appointment_routes)
   .use(user_routes)
   .use(customer_routes)
   .get("/", () => "Hello Elysia").listen(envs.port);

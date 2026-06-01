@@ -4,5 +4,6 @@ export const permissions = [
 	"CATEGORY",
 	"MOVEMENT",
 	"TREATMENT",
-	"CUSTOMER"
+	"CUSTOMER",
+	"APPOINTMENT"
 ] as const;
