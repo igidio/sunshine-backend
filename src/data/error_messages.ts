@@ -44,4 +44,6 @@ export const error_messages = {
 	// customer
 	customer_not_found: "Cliente no encontrado. Por favor, verifica el ID del cliente e intenta nuevamente.",
 	customer_create_failed: "No se pudo crear el cliente.",
+	// wishlist
+	wishlist_item_not_found: "Elemento no encontrado en la lista de deseos. Por favor, verifica el ID del elemento e intenta nuevamente.",
 }
