@@ -12,6 +12,8 @@ import { supplier_schema } from "~/modules/supplier/supplier.schema";
 import { treatment_schema } from "~/modules/treatment/treatment.schema";
 import { user_schema } from "~/modules/user/user.schema";
 
+import { wishlist_schema } from "~/modules/wishlist/wishlist.schema";
+
 export {
   user_schema,
   profile_schema,
@@ -28,5 +30,6 @@ export {
   appointment_schema,
   product_image_schema,
   notification_schema,
+  wishlist_schema,
 }
 

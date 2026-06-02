@@ -24,6 +24,7 @@ export const relations = defineRelations(schemas, (r) => ({
       to: r.profile_schema.id
     }),
     appointments: r.many.appointment_schema(),
+    wishlist: r.many.wishlist_schema(),
 
   },
   sale_schema: {
@@ -145,6 +146,16 @@ export const relations = defineRelations(schemas, (r) => ({
     user: r.one.user_schema({
       from: r.notification_schema.user_id,
       to: r.user_schema.id,
+    }),
+  },
+  wishlist_schema: {
+    product: r.one.product_schema({
+      from: r.wishlist_schema.product_id,
+      to: r.product_schema.id,
+    }),
+    customer: r.one.customer_schema({
+      from: r.wishlist_schema.customer_id,
+      to: r.customer_schema.id,
     }),
   }
 }))
