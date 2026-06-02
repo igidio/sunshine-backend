@@ -6,7 +6,7 @@ import { notification_schema } from "~/modules/notification/notification.schema"
 import { product_schema } from "~/modules/product/product.schema"
 import { product_image_schema } from "~/modules/product/product_image.schema";
 import { profile_schema } from "~/modules/profile/profile.schema";
-import { sale_product_detail_schema, sale_schema, sale_treatment_detail_schema } from "~/modules/sale/sale.schema";
+import { sale_appointment_detail_schema, sale_product_detail_schema, sale_schema,  } from "~/modules/sale/sale.schema";
 import { stock_schema } from "~/modules/stock/stock.schema";
 import { supplier_schema } from "~/modules/supplier/supplier.schema";
 import { treatment_schema } from "~/modules/treatment/treatment.schema";
@@ -22,7 +22,7 @@ export {
   treatment_schema,
   sale_schema,
   sale_product_detail_schema,
-  sale_treatment_detail_schema,
+  sale_appointment_detail_schema,
   category_schema,
   movement_schema,
   stock_schema,

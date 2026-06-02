@@ -16,11 +16,11 @@ import supplier_seeder from "./seeders/supplier.seeder"
 import stock_seeder from "./seeders/stock.seeder"
 import sale_seeder from "./seeders/sale.seeder"
 import sale_product_detail_seeder from "./seeders/sale_product_detail.seeder"
-import sale_treatment_detail_seeder from "./seeders/sale_treatment_detail.seeder"
 import appointment_seeder from "./seeders/appointment.seeder";
 import wishlist_seeder from "./seeders/wishlist.seeder";
 import * as schema from "./schema"
 import notification_seeder from "./seeders/notification.seeder";
+import sale_appointment_detail_seeder from "./seeders/sale_appointment_detail.seeder";
 
 const seed_database = async (seeder: Seeder<AnyMySqlTable>) => {
 	const table_name = await getTableName(seeder.type);
@@ -42,8 +42,8 @@ async function main() {
 		await seed_database(movement_seeder)
 		await seed_database(sale_seeder)
 		await seed_database(sale_product_detail_seeder)
-		await seed_database(sale_treatment_detail_seeder)
 		await seed_database(appointment_seeder)
+		await seed_database(sale_appointment_detail_seeder)
 		await seed_database(wishlist_seeder)
 		await seed_database(notification_seeder)
 		logger.info("Database seeded successfully");

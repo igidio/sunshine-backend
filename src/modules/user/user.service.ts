@@ -4,6 +4,7 @@ import { error_messages } from "~/data/error_messages";
 import type { permissions } from "~/data/permissions";
 import { BcryptHelper } from "~/helpers/bcrypt";
 import type { ReadUserDto, UpdateUserDto, ToggleDisabledUserDto, SetPermissionsUserDto } from "./user.dto";
+import type { user_select } from "./user.schema";
 
 export const user_service = {
 	find: async (params: ReadUserDto) => {
@@ -19,7 +20,7 @@ export const user_service = {
 		};
 	},
 	find_one: async (id: number) => {
-		const result = await user_repository.find_one({id});
+		const result = await user_repository.find_one({id}) as user_select | null;
 		if (!result) throw new ServerError(error_messages.user_not_found, 404);
 		return result;
 	},
