@@ -14,6 +14,7 @@ import { treatment_routes } from "./modules/treatment/treatment.routes";
 import { appointment_routes } from "./modules/appointment/appointment.routes";
 import { user_routes } from "./modules/user/user.routes";
 import { customer_routes } from "./modules/customer/customer.routes";
+import wishlist_routes from "./modules/wishlist/wishlist.routes";
 import staticPlugin from "@elysiajs/static";
 const app = new Elysia()
   .error({ Error })
@@ -35,6 +36,7 @@ const app = new Elysia()
   .use(appointment_routes)
   .use(user_routes)
   .use(customer_routes)
+  .use(wishlist_routes)
   .get("/", () => "Hello Elysia").listen(envs.port);
 
 console.log(
