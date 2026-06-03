@@ -177,6 +177,7 @@ export const appointment_service = {
 		if (!has_updates) throw new ServerError(error_messages.nothing_to_update, 400);
 
 		const current_appointment = await appointment_repository.find_one(id);
+		if (current_appointment?.sale_appointment_detail) throw new ServerError(error_messages.appointment_already_attended, 400);
 		if (!current_appointment) throw new ServerError(error_messages.appointment_not_found, 404);
 		const next_customer_id = data.customer_id ?? current_appointment.customer_id;
 		const next_treatment_id = data.treatment_id ?? current_appointment.treatment_id;

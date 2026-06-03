@@ -46,6 +46,7 @@ export const appointment_repository = {
 			with: {
 				customer: { with: { profile: true } },
 				treatment: true,
+				sale_appointment_detail: true
 			},
 			orderBy: { date: "asc", time_start: "asc" },
 			limit: query.limit,
@@ -62,7 +63,9 @@ export const appointment_repository = {
 	find_one: async (id: number, tx?: DbTransaction) => {
 		const database = tx || db;
 		return await database.query.appointment_schema.findFirst({
-			with: { customer: true, treatment: true },
+			with: {
+				customer: true, treatment: true, sale_appointment_detail: true
+			},
 			where: {
 				id: { eq: id },
 				deleted_at: { isNull: true },

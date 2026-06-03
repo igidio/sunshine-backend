@@ -1,5 +1,6 @@
 import { defineRelations } from "drizzle-orm";
 import * as schemas from "~/database/schema";
+import { sale_appointment_detail_schema } from "~/database/schema";
 
 export const relations = defineRelations(schemas, (r) => ({
   profile_schema: {
@@ -131,6 +132,10 @@ export const relations = defineRelations(schemas, (r) => ({
     treatment: r.one.treatment_schema({
       from: r.appointment_schema.treatment_id,
       to: r.treatment_schema.id,
+    }),
+    sale_appointment_detail: r.one.sale_appointment_detail_schema({
+      from: r.appointment_schema.id,
+      to: r.sale_appointment_detail_schema.appointment_id,
     }),
   },
   notification_schema: {
