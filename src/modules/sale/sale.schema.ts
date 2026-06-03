@@ -1,8 +1,6 @@
-import { int, mysqlEnum, mysqlTable, real, timestamp } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, real, timestamp, varchar } from "drizzle-orm/mysql-core";
 import { customer_schema } from "../customer/customer.schema";
 import { product_schema } from "../product/product.schema";
-import { user_schema } from "../user/user.schema";
-import { treatment_schema } from "../treatment/treatment.schema";
 import { appointment_schema } from "../appointment/appointment.schema";
 
 export const sale_payment_method = ["cash", "card", "transfer"] as const;
@@ -13,7 +11,8 @@ export const sale_schema = mysqlTable("sale", {
   customer_id: int("customer_id").notNull().references(() => customer_schema.id),
   total: real({ precision: 10, scale: 2 }).notNull(),
   payment_method: mysqlEnum("payment_method", sale_payment_method).notNull(),
-  created_at: timestamp().defaultNow()
+  created_at: timestamp().defaultNow(),
+  bill: varchar("bill", { length: 255 }).notNull(),
 })
 
 export const sale_product_detail_schema = mysqlTable("sale_product_detail", {

@@ -159,4 +159,12 @@ export const sale_repository = {
 			.where(eq(sale_appointment_detail_schema.sale_id, sale_id))
 			.execute();
 	},
+
+	update_bill: async (id: number, bill: string) => {
+		await db
+			.update(sale_schema)
+			.set({ bill })
+			.where(eq(sale_schema.id, id))
+			.execute();
+	},
 };
