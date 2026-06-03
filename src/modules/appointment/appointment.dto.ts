@@ -1,5 +1,5 @@
 import z from "zod";
-import { PaginationTypeSchema } from "~/helpers/types";
+import { IdsSchema, PaginationTypeSchema } from "~/helpers/types";
 
 const appointment_time_schema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
 	message: "La hora proporcionada no es válida. Usa el formato HH:MM:SS.",
@@ -11,6 +11,7 @@ export const ReadAppointmentDtoSchema = PaginationTypeSchema.extend({
 	to: z.coerce.date().optional(),
 	customer_id: z.coerce.number().int().positive().optional(),
 	treatment_id: z.coerce.number().int().positive().optional(),
+	ids: IdsSchema,
 });
 
 export type ReadAppointmentDto = z.infer<typeof ReadAppointmentDtoSchema>;

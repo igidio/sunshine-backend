@@ -1,6 +1,6 @@
 import db from "~/database";
 import type { ModelWhere } from "~/helpers/types";
-import { and, count, eq, gte, isNull, lte, type SQL } from "drizzle-orm";
+import { and, count, eq, gte, inArray, isNull, lte, type SQL } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 import type { ReadAppointmentDto } from "./appointment.dto";
 import { appointment_schema, type appointment_insert } from "./appointment.schema";
@@ -22,6 +22,7 @@ const build_where_query = (query: ReadAppointmentDto): AppointmentWhereConfig =>
 				...(query.to && { lte: format_date(query.to) }),
 			},
 		}),
+		...(query.ids && query.ids.length > 0 && { id: { in: query.ids } }),
 	};
 };
 
@@ -33,6 +34,7 @@ const build_where = (query: ReadAppointmentDto): SQL | undefined => {
 	if (query.treatment_id) conditions.push(eq(appointment_schema.treatment_id, query.treatment_id));
 	if (query.from) conditions.push(gte(appointment_schema.date, format_date(query.from)));
 	if (query.to) conditions.push(lte(appointment_schema.date, format_date(query.to)));
+	if (query.ids && query.ids.length > 0) conditions.push(inArray(appointment_schema.id, query.ids));
 
 	return and(...conditions);
 };

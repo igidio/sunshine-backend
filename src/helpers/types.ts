@@ -33,3 +33,13 @@ export const ForceArrayPreprocess = <T extends z.ZodTypeAny>(schema: T) => z.pre
 	(val) => (Array.isArray(val) ? val : [val]),
 	z.array(schema)
 );
+
+export const IdsSchema = z.preprocess(
+	(val) => {
+		if (val === undefined || val === null) return undefined;
+		if (Array.isArray(val)) return val;
+		if (typeof val === "string") return val.split(",").map((v) => v.trim()).filter(Boolean);
+		return [val];
+	},
+	z.array(z.coerce.number().int().positive()).optional()
+);

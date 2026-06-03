@@ -27,7 +27,8 @@ export const build_where_query = (pagination: ReadProductDto): ProductWhereConfi
 				...(pagination.max_price !== undefined && { lte: pagination.max_price })
 			}
 		},
-		...( pagination.category_id !== undefined && { category_id: { eq: pagination.category_id } } )
+		...( pagination.category_id !== undefined && { category_id: { eq: pagination.category_id } } ),
+		...(pagination.ids && pagination.ids.length > 0 && { id: { in: pagination.ids } }),
 	}
 }
 
@@ -59,6 +60,9 @@ export const build_where = (pagination: ReadProductDto): SQL | undefined => {
 
 	if (pagination.category_id !== undefined)
 		conditions.push(eq(product_schema.category_id, pagination.category_id));
+
+	if (pagination.ids && pagination.ids.length > 0)
+		conditions.push(inArray(product_schema.id, pagination.ids));
 
 	return and(...conditions);
 };
