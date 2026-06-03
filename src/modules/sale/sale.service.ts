@@ -7,6 +7,7 @@ import { product_service } from "../product/product.service";
 import { appointment_service } from "../appointment/appointment.service";
 import db from "~/database";
 import type { sale_select } from "./sale.schema";
+import { bill_service } from "../bill/bill.service";
 
 export const sale_service = {
 	find: async (query: ReadSaleDto) => {
@@ -29,14 +30,12 @@ export const sale_service = {
 	},
 
 	create: async (data: CreateSaleDto) => {
-		// Validate customer exists
 		await customer_service.find_one(data.customer_id);
 
 		let total = 0;
 		const product_details: { product_id: number; quantity: number; unit_price: number }[] = [];
 		const appointment_details: { appointment_id: number; price: number }[] = [];
 
-		// Fetch products and sum their prices
 		if (data.product_ids && data.product_ids.length > 0) {
 			const products_result = await product_service.find_all({
 				ids: data.product_ids,
@@ -56,7 +55,6 @@ export const sale_service = {
 			}
 		}
 
-		// Fetch appointments and sum their treatment prices
 		if (data.appointment_ids && data.appointment_ids.length > 0) {
 			for (const appointment_id of data.appointment_ids) {
 				const appointment = await appointment_service.find_one(appointment_id);
@@ -70,7 +68,6 @@ export const sale_service = {
 			}
 		}
 
-		// Create sale within a transaction
 		const result = await db.transaction(async (tx) => {
 			const sale = await sale_repository.create(
 				{
@@ -101,6 +98,9 @@ export const sale_service = {
 			if (!created_sale) throw new ServerError(error_messages.sale_create_failed, 500);
 			return created_sale;
 		});
+
+		const { bill } = await bill_service.generate(result);
+		await sale_service.update_bill(result.id, bill);
 
 		return result;
 	},
@@ -145,7 +145,6 @@ export const sale_service = {
 				}
 			}
 
-			// Handle appointment replacement
 			if (data.appointment_ids !== undefined) {
 				await sale_repository.delete_appointment_details(id, tx);
 
@@ -171,7 +170,6 @@ export const sale_service = {
 				}
 			}
 
-			// Update sale record
 			const update_data: Partial<sale_select> = { total };
 			if (data.payment_method !== undefined) {
 				update_data.payment_method = data.payment_method;
@@ -187,4 +185,8 @@ export const sale_service = {
 			return updated;
 		});
 	},
+
+	update_bill: async (id: number, bill_filename: string) => {
+		return await sale_repository.update(id, { bill: bill_filename });
+	}
 };

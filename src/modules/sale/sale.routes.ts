@@ -4,6 +4,7 @@ import { plugin_auth } from "~/plugins/auth";
 import { CreateSaleDtoSchema, ReadSaleDtoSchema, UpdateSaleDtoSchema } from "./sale.dto";
 import { sale_service } from "./sale.service";
 import { bill_service } from "../bill/bill.service";
+import { error_messages } from "~/data/error_messages";
 
 export const sale_routes = new Elysia({
 	prefix: "/sale",
@@ -45,7 +46,9 @@ export const sale_routes = new Elysia({
 	})
 
 	.post("/:id/bill", async ({ params }) => {
-		return await bill_service.generate(params.id);
+		const sale = await sale_service.find_one(params.id);		
+		const { bill } = await bill_service.generate(sale);
+		return sale_service.update_bill(params.id, bill);
 	}, {
 		auth: true,
 		permission: "SALE",
@@ -54,7 +57,8 @@ export const sale_routes = new Elysia({
 	})
 
 	.get("/:id/bill", async ({ params }) => {
-		return await bill_service.get(params.id);
+		const sale = await sale_service.find_one(params.id);
+		return await bill_service.get(sale);
 	}, {
 		auth: true,
 		params: IdSchema,

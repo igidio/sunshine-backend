@@ -1,5 +1,6 @@
 import { int, mysqlTable, timestamp, varchar } from "drizzle-orm/mysql-core";
 import { profile_schema } from "~/database/schema";
+import type { profile_select } from "../profile/profile.schema";
 
 export const customer_schema = mysqlTable("customer", {
 	id: int("id").autoincrement().primaryKey(),
@@ -12,4 +13,4 @@ export const customer_schema = mysqlTable("customer", {
 });
 
 export type customer_insert = typeof customer_schema.$inferInsert;
-export type customer_select = typeof customer_schema.$inferSelect;
+export type customer_select = typeof customer_schema.$inferSelect & { profile: profile_select };

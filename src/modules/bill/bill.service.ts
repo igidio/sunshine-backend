@@ -4,13 +4,16 @@ import jsPDF from "jspdf";
 import { autoTable } from 'jspdf-autotable';
 import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
-import { sale_repository } from "../sale/sale.repository";
 import { BILLS_DIR, payment_method_labels } from "./bill.data";
+import type { sale_select } from "../sale/sale.schema";
+import { sale_service } from "../sale/sale.service";
+
+type sale = Awaited<ReturnType<typeof sale_service.find_one>>;
 
 export const bill_service = {
-	generate: async (sale_id: number) => {
-		const sale = await sale_repository.find_one(sale_id);
+	generate: async (sale?: sale) => {
 		if (!sale) throw new ServerError(error_messages.sale_not_found, 404);
+		if (sale.bill) throw new ServerError(error_messages.bill_already_exists, 400);
 
 		if (!existsSync(BILLS_DIR)) {
 			mkdirSync(BILLS_DIR, { recursive: true });
@@ -38,15 +41,15 @@ export const bill_service = {
 		doc.setFontSize(11);
 		doc.setFont("helvetica", "normal");
 		doc.text(`Venta ID: ${sale.id}`, 14, 66);
-		const fecha = sale.created_at
+		const date = sale.created_at
 			? new Date(sale.created_at).toLocaleDateString("es-BO")
 			: "N/A";
-		doc.text(`Fecha: ${fecha}`, 14, 73);
+		doc.text(`Fecha: ${date}`, 14, 73);
 
-		const customerName = sale.customer?.profile
+		const customer_name = sale.customer?.profile
 			? `${sale.customer.profile.first_name} ${sale.customer.profile.last_name}`
 			: "N/A";
-		doc.text(`Cliente: ${customerName}`, 14, 80);
+		doc.text(`Cliente: ${customer_name}`, 14, 80);
 		doc.text(`M\u00e9todo de pago: ${payment_method_labels[sale.payment_method]}`, 14, 87);
 
 		let current_Y = 95;
@@ -57,8 +60,8 @@ export const bill_service = {
 			doc.text("Productos", 14, current_Y);
 			current_Y += 8;
 
-			const productColumns = ["ID", "Nombre", "Cantidad", "Precio Unit.", "Subtotal"];
-			const productRows = sale.product_details.map((pd) => [
+			const product_columns = ["ID", "Nombre", "Cantidad", "Precio Unit.", "Subtotal"];
+			const product_rows = sale.product_details.map((pd) => [
 				String(pd.product_id),
 				(pd.product as any)?.name ?? "N/A",
 				String(pd.quantity),
@@ -68,8 +71,8 @@ export const bill_service = {
 
 			autoTable(doc, {
 				startY: current_Y,
-				head: [productColumns],
-				body: productRows,
+				head: [product_columns],
+				body: product_rows,
 				theme: "grid",
 				headStyles: { fillColor: [67, 158, 234] },
 				styles: { fontSize: 10, cellPadding: 3 },
@@ -117,15 +120,10 @@ export const bill_service = {
 		const filepath = join(BILLS_DIR, filename);
 		const pdf_buffer = Buffer.from(doc.output("arraybuffer"));
 		await Bun.write(filepath, pdf_buffer);
-
-		await sale_repository.update_bill(sale.id, filename);
-
 		return { bill: filename };
 	},
 
-	get: async (sale_id: number) => {
-		const sale = await sale_repository.find_one(sale_id);
-		if (!sale) throw new ServerError(error_messages.sale_not_found, 404);
+	get: async (sale: sale_select) => {
 		if (!sale.bill) throw new ServerError("Factura no encontrada para esta venta", 404);
 
 		const filepath = join(BILLS_DIR, sale.bill);

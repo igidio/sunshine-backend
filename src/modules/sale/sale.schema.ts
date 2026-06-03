@@ -12,7 +12,7 @@ export const sale_schema = mysqlTable("sale", {
   total: real({ precision: 10, scale: 2 }).notNull(),
   payment_method: mysqlEnum("payment_method", sale_payment_method).notNull(),
   created_at: timestamp().defaultNow(),
-  bill: varchar("bill", { length: 255 }).notNull(),
+  bill: varchar("bill", { length: 255 }),
 })
 
 export const sale_product_detail_schema = mysqlTable("sale_product_detail", {
