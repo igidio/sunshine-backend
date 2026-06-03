@@ -38,7 +38,7 @@ export const relations = defineRelations(schemas, (r) => ({
     }),
 
     product_details: r.many.sale_product_detail_schema(),
-    treatment_details: r.many.sale_appointment_detail_schema(),
+    appointment_details: r.many.sale_appointment_detail_schema(),
 
     customer: r.one.customer_schema({
       from: r.sale_schema.customer_id,

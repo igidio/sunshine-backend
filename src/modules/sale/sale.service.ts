@@ -165,8 +165,8 @@ export const sale_service = {
 
 					await sale_repository.create_appointment_details(appointment_details, tx);
 				}
-			} else if (current_sale.treatment_details) {
-				for (const td of current_sale.treatment_details) {
+			} else if (current_sale.appointment_details) {
+				for (const td of current_sale.appointment_details) {
 					total += Number(td.price);
 				}
 			}

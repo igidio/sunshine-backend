@@ -1,8 +1,10 @@
 import db from "~/database";
 import type { ReadSaleDto } from "./sale.dto";
 import type { ModelWhere } from "~/helpers/types";
-import { and, count, eq, inArray, type SQL } from "drizzle-orm";
+import { and, count, eq, gte, inArray, like, lte, or, type SQL } from "drizzle-orm";
 import { sale_schema, sale_product_detail_schema, sale_appointment_detail_schema, type sale_insert, type sale_product_detail_insert, type sale_appointment_detail_insert } from "./sale.schema";
+import { customer_schema } from "../customer/customer.schema";
+import { profile_schema } from "../profile/profile.schema";
 
 type SaleWhereConfig = ModelWhere<"sale_schema">;
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -10,7 +12,30 @@ type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 const build_where_query = (query: ReadSaleDto): SaleWhereConfig => {
 	return {
 		...(query.customer_id && { customer_id: { eq: query.customer_id } }),
-		...(query.ids && query.ids.length > 0 && { id: { inArray: query.ids } }),
+		...(query.ids && query.ids.length > 0 && { id: { in: query.ids } }),
+		...(query.payment_method && { payment_method: { eq: query.payment_method } }),
+		...((query.from || query.to) && {
+			created_at: {
+				...(query.from && { gte: query.from }),
+				...(query.to && { lte: query.to }),
+			},
+		}),
+		...{
+			total: {
+				...(query.min_price !== undefined && { gte: query.min_price }),
+				...(query.max_price !== undefined && { lte: query.max_price }),
+			},
+		},
+		...(query.search && {
+			customer: {
+				profile: {
+					OR: [
+						{ first_name: { like: `%${query.search}%` } },
+						{ last_name: { like: `%${query.search}%` } },
+					],
+				},
+			},
+		}),
 	};
 };
 
@@ -19,6 +44,11 @@ const build_where = (query: ReadSaleDto): SQL | undefined => {
 
 	if (query.customer_id) conditions.push(eq(sale_schema.customer_id, query.customer_id));
 	if (query.ids && query.ids.length > 0) conditions.push(inArray(sale_schema.id, query.ids));
+	if (query.payment_method) conditions.push(eq(sale_schema.payment_method, query.payment_method));
+	if (query.from) conditions.push(gte(sale_schema.created_at, query.from));
+	if (query.to) conditions.push(lte(sale_schema.created_at, query.to));
+	if (query.min_price !== undefined) conditions.push(gte(sale_schema.total, query.min_price));
+	if (query.max_price !== undefined) conditions.push(lte(sale_schema.total, query.max_price));
 
 	return and(...conditions);
 };
@@ -31,7 +61,7 @@ export const sale_repository = {
 				product_details: {
 					with: { product: true },
 				},
-				treatment_details: {
+				appointment_details: {
 					with: { appointment: { with: { treatment: true } } },
 				},
 			},
@@ -45,7 +75,28 @@ export const sale_repository = {
 	},
 
 	count: async (query: ReadSaleDto) => {
-		const [result] = await db.select({ total: count() }).from(sale_schema).where(build_where(query));
+		const where_conditions = build_where(query);
+
+		if (query.search) {
+			const search_formatted = `%${query.search}%`;
+			const [result] = await db
+				.select({ total: count() })
+				.from(sale_schema)
+				.innerJoin(customer_schema, eq(sale_schema.customer_id, customer_schema.id))
+				.innerJoin(profile_schema, eq(customer_schema.profile_id, profile_schema.id))
+				.where(
+					and(
+						where_conditions,
+						or(
+							like(profile_schema.first_name, search_formatted),
+							like(profile_schema.last_name, search_formatted),
+						),
+					),
+				);
+			return result?.total ?? 0;
+		}
+
+		const [result] = await db.select({ total: count() }).from(sale_schema).where(where_conditions);
 		return result?.total ?? 0;
 	},
 
@@ -57,7 +108,7 @@ export const sale_repository = {
 				product_details: {
 					with: { product: true },
 				},
-				treatment_details: {
+				appointment_details: {
 					with: { appointment: { with: { treatment: true } } },
 				},
 			},
