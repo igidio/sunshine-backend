@@ -2,11 +2,11 @@ import z from "zod";
 import type db from "~/database";
 
 export const PaginationTypeSchema = z.object({
-	limit: z.coerce.number().optional().default(10),
-	offset: z.coerce.number().optional().default(0),
-	search: z.string().optional(),
-	sort_by: z.string().optional(),
-	order: z.enum(['asc', 'desc']).optional(),
+	limit: z.coerce.number().int().min(1).max(100).optional().default(10).describe('Cantidad de registros por página'),
+	offset: z.coerce.number().int().min(0).optional().default(0).describe('Número de registros a saltar'),
+	search: z.string().optional().describe('Texto de búsqueda por nombre o descripción'),
+	sort_by: z.string().optional().describe('Campo por el cual ordenar'),
+	order: z.enum(['asc', 'desc']).optional().describe('Dirección del ordenamiento'),
 })
 
 export type PaginationType = z.infer<typeof PaginationTypeSchema>;
