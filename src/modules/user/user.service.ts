@@ -76,5 +76,11 @@ export const user_service = {
 			throw new ServerError(error_messages.user_forbidden, 403);
 		const parsed_permissions = JSON.parse(user.permissions);
 		return parsed_permissions.includes(permission);
+	},
+	generate_chat_access: async (id: number) => {
+		const plain_key = crypto.randomUUID();
+		const hashed_key = await Hasher.hash_password(plain_key);
+		await user_repository.set_chat_access(id, hashed_key);
+		return { chat_access: plain_key };
 	}
 }

@@ -8,10 +8,13 @@ type User = InferInsertModel<typeof user_schema>;
 
 const users_with_hashed_passwords = async (users: User[]) => {
 	return await Promise.all(users.map(async (user) => {
+		const plain_key = crypto.randomUUID();
+		const hashed_key = await Hasher.hash_password(plain_key);
+
 		return {
 			...user,
 			password: await Hasher.hash_password(user.password),
-			chat_access: await Hasher.hash_password(user.username)
+			chat_access: Hasher.hash_token(hashed_key)
 		}
 	}))
 }

@@ -121,5 +121,15 @@ export const user_repository = {
 			.where(eq(user_schema.id, id))
 			.execute();
 		return result;
+	},
+
+	set_chat_access: async (id: number, chat_access: string, tx?: MySql2Database) => {
+		const database = tx || db;
+		const [result] = await database
+			.update(user_schema)
+			.set({ chat_access })
+			.where(eq(user_schema.id, id))
+			.execute();
+		return result;
 	}
 }

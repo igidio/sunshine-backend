@@ -1,6 +1,5 @@
 import { int, mysqlTable, timestamp, varchar, mysqlEnum } from "drizzle-orm/mysql-core";
 import { profile_schema } from "../profile/profile.schema";
-import { permission } from "process";
 import { text } from "drizzle-orm/mssql-core";
 
 export const user_roles = ["superuser", "admin", "employer", "customer"] as const;

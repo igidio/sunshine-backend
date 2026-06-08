@@ -2,11 +2,11 @@ import Elysia from "elysia";
 import { plugin_auth } from "~/plugins/auth";
 import z from "zod";
 import { user_service } from "./user.service";
-import { 
-	ReadUserDtoSchema, 
-	UpdateUserDtoSchema, 
-	ToggleDisabledUserDtoSchema, 
-	SetPermissionsUserDtoSchema 
+import {
+	ReadUserDtoSchema,
+	UpdateUserDtoSchema,
+	ToggleDisabledUserDtoSchema,
+	SetPermissionsUserDtoSchema
 } from "./user.dto";
 import { IdSchema } from "~/helpers/types";
 
@@ -53,4 +53,14 @@ export const user_routes = new Elysia({
 		role: ["superuser", "admin"],
 		body: SetPermissionsUserDtoSchema,
 		params: IdSchema,
-	});
+	})
+
+	.post("/chat-access", async ({ user }) => {
+		return await user_service.generate_chat_access(user.id);
+	}, {
+		auth: true,
+		role: ["superuser", "admin", "employer"],				
+		params: IdSchema,
+	})
+
+	;
