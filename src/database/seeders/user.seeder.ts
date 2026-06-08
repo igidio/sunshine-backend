@@ -1,6 +1,6 @@
 import type { InferInsertModel } from "drizzle-orm";
 import { user_schema } from "../schema";
-import { BcryptHelper } from "~/helpers/bcrypt";
+import { Hasher } from "~/helpers/hasher";
 import { create_faker_user } from "../factories/user.factory";
 import type { user_insert } from "~/modules/user/user.schema";
 
@@ -10,7 +10,8 @@ const users_with_hashed_passwords = async (users: User[]) => {
 	return await Promise.all(users.map(async (user) => {
 		return {
 			...user,
-			password: await BcryptHelper.hash_password(user.password)
+			password: await Hasher.hash_password(user.password),
+			chat_access: await Hasher.hash_password(user.username)
 		}
 	}))
 }

@@ -2,7 +2,7 @@ import { user_repository } from "./user.repository";
 import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
 import type { permissions } from "~/data/permissions";
-import { BcryptHelper } from "~/helpers/bcrypt";
+import { Hasher } from "~/helpers/hasher";
 import type { ReadUserDto, UpdateUserDto, ToggleDisabledUserDto, SetPermissionsUserDto } from "./user.dto";
 import type { user_select } from "./user.schema";
 
@@ -33,7 +33,7 @@ export const user_service = {
 		
 		const update_data = { ...data };
 		if (update_data.password) {
-			update_data.password = await BcryptHelper.hash_password(update_data.password);
+			update_data.password = await Hasher.hash_password(update_data.password);
 		}
 
 		const result = await user_repository.update(id, update_data);

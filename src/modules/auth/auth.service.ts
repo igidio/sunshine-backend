@@ -4,7 +4,7 @@ import type { CreateProfileDto } from "../profile/profile.dto";
 import { auth_repository } from "./auth.repository";
 import jwt from "@elysia/jwt";
 import { user_repository } from "../user/user.repository";
-import { BcryptHelper } from "~/helpers/bcrypt";
+import { Hasher } from "~/helpers/hasher";
 import { error_messages } from "~/data/error_messages";
 import { ServerError } from "~/classes/server_error";
 
@@ -25,7 +25,7 @@ export const auth_service = {
 		if (!user) {
 			throw new ServerError(error_messages.invalid_credentials, 400);
 		}
-		const is_match = await BcryptHelper.match_password(password, user.password);
+		const is_match = await Hasher.match_password(password, user.password);
 		if (!is_match) {
 			throw new ServerError(error_messages.invalid_password, 400);
 		}
