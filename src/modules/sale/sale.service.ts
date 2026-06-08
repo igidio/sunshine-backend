@@ -102,7 +102,7 @@ export const sale_service = {
 		const { bill } = await bill_service.generate(result);
 		await sale_service.update_bill(result.id, bill);
 
-		return result;
+		return { ...result, bill };
 	},
 
 	update: async (id: number, data: UpdateSaleDto) => {
