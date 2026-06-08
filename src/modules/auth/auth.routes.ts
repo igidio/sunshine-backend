@@ -9,6 +9,8 @@ import bearer from "@elysia/bearer";
 import { error_messages } from "~/data/error_messages";
 import { user_service } from "../user/user.service";
 import { ServerError } from "~/classes/server_error";
+import { IdSchema } from "~/helpers/types";
+import { plugin_auth } from "~/plugins/auth";
 
 export const auth_routes = new Elysia({
 	prefix: "/auth"
@@ -50,12 +52,18 @@ export const auth_routes = new Elysia({
 
 	.post("/refresh", async ({ jwt, jwt_refresh, bearer, body }) => {
 		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
-		
+
 		return await auth_service.refresh(body.refresh_token, jwt_refresh, jwt);
 	}, {
 		body: z.object({
 			refresh_token: z.string(),
 		})
+	})
+
+	.post("/chat-access", async ({ jwt, bearer }) => {
+		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
+		const auth_info = await auth_service.get_authenticated_user(bearer, jwt);
+		return await auth_service.generate_chat_access(auth_info.user.id);
 	})
 
 	;

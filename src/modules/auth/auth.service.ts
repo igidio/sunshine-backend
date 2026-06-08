@@ -1,4 +1,3 @@
-import type z from "zod";
 import type { CreateUserDto } from "../user/user.dto";
 import type { CreateProfileDto } from "../profile/profile.dto";
 import { auth_repository } from "./auth.repository";
@@ -42,7 +41,7 @@ export const auth_service = {
 	},
 
 	get_authenticated_user: async (bearer: string, jwt: JwtDecorator) => {
-		const payload = await jwt.verify(bearer);		
+		const payload = await jwt.verify(bearer);
 		if (payload) {
 			return { user: payload };
 		} else {
@@ -57,11 +56,18 @@ export const auth_service = {
 			const new_token = await jwt.sign(rest);
 			let refresh_token;
 			if (remember_me) {
-				refresh_token = await jwt_refresh.sign({...rest, remember_me });
+				refresh_token = await jwt_refresh.sign({ ...rest, remember_me });
 			}
 			return { access_token: new_token, refresh_token };
 		} else {
 			throw new ServerError(error_messages.invalid_token, 400);
 		}
+	},
+
+	generate_chat_access: async (id: number) => {
+		const plain_key = crypto.randomUUID();
+		const hashed_key = await Hasher.hash_password(plain_key);
+		await user_repository.set_chat_access(id, hashed_key);
+		return { chat_access: plain_key };
 	}
 }

@@ -53,14 +53,4 @@ export const user_routes = new Elysia({
 		role: ["superuser", "admin"],
 		body: SetPermissionsUserDtoSchema,
 		params: IdSchema,
-	})
-
-	.post("/chat-access", async ({ user }) => {
-		return await user_service.generate_chat_access(user.id);
-	}, {
-		auth: true,
-		role: ["superuser", "admin", "employer"],				
-		params: IdSchema,
-	})
-
-	;
+	});
