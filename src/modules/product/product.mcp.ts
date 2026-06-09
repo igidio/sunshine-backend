@@ -38,8 +38,8 @@ export const register_products_tools = (server: McpServer) => {
 				'Soporta filtrado por categoría, rango de precios, rango de stock, estado (active/inactive) y búsqueda por nombre o descripción.',
 			inputSchema: ReadProductDtoSchema,
 		},
-		async (params) => {
-			const result = await product_service.find_all(params);
+		async (params, extra) => {
+			const result = await product_service.find_all(params)
 			return {
 				content: [
 					{
