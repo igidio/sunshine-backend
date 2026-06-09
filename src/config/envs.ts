@@ -12,6 +12,7 @@ interface Env_vars {
 	openai_tool_model?: string;
 	use_mailer_service?: boolean;
 	mailer_url?: string;
+	telegram_bot_token?: string;
 }
 
 const env_schema = z.object({
@@ -26,6 +27,7 @@ const env_schema = z.object({
 	openai_tool_model: z.string().optional(),
 	use_mailer_service: z.coerce.boolean().optional(),
 	mailer_url: z.url().optional(),
+	telegram_bot_token: z.string().optional(),
 });
 
 const parseResult = env_schema.safeParse({
@@ -40,6 +42,7 @@ const parseResult = env_schema.safeParse({
 	openai_tool_model: process.env.OPENAI_TOOL_MODEL,
 	use_mailer_service: process.env.USE_MAILER_SERVICE,
 	mailer_url: process.env.MAILER_URL,
+	telegram_bot_token: process.env.TELEGRAM_BOT_TOKEN,
 });
 
 if (!parseResult.success) {
