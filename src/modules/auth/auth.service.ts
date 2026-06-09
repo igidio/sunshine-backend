@@ -66,8 +66,9 @@ export const auth_service = {
 
 	generate_chat_access: async (id: number) => {
 		const plain_key = crypto.randomUUID();
-		const hashed_key = await Hasher.hash_password(plain_key);
+		const hashed_key = await Hasher.hash_token(plain_key);
 		await user_repository.set_chat_access(id, hashed_key);
 		return { chat_access: plain_key };
 	}
+	
 }

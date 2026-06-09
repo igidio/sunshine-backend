@@ -20,17 +20,17 @@ export const user_service = {
 		};
 	},
 	find_one: async (id: number) => {
-		const result = await user_repository.find_one({id}) as user_select | null;
+		const result = await user_repository.find_one({ id }) as user_select | null;
 		if (!result) throw new ServerError(error_messages.user_not_found, 404);
 		return result;
 	},
 	update: async (id: number, data: UpdateUserDto) => {
 		const has_updates = Object.keys(data).length > 0;
 		if (!has_updates) throw new ServerError(error_messages.nothing_to_update, 400);
-		
-		const current_user = await user_repository.find_one({id});
+
+		const current_user = await user_repository.find_one({ id });
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
-		
+
 		const update_data = { ...data };
 		if (update_data.password) {
 			update_data.password = await Hasher.hash_password(update_data.password);
@@ -44,7 +44,7 @@ export const user_service = {
 		return await user_service.find_one(id);
 	},
 	toggle_disabled: async (id: number, data: ToggleDisabledUserDto) => {
-		const current_user = await user_repository.find_one({id});
+		const current_user = await user_repository.find_one({ id });
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 
 		let target_disabled_at: Date | null = null;
@@ -58,7 +58,7 @@ export const user_service = {
 		return await user_service.find_one(id);
 	},
 	set_permissions: async (id: number, data: SetPermissionsUserDto) => {
-		const current_user = await user_repository.find_one({id});
+		const current_user = await user_repository.find_one({ id });
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 
 		const permissions_string = JSON.stringify(data.permissions);
@@ -66,7 +66,7 @@ export const user_service = {
 		return await user_service.find_one(id);
 	},
 	check_permissions: async (id: number, permission: typeof permissions[number]) => {
-		const user = await user_repository.find_one({id});
+		const user = await user_repository.find_one({ id });
 		if (!user) throw new ServerError(error_messages.user_not_found, 404);
 		if (["superuser", "admin"].includes(user.role)) return true;
 		if (user.role === "customer") {
@@ -76,5 +76,11 @@ export const user_service = {
 			throw new ServerError(error_messages.user_forbidden, 403);
 		const parsed_permissions = JSON.parse(user.permissions);
 		return parsed_permissions.includes(permission);
-	}
+	},
+	find_by_chat_access: async (unhashed_key: string) => {
+		console.log("find_by_chat_access", unhashed_key)
+		const hashed = Hasher.hash_token(unhashed_key);
+		console.log("Hashed key:", hashed);
+		return await user_repository.find_one({ chat_access: hashed }, undefined, false);
+	},
 }

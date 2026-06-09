@@ -72,7 +72,7 @@ export const user_repository = {
 		return result!.total;
 	},
 
-	find_one: async ({ id, username, email }: { id?: number, username?: string, email?: string }, tx?: DbTransaction, exclude_password: boolean = true) => {
+	find_one: async ({ id, username, email, chat_access }: { id?: number, username?: string, email?: string, chat_access?: string }, tx?: DbTransaction, exclude_password: boolean = true) => {
 		const database = tx || db;
 		const user = await database.query.user_schema.findFirst({
 			...(exclude_password ? { columns: { password: false } } : {}),
@@ -87,6 +87,9 @@ export const user_repository = {
 					{
 						email: { eq: email },
 					},
+					{
+						chat_access: { eq: chat_access },
+					}
 				]
 			}
 		});
