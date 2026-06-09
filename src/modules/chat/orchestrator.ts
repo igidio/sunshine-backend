@@ -38,7 +38,6 @@ export class ChatOrchestrator {
     if (!envs.openai_tool_model) throw new ServerError(error_messages.openai_tool_model_not_defined);
 
     const client = await this.init_mcp_client();
-
     const mcp_tools = await client.listTools();
     const openai_tools = mcp_tools.tools.map(tool => ({
       type: "function" as const,
@@ -87,8 +86,6 @@ export class ChatOrchestrator {
       const function_name = tool_call.function.name;
       const function_args = JSON.parse(tool_call.function.arguments);
 
-      console.log(`Ejecutando herramienta MCP: ${function_name}`, function_args);
-      // send notification of tool execution
       global_events.emit('new_notification', `Ejecutando herramienta: ${function_name}`);
 
       try {

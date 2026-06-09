@@ -52,6 +52,8 @@ export const error_messages = {
 	sale_create_failed: "No se pudo crear la venta. Por favor, verifica los datos proporcionados e intenta nuevamente.",
 	sale_product_not_found: "Producto no encontrado en la venta. Por favor, verifica el ID del producto e intenta nuevamente.",
 	sale_appointment_not_found: "Cita no encontrada en la venta. Por favor, verifica el ID de la cita e intenta nuevamente.",
-	// BILL
+	// bill
 	bill_already_exists: "La venta ya tiene una factura generada. Por favor, verifica el ID de la venta e intenta nuevamente.",
+	// mcp
+	mcp_unauthorized: "El usuario no está autorizado para utilizar esta herramienta. Por favor, verifica tus credenciales e intenta nuevamente.",
 }
