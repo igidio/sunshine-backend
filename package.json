@@ -9,10 +9,14 @@
     "push": "bunx drizzle-kit push"
   },
   "dependencies": {
+    "@ai-sdk/mcp": "^1.0.46",
+    "@ai-sdk/openai": "^3.0.69",
     "@elysia/bearer": "^1.4.4",
     "@elysia/jwt": "^1.4.2",
     "@elysiajs/static": "^1.4.10",
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "ai": "^6.0.199",
+    "ai-sdk-ollama": "^3.8.7",
     "drizzle-orm": "^1.0.0-beta.22",
     "drizzle-seed": "^1.0.0-beta.22",
     "elysia": "latest",
