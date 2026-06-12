@@ -31,7 +31,7 @@ const env_schema = z.object({
 });
 
 const parseResult = env_schema.safeParse({
-	port: process.env.DB_PORT,
+	port: process.env.PORT,
 	db_url: process.env.DB_URL,
 	server_url: process.env.SERVER_URL,
 	jwt_secret: process.env.JWT_SECRET,
