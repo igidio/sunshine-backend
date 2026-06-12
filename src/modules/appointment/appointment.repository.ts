@@ -1,9 +1,10 @@
 import db from "~/database";
 import type { ModelWhere } from "~/helpers/types";
-import { and, count, eq, gte, inArray, isNull, lte, type SQL } from "drizzle-orm";
+import { and, count, eq, gte, inArray, isNull, lte, notInArray, type SQL } from "drizzle-orm";
 import type { MySql2Database } from "drizzle-orm/mysql2";
 import type { ReadAppointmentDto } from "./appointment.dto";
 import { appointment_schema, type appointment_insert } from "./appointment.schema";
+import { sale_appointment_detail_schema } from "~/modules/sale/sale.schema";
 
 type AppointmentWhereConfig = ModelWhere<"appointment_schema">;
 type DbTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -23,6 +24,8 @@ const build_where_query = (query: ReadAppointmentDto): AppointmentWhereConfig =>
 			},
 		}),
 		...(query.ids && query.ids.length > 0 && { id: { in: query.ids } }),
+		...(query.show_attended === true && { sale_appointment_detail: { id: { isNotNull: true } } }),
+		...(query.show_attended === false && { NOT: { sale_appointment_detail: { id: { isNotNull: true } } } }),
 	};
 };
 
@@ -36,6 +39,14 @@ const build_where = (query: ReadAppointmentDto): SQL | undefined => {
 	if (query.to) conditions.push(lte(appointment_schema.date, format_date(query.to)));
 	if (query.ids && query.ids.length > 0) conditions.push(inArray(appointment_schema.id, query.ids));
 
+	if (query.show_attended === true) {
+		const subQuery = db.select({ id: sale_appointment_detail_schema.appointment_id }).from(sale_appointment_detail_schema);
+		conditions.push(inArray(appointment_schema.id, subQuery));
+	} else if (query.show_attended === false) {
+		const subQuery = db.select({ id: sale_appointment_detail_schema.appointment_id }).from(sale_appointment_detail_schema);
+		conditions.push(notInArray(appointment_schema.id, subQuery));
+	}
+
 	return and(...conditions);
 };
 
@@ -46,11 +57,12 @@ export const appointment_repository = {
 			with: {
 				customer: { with: { profile: true } },
 				treatment: true,
-				sale_appointment_detail: true
+				sale_appointment_detail: true,
 			},
 			orderBy: { date: "asc", time_start: "asc" },
 			limit: query.limit,
 			offset: query.offset,
+			//where: build_where_query(query),
 			where: build_where_query(query),
 		});
 	},

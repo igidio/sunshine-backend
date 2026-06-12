@@ -155,6 +155,7 @@ export const appointment_service = {
 			limit: query.limit,
 			offset: query.offset,
 			is_last_page: query.offset + query.limit >= count,
+			show_attended: query.show_attended,
 		};
 	},
 

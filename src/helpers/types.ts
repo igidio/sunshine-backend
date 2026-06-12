@@ -34,6 +34,14 @@ export const ForceArrayPreprocess = <T extends z.ZodTypeAny>(schema: T) => z.pre
 	z.array(schema)
 );
 
+export const BooleanPreprocess = z.preprocess((value) => {
+	if (typeof value === "string") {
+		if (value.toLowerCase() === "true") return true;
+		if (value.toLowerCase() === "false") return false;
+	}
+	return value;
+}, z.boolean())
+
 export const IdsSchema = z.preprocess(
 	(val) => {
 		if (val === undefined || val === null) return undefined;
