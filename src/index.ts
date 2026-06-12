@@ -17,6 +17,7 @@ import { user_routes } from "./modules/user/user.routes";
 import { customer_routes } from "./modules/customer/customer.routes";
 import wishlist_routes from "./modules/wishlist/wishlist.routes";
 import staticPlugin from "@elysiajs/static";
+import { setup_telegram_routes } from "./modules/telegram/telegram.routes";
 const app = new Elysia()
   .error({ Error })
   .use(staticPlugin({
@@ -39,7 +40,14 @@ const app = new Elysia()
   .use(user_routes)
   .use(customer_routes)
   .use(wishlist_routes)
-  .get("/", () => "Hello Elysia").listen(envs.port);
+  .get("/", () => "Hello Elysia").listen({
+    port: envs.port
+  });
+
+
+if (envs.server_url) {
+  app.use(setup_telegram_routes());
+}
 
 console.log(
   `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
