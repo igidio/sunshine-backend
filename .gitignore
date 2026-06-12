@@ -44,3 +44,4 @@ package-lock.json
 .env
 public/uploads/*
 storage
+mcps/localhost/mcp
