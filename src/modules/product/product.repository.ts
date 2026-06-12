@@ -27,6 +27,15 @@ export const build_where_query = (pagination: ReadProductDto): ProductWhereConfi
 				...(pagination.max_price !== undefined && { lte: pagination.max_price })
 			}
 		},
+		...((pagination.min_stock !== undefined || pagination.max_stock !== undefined) && {
+			stock: {
+				deleted_at: { isNull: true },
+				quantity: {
+					...(pagination.min_stock !== undefined && { gte: pagination.min_stock }),
+					...(pagination.max_stock !== undefined && { lte: pagination.max_stock }),
+				},
+			},
+		}),
 		...( pagination.category_id !== undefined && { category_id: { eq: pagination.category_id } } ),
 		...(pagination.ids && pagination.ids.length > 0 && { id: { in: pagination.ids } }),
 	}
@@ -78,6 +87,9 @@ export const product_repository = {
 				images: true,
 				category: true,
 				stock: {
+					orderBy: {
+						quantity: "desc"
+					},
 					where: {
 						deleted_at: {
 							isNull: true
@@ -91,7 +103,7 @@ export const product_repository = {
 					}
 				},
 			},
-			orderBy: {
+			orderBy: {				
 				...query.sort_by && { [query.sort_by]: query.order }
 			},
 			limit: query.limit,
@@ -121,24 +133,19 @@ export const product_repository = {
 
 	count: async (query: ReadProductDto) => {
 		const conditions: (SQL | undefined)[] = [build_where(query)];
-		const stockConditions: (SQL | undefined)[] = [isNull(stock_schema.deleted_at)];
 
-		if (query.min_stock !== undefined) {
-			stockConditions.push(gte(stock_schema.quantity, query.min_stock));
+		if (query.min_stock !== undefined || query.max_stock !== undefined) {
+			const stock_conds: (SQL | undefined)[] = [isNull(stock_schema.deleted_at)];
+			if (query.min_stock !== undefined) stock_conds.push(gte(stock_schema.quantity, query.min_stock));
+			if (query.max_stock !== undefined) stock_conds.push(lte(stock_schema.quantity, query.max_stock));
+			conditions.push(and(...stock_conds));
 		}
-
-		if (query.max_stock !== undefined) {
-			stockConditions.push(lte(stock_schema.quantity, query.max_stock));
-		}
-
-		conditions.push(and(...stockConditions));
 
 		const [result] = await db
 			.select({ total: count() })
 			.from(product_schema)
 			.leftJoin(stock_schema, eq(product_schema.id, stock_schema.product_id))
 			.where(and(...conditions));
-
 
 		return result!.total;
 	},

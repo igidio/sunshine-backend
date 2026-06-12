@@ -59,10 +59,9 @@ export const appointment_repository = {
 				treatment: true,
 				sale_appointment_detail: true,
 			},
-			orderBy: { date: "asc", time_start: "asc" },
+			orderBy: { date: "desc", time_start: "asc" },
 			limit: query.limit,
 			offset: query.offset,
-			//where: build_where_query(query),
 			where: build_where_query(query),
 		});
 	},
