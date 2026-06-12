@@ -5,41 +5,57 @@ import { envs } from "../../config/envs";
 import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
 import { global_events } from "~/helpers/event_bus";
+import { SYSTEM_PROMPT } from "./chat-data";
 
 const openai = new OpenAI({
   baseURL: envs.openai_base_url,
   apiKey: envs.openai_api_key,
 });
 
-export class ChatOrchestrator {
-  private mcp_client: Client | null = null;
+type ChatMessage = { role: string; content: string };
 
-  async init_mcp_client() {
-    if (!envs.server_url) throw new ServerError(error_messages.server_url_not_defined);
+interface BufferedToolCall {
+  id: string;
+  type: "function";
+  function: { name: string; arguments: string };
+}
 
-    if (!this.mcp_client) {
-      const transport = new StreamableHTTPClientTransport(
-        new URL(`${envs.server_url}/mcp`)
-      );
+const TOOL_CALL_TIMEOUT = 55_000;
 
-      this.mcp_client = new Client(
-        { name: "chat-client", version: "1.0.0" },
-        { capabilities: {} }
-      );
+export class OpenAIOrchestrator {
+  private static shared_mcp_client: Client | null = null;
+  private static cached_openai_tools: OpenAI.Chat.ChatCompletionTool[] | null = null;
+  private static init_promise: Promise<Client> | null = null;
 
-      await this.mcp_client.connect(transport);
+  private static async ensure_client(): Promise<Client> {
+    if (this.shared_mcp_client) return this.shared_mcp_client;
+
+    if (!this.init_promise) {
+      this.init_promise = this._init().catch(err => {
+        this.init_promise = null;
+        throw err;
+      });
     }
-    return this.mcp_client;
+
+    return this.init_promise;
   }
 
-  async handle_chat(chat_history: { role: string; content: string }[]): Promise<string> {
+  private static async _init(): Promise<Client> {
+    if (!envs.server_url) throw new ServerError(error_messages.server_url_not_defined);
 
-    if (!envs.openai_language_model) throw new ServerError(error_messages.openai_language_model_not_defined);
-    if (!envs.openai_tool_model) throw new ServerError(error_messages.openai_tool_model_not_defined);
+    const transport = new StreamableHTTPClientTransport(
+      new URL(`${envs.server_url}/mcp`)
+    );
 
-    const client = await this.init_mcp_client();
+    const client = new Client(
+      { name: "chat-client", version: "1.0.0" },
+      { capabilities: {} }
+    );
+
+    await client.connect(transport);
+
     const mcp_tools = await client.listTools();
-    const openai_tools = mcp_tools.tools.map(tool => ({
+    this.cached_openai_tools = mcp_tools.tools.map(tool => ({
       type: "function" as const,
       function: {
         name: tool.name,
@@ -48,180 +64,199 @@ export class ChatOrchestrator {
       },
     }));
 
-    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: "system", content: "Eres un asistente útil que responde a las peticiones usando las herramientas suministradas si es necesario." },
-      ...chat_history.map(entry => {
-        if (entry.role === "function") {
-          return { role: "function" as const, name: "function", content: entry.content };
-        }
+    this.shared_mcp_client = client;
+    return client;
+  }
 
-        return { role: entry.role as "user" | "assistant" | "system", content: entry.content };
-      })
-    ];
-    let response;
+  private static async execute_tool_call(
+    client: Client,
+    tool_call: BufferedToolCall
+  ): Promise<OpenAI.Chat.ChatCompletionToolMessageParam> {
+    const { function: fn } = tool_call;
+    const function_name = fn.name;
+
+    global_events.emit("new_notification", `Ejecutando herramienta: ${function_name}`);
 
     try {
-      response = await openai.chat.completions.create({
-        model: envs.openai_language_model,
-        messages,
-        tools: openai_tools.length > 0 ? openai_tools : undefined,
-      });
+      const function_args = JSON.parse(fn.arguments || "{}");
+
+      const result = await Promise.race([
+        client.callTool({ name: function_name, arguments: function_args }),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error(`Timeout ejecutando ${function_name}`)), TOOL_CALL_TIMEOUT)
+        ),
+      ]);
+
+      const content_array: any[] = Array.isArray(result.content) ? result.content : [];
+      const tool_text = content_array
+        .filter((c: any) => c?.type === "text")
+        .map((c: any) => c.text as string)
+        .join("\n");
+
+      return {
+        role: "tool",
+        tool_call_id: tool_call.id,
+        content: result.isError
+          ? `Error de la herramienta: ${tool_text}`
+          : tool_text,
+      };
     } catch (error: any) {
-      throw error;
+      console.error(`Error en herramienta ${function_name}:`, error.message);
+      return {
+        role: "tool",
+        tool_call_id: tool_call.id,
+        content: `La ejecución de la herramienta falló: ${error.message}`,
+      };
     }
+  }
+
+  private static build_messages(chat_history: ChatMessage[]): OpenAI.Chat.ChatCompletionMessageParam[] {
+    return [
+      { role: "system", content: SYSTEM_PROMPT },
+      ...chat_history.map(entry => ({
+        role: entry.role as "user" | "assistant" | "system",
+        content: entry.content,
+      })),
+    ];
+  }
+
+  private static async resolve_tool_calls(
+    client: Client,
+    tool_calls: BufferedToolCall[]
+  ): Promise<OpenAI.Chat.ChatCompletionToolMessageParam[]> {
+    const results = await Promise.all(
+      tool_calls.map(tc => this.execute_tool_call(client, tc))
+    );
+    return results;
+  }
+
+  async handle_chat(chat_history: ChatMessage[]): Promise<string> {
+    if (!envs.openai_language_model)
+      throw new ServerError(error_messages.openai_language_model_not_defined);
+    if (!envs.openai_tool_model)
+      throw new ServerError(error_messages.openai_tool_model_not_defined);
+
+    const client = await OpenAIOrchestrator.ensure_client();
+    const openai_tools = OpenAIOrchestrator.cached_openai_tools!;
+    const messages = OpenAIOrchestrator.build_messages(chat_history);
+
+    const response = await openai.chat.completions.create({
+      model: envs.openai_language_model,
+      messages,
+      tools: openai_tools.length > 0 ? openai_tools : undefined,
+    });
 
     const response_message = response.choices[0]!.message;
 
-    if (!response_message.tool_calls || response_message.tool_calls.length === 0) {
+    if (!response_message.tool_calls?.length) {
       return response_message.content ?? "";
     }
 
     messages.push(response_message);
 
-    for (const tool_call of response_message.tool_calls) {
-      if (tool_call.type !== "function") {
-        continue;
-      }
-
-      const function_name = tool_call.function.name;
-      const function_args = JSON.parse(tool_call.function.arguments);
-
-      global_events.emit('new_notification', `Ejecutando herramienta: ${function_name}`);
-
-      try {
-        const result = await client.callTool({
-          name: function_name,
-          arguments: function_args,
-        });
-
-        const content_array: any[] = Array.isArray(result.content) ? result.content : [];
-        const tool_text_result = content_array
-          .filter(c => c && c.type === "text")
-          .map(c => (c as any).text)
-          .join("\n");
-
-        messages.push({
-          role: "tool",
-          tool_call_id: tool_call.id,
-          content: result.isError
-            ? `Error de la herramienta: ${tool_text_result}`
-            : tool_text_result,
-        });
-
-      } catch (error: any) {
-        console.error(`Error de red o ejecución fallida en herramienta ${function_name}`, error);
-        messages.push({
-          role: "tool",
-          tool_call_id: tool_call.id,
-          content: `La ejecución de la herramienta falló en el servidor: ${error.message}`,
-        });
-      }
-    }
+    const tool_results = await OpenAIOrchestrator.resolve_tool_calls(client, response_message.tool_calls as BufferedToolCall[]);
+    tool_results.forEach(r => messages.push(r));
 
     const final_response = await openai.chat.completions.create({
       model: envs.openai_tool_model,
       messages,
     });
 
-    return final_response.choices[0]!.message.content || "";
+    return final_response.choices[0]!.message.content ?? "";
   }
 
-  async *handle_chat_stream(user_message: string): AsyncGenerator<string, void, unknown> {
-    if (!envs.openai_language_model) throw new ServerError(error_messages.openai_language_model_not_defined);
-    if (!envs.openai_tool_model) throw new ServerError(error_messages.openai_tool_model_not_defined);
+  private static buffer_tool_call_chunks(
+    buffer: Map<number, BufferedToolCall>,
+    delta: OpenAI.Chat.Completions.ChatCompletionChunk.Choice.Delta
+  ): void {
+    if (!delta.tool_calls) return;
 
-    const client = await this.init_mcp_client();
-    const mcp_tools = await client.listTools();
-    const openai_tools = mcp_tools.tools.map(tool => ({
-      type: "function" as const,
-      function: {
-        name: tool.name,
-        description: tool.description,
-        parameters: tool.inputSchema,
-      },
-    }));
+    for (const tc of delta.tool_calls) {
+      if (tc.index == null) continue;
 
-    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: "system", content: "Eres un asistente útil que responde a las peticiones usando las herramientas suministradas si es necesario." },
-      { role: "user", content: user_message }
-    ];
+      const existing = buffer.get(tc.index);
 
-    const response_stream = await openai.chat.completions.create({
+      if (!existing) {
+        if (!tc.id || !tc.function?.name) continue;
+        buffer.set(tc.index, {
+          id: tc.id,
+          type: "function",
+          function: {
+            name: tc.function.name,
+            arguments: tc.function.arguments ?? "",
+          },
+        });
+      } else if (tc.function?.arguments) {
+        existing.function.arguments += tc.function.arguments;
+      }
+    }
+  }
+
+  private static async flush_tool_calls(
+    client: Client,
+    messages: OpenAI.Chat.ChatCompletionMessageParam[],
+    buffer: Map<number, BufferedToolCall>,
+    full_assistant_content: string
+  ): Promise<void> {
+    const tool_calls = Array.from(buffer.values());
+
+    messages.push({
+      role: "assistant",
+      content: full_assistant_content || null,
+      tool_calls,
+    });
+
+    const results = await this.resolve_tool_calls(client, tool_calls);
+    results.forEach(r => messages.push(r));
+  }
+
+  async *handle_chat_stream(
+    chat_history: ChatMessage[]
+  ): AsyncGenerator<string, void, unknown> {
+    if (!envs.openai_language_model)
+      throw new ServerError(error_messages.openai_language_model_not_defined);
+    if (!envs.openai_tool_model)
+      throw new ServerError(error_messages.openai_tool_model_not_defined);
+
+    const client = await OpenAIOrchestrator.ensure_client();
+    const openai_tools = OpenAIOrchestrator.cached_openai_tools!;
+    const messages = OpenAIOrchestrator.build_messages(chat_history);
+
+    const first_stream = await openai.chat.completions.create({
       model: envs.openai_language_model,
       messages,
       tools: openai_tools.length > 0 ? openai_tools : undefined,
       stream: true,
     });
 
-    let tool_calls_buffer: any[] = [];
-    let is_tool_call = false;
-    let full_assistant_content = "";
+    const tool_calls_buffer = new Map<number, BufferedToolCall>();
+    let full_content = "";
 
-    for await (const chunk of response_stream) {
+    for await (const chunk of first_stream) {
       const delta = chunk.choices[0]?.delta;
       if (!delta) continue;
 
       if (delta.tool_calls) {
-        is_tool_call = true;
-        for (const tc of delta.tool_calls) {
-          if (!tool_calls_buffer[tc.index]) {
-            tool_calls_buffer[tc.index] = tc;
-          } else {
-            if (tc.function?.arguments) {
-              tool_calls_buffer[tc.index].function.arguments += tc.function.arguments;
-            }
-          }
-        }
-      }
-      else if (!is_tool_call && delta.content) {
-        full_assistant_content += delta.content;
+        OpenAIOrchestrator.buffer_tool_call_chunks(tool_calls_buffer, delta);
+      } else if (delta.content) {
+        full_content += delta.content;
         yield delta.content;
       }
     }
 
-    if (!is_tool_call || tool_calls_buffer.length === 0) {
-      return;
-    }
+    if (tool_calls_buffer.size === 0) return;
 
-    messages.push({
-      role: "assistant",
-      content: full_assistant_content || null,
-      tool_calls: tool_calls_buffer as any
-    });
+    await OpenAIOrchestrator.flush_tool_calls(client, messages, tool_calls_buffer, full_content);
 
-    for (const tool_call of tool_calls_buffer) {
-      const function_name = tool_call.function.name;
-      const function_args = JSON.parse(tool_call.function.arguments);
-
-      console.log(`Ejecutando herramienta MCP: ${function_name}`, function_args);
-
-      try {
-        const result = await client.callTool({ name: function_name, arguments: function_args });
-
-        const content_array: any[] = Array.isArray(result.content) ? result.content : [];
-        const tool_text_result = content_array
-          .filter(c => c && c.type === "text")
-          .map(c => (c as any).text)
-          .join("\n");
-
-        messages.push({ role: "tool", tool_call_id: tool_call.id, content: tool_text_result });
-      } catch (error: any) {
-        console.error(`Error en tool: ${function_name}`, error);
-        messages.push({ role: "tool", tool_call_id: tool_call.id, content: `Falló: ${error.message}` });
-      }
-    }
-
-    const final_response_stream = await openai.chat.completions.create({
+    const final_stream = await openai.chat.completions.create({
       model: envs.openai_tool_model,
       messages,
-      stream: true
+      stream: true,
     });
 
-    for await (const chunk of final_response_stream) {
+    for await (const chunk of final_stream) {
       const delta = chunk.choices[0]?.delta;
-      if (delta?.content) {
-        yield delta.content;
-      }
+      if (delta?.content) yield delta.content;
     }
   }
 }
