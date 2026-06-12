@@ -56,4 +56,6 @@ export const error_messages = {
 	bill_already_exists: "La venta ya tiene una factura generada. Por favor, verifica el ID de la venta e intenta nuevamente.",
 	// mcp
 	mcp_unauthorized: "El usuario no está autorizado para utilizar esta herramienta. Por favor, verifica tus credenciales e intenta nuevamente.",
+	// telegram
+	telegram_bot_token_not_defined: "El token del bot de Telegram no está definido. Por favor, asegúrate de que la variable de entorno esté configurada correctamente.",
 }

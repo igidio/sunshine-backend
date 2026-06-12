@@ -1,41 +1,36 @@
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
 import { envs } from "~/config/envs";
-import { ChatOrchestrator } from "../chat/orchestrator";
+import { VercelAiOrchestrator } from "~/modules/chat/vercel_ai-orchestrator";
+import type { ChatMessage } from "../chat/vercel_ai-orchestrator";
+import { error_messages } from "~/data/error_messages";
 
-const chat_histories = new Map<number, { role: string; content: string }[]>();
-
+const chat_histories = new Map<number, ChatMessage[]>();
 export function create_telegram_plugin() {
 	if (!envs.telegram_bot_token) {
-		console.warn("TELEGRAM_BOT_TOKEN no definido. Telegram bot deshabilitado.");
+		console.warn(error_messages.telegram_bot_token_not_defined);
 		return null;
-	} else {
-		console.log("TELEGRAM_BOT_TOKEN encontrado. Telegram bot habilitado.");
 	}
-	console.log(envs.telegram_bot_token);
 
 	const bot = new Telegraf(envs.telegram_bot_token);
-	const orchestrator = new ChatOrchestrator();
+	const orchestrator = new VercelAiOrchestrator();
 
 	bot.start(async (ctx) => {
-		console.log("sffdasd");
-
 		chat_histories.set(ctx.chat.id, []);
 		return await ctx.reply("¡Bienvenido! Soy el asistente de Sunshine. ¿En qué puedo ayudarte?");
 	});
 
 	bot.help((ctx) => {
 		return ctx.reply(
-			"ℹ️ Envíame cualquier pregunta y usaré las herramientas disponibles para responderte.\n\n" +
+			"ℹEnvíame cualquier pregunta y usaré las herramientas disponibles para responderte.\n\n" +
 			"/clear — Limpiar historial de conversación\n" +
 			"/start — Reiniciar el bot"
 		);
 	});
 
 	bot.command("clear", (ctx) => {
-		console.log("Clearing chat history for user:", ctx.chat.id);
 		chat_histories.set(ctx.chat.id, []);
-		return ctx.reply("🗑️ Historial limpiado.");
+		return ctx.reply("Historial limpiado.");
 	});
 
 	bot.on(message("text"), async (ctx) => {
@@ -52,7 +47,8 @@ export function create_telegram_plugin() {
 		try {
 			await ctx.sendChatAction("typing");
 
-			const reply = await orchestrator.handle_chat(history);
+			const result = await orchestrator.handle_chat(history);
+			const reply = result.text;
 
 			history.push({ role: "assistant", content: reply });
 
@@ -65,7 +61,6 @@ export function create_telegram_plugin() {
 				}
 			}
 		} catch (error: any) {
-			console.error("Telegram chat error:", error);
 			await ctx.reply("Hubo un error procesando tu mensaje. Intenta de nuevo.");
 		}
 	});

@@ -4,12 +4,12 @@ import { envs } from "../../config/envs";
 import { mcpLocalhostTools } from "../../../mcps/localhost/mcp";
 import { SYSTEM_PROMPT } from "./chat-data";
 
-type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
+export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
 export class VercelAiOrchestrator {
 	async handle_chat(chat_history: ChatMessage[]) {
 		const result = await generateText({
-			model: openai(envs.openai_language_model!),
+			model: openai.chat(envs.openai_language_model!),
 			system: SYSTEM_PROMPT,
 			messages: chat_history,
 			tools: mcpLocalhostTools,

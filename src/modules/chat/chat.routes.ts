@@ -1,7 +1,7 @@
 import { Elysia } from "elysia";
-import { ChatOrchestrator } from "./chat.orchestrator";
 import { createUIMessageStreamResponse } from "ai";
 import z from "zod";
+import { VercelAiOrchestrator } from "./vercel_ai-orchestrator";
 
 const ChatMessageSchema = z.object({
 	role: z.enum(["user", "assistant", "system"]),
@@ -9,7 +9,7 @@ const ChatMessageSchema = z.object({
 });
 
 export const chat_routes = new Elysia({ prefix: '/chat' })
-	.decorate('orchestrator', ChatOrchestrator)
+	.decorate('orchestrator', new VercelAiOrchestrator())
 	.post('/', async ({ body, orchestrator }) => {
 		const result = await orchestrator.handle_chat(body);
 		return { reply: result.text };
