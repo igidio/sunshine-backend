@@ -10,8 +10,8 @@ export const stock_service = {
 		return stock;
 	},
 
-	get_by_product: async (product_id: number) => {
-		const stock = await stock_repository.find_by_product_id(product_id);
+	get_by_product: async (product_id: number, tx?: MySql2Database) => {
+		const stock = await stock_repository.find_by_product_id(product_id, tx);
 		if (!stock) throw new ServerError(error_messages.stock_not_found, 404);
 		return stock;
 	},
@@ -22,13 +22,13 @@ export const stock_service = {
 		return await stock_repository.find_one(result.id, tx);
 	},
 
-	update_quantity: async (id: number, quantity: number) => {
+	update_quantity: async (id: number, quantity: number, tx?: MySql2Database) => {
 		if (quantity < 0) throw new ServerError(error_messages.stock_insufficient, 400);
 
-		const stock = await stock_repository.find_one(id);
+		const stock = await stock_repository.find_one(id, tx);
 		if (!stock) throw new ServerError(error_messages.stock_not_found, 404);
 
-		const result = await stock_repository.update_quantity(id, quantity);
+		const result = await stock_repository.update_quantity(id, quantity, tx);
 		if (!result || result.affectedRows === 0) {
 			throw new ServerError(error_messages.nothing_to_update, 400);
 		}

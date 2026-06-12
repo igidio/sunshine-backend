@@ -15,7 +15,15 @@ export type ReadSaleDto = z.infer<typeof ReadSaleDtoSchema>;
 
 export const CreateSaleDtoSchema = z.object({
 	customer_id: z.coerce.number().int().positive(),
-	product_ids: ForceArrayPreprocess(z.coerce.number().int().positive()).optional().default([]),
+	products: z
+		.array(
+			z.object({
+				id: z.coerce.number().int().positive(),
+				quantity: z.coerce.number().int().positive(),
+			}),
+		)
+		.optional()
+		.default([]),
 	appointment_ids: ForceArrayPreprocess(z.coerce.number().int().positive()).optional().default([]),
 	payment_method: z.enum(["cash", "card", "transfer"]),
 });
