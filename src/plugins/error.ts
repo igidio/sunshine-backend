@@ -2,7 +2,6 @@ import { DrizzleError, DrizzleQueryError } from "drizzle-orm";
 import Elysia, { ValidationError } from "elysia";
 
 export const plugin_error = new Elysia().onError(({ error, set }) => {
-	
 	if (error instanceof DrizzleQueryError) {
 		const code = (error as any).cause?.code;
 		let message;
