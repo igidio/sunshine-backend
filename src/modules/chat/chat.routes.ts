@@ -1,5 +1,6 @@
-import { Elysia, sse } from "elysia";
-import { ChatOrchestrator } from "./orchestrator";
+import { Elysia } from "elysia";
+import { ChatOrchestrator } from "./chat.orchestrator";
+import { createUIMessageStreamResponse } from "ai";
 import z from "zod";
 
 const ChatMessageSchema = z.object({
@@ -8,25 +9,16 @@ const ChatMessageSchema = z.object({
 });
 
 export const chat_routes = new Elysia({ prefix: '/chat' })
-	.decorate('orchestrator', new ChatOrchestrator())
+	.decorate('orchestrator', ChatOrchestrator)
 	.post('/', async ({ body, orchestrator }) => {
-
-		const reply = await orchestrator.handle_chat(body);
-		return { reply };
+		const result = await orchestrator.handle_chat(body);
+		return { reply: result.text };
 	}, {
 		body: z.array(ChatMessageSchema).min(1, "El historial no puede estar vacío"),
 	})
-	.post('/stream', async function* ({ body, orchestrator, headers }) {
-		const accept = headers["accept"];
-		if (accept !== "text/event-stream") {
-			throw new Error("Se requiere Accept: text/event-stream");
-		}
-		for await (const chunk of orchestrator.handle_chat_stream(body)) {
-			yield chunk;
-		}
+	.post('/stream', async ({ body, orchestrator }) => {
+		const stream = await orchestrator.handle_chat_stream(body);
+		return createUIMessageStreamResponse({ stream });
 	}, {
 		body: z.array(ChatMessageSchema).min(1, "El historial no puede estar vacío"),
-		headers: z.object({
-			accept: z.string(),
-		}),
 	})
