@@ -7,10 +7,10 @@ const chat_histories = new Map<number, { role: string; content: string }[]>();
 
 export function create_telegram_plugin() {
 	if (!envs.telegram_bot_token) {
-		console.warn("⚠️  TELEGRAM_BOT_TOKEN no definido. Telegram bot deshabilitado.");
+		console.warn("TELEGRAM_BOT_TOKEN no definido. Telegram bot deshabilitado.");
 		return null;
 	} else {
-		console.log("✅ TELEGRAM_BOT_TOKEN encontrado. Telegram bot habilitado.");
+		console.log("TELEGRAM_BOT_TOKEN encontrado. Telegram bot habilitado.");
 	}
 	console.log(envs.telegram_bot_token);
 
@@ -21,7 +21,7 @@ export function create_telegram_plugin() {
 		console.log("sffdasd");
 
 		chat_histories.set(ctx.chat.id, []);
-		return await ctx.reply("👋 ¡Bienvenido! Soy el asistente de Sunshine. ¿En qué puedo ayudarte?");
+		return await ctx.reply("¡Bienvenido! Soy el asistente de Sunshine. ¿En qué puedo ayudarte?");
 	});
 
 	bot.help((ctx) => {
@@ -42,13 +42,11 @@ export function create_telegram_plugin() {
 		const chat_id = ctx.chat.id;
 		const user_message = ctx.message.text;
 
-		// Obtener o crear historial
 		if (!chat_histories.has(chat_id)) {
 			chat_histories.set(chat_id, []);
 		}
 		const history = chat_histories.get(chat_id)!;
 
-		// Agregar mensaje del usuario
 		history.push({ role: "user", content: user_message });
 
 		try {
@@ -56,14 +54,11 @@ export function create_telegram_plugin() {
 
 			const reply = await orchestrator.handle_chat(history);
 
-			// Agregar respuesta al historial
 			history.push({ role: "assistant", content: reply });
 
-			// Telegram tiene límite de 4096 caracteres por mensaje
 			if (reply.length <= 4096) {
 				await ctx.reply(reply);
 			} else {
-				// Dividir en múltiples mensajes
 				const chunks = reply.match(/.{1,4090}/gs) || [reply];
 				for (const chunk of chunks) {
 					await ctx.reply(chunk);
@@ -71,7 +66,7 @@ export function create_telegram_plugin() {
 			}
 		} catch (error: any) {
 			console.error("Telegram chat error:", error);
-			await ctx.reply("❌ Hubo un error procesando tu mensaje. Intenta de nuevo.");
+			await ctx.reply("Hubo un error procesando tu mensaje. Intenta de nuevo.");
 		}
 	});
 
