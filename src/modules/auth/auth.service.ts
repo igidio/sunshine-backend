@@ -6,6 +6,7 @@ import { user_repository } from "../user/user.repository";
 import { Hasher } from "~/helpers/hasher";
 import { error_messages } from "~/data/error_messages";
 import { ServerError } from "~/classes/server_error";
+import type { user_select } from "../user/user.schema";
 
 type JwtDecorator = ReturnType<typeof jwt>["decorator"]["jwt"];
 
@@ -16,7 +17,7 @@ export const auth_service = {
 			profile: CreateProfileDto
 		}
 	) => {
-		return auth_repository.create_user(body);
+		return auth_repository.create_user(body) as unknown as user_select;
 	},
 
 	sign_in: async (email_or_username: string, password: string) => {

@@ -29,9 +29,12 @@ export const auth_routes = new Elysia({
 		body: UserLoginDtoSchema,
 	})
 
-	.post("/signup", async ({ body, set }) => {
-		await auth_service.signup(body);
-		return "Signup successful";
+	.post("/signup", async ({ body, jwt, jwt_refresh }) => {
+		const user = await auth_service.signup(body);
+		const to_sign = { id: user.id, email: user.email, username: user.username };
+		const token = await jwt.sign(to_sign);
+		const refresh_token = await jwt_refresh.sign(to_sign);
+		return { "access_token": token, "refresh_token": refresh_token };
 	}, {
 		body: z.object({
 			user: CreateUserDtoSchema,
