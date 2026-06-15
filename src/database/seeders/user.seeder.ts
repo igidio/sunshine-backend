@@ -67,11 +67,18 @@ const data: user_insert[] = [
 		phone_number: "70000000",
 		email_verified_at: new Date(),
 	},
-	create_faker_user({ profile_id: 6, role: "customer", generate_phone: false }),
-	create_faker_user({ profile_id: 7, role: "customer", generate_phone: false }),
-	create_faker_user({ profile_id: 8, role: "customer", generate_phone: false }),
-	create_faker_user({ profile_id: 9, role: "customer", generate_phone: false }),
-	create_faker_user({ profile_id: 10, role: "customer", generate_phone: false }),
+	{
+		username: "javier",
+		password: "password",
+		email: "javier@mail.com",
+		profile_id: 6,
+		role: "customer",
+		email_verified_at: new Date(),
+	},
+	create_faker_user({ profile_id: 7, role: "customer", generate_phone: false, generate_password: false }),
+	create_faker_user({ profile_id: 8, role: "customer", generate_phone: false, generate_password: false }),
+	create_faker_user({ profile_id: 9, role: "customer", generate_phone: false, generate_password: false }),
+	create_faker_user({ profile_id: 10, role: "customer", generate_phone: false, generate_password: false }),
 ]
 
 export default {
