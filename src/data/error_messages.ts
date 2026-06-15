@@ -22,6 +22,8 @@ export const error_messages = {
 	user_not_found: "Usuario no encontrado. Por favor, verifica el ID del usuario e intenta nuevamente.",
 	user_forbidden: "No tienes permisos para acceder a este recurso. Por favor, verifica tus permisos e intenta nuevamente.",
 	user_disabled: "La cuenta ha sido deshabilitada. Por favor, contacta al soporte para más información.",
+	email_in_use: "El correo electrónico ya está registrado. Por favor, utiliza otro correo o inicia sesión.",
+	username_in_use: "El nombre de usuario ya está en uso. Por favor, elige otro nombre de usuario.",
 	// supplier
 	supplier_not_found: "Proveedor no encontrado. Por favor, verifica el ID del proveedor e intenta nuevamente.",
 	supplier_image_too_large: "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.",

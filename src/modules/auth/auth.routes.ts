@@ -30,7 +30,7 @@ export const auth_routes = new Elysia({
 	})
 
 	.post("/signup", async ({ body, jwt, jwt_refresh }) => {
-		const user = await auth_service.signup(body);
+		const user = await auth_service.sign_up(body);
 		const to_sign = { id: user.id, email: user.email, username: user.username };
 		const token = await jwt.sign(to_sign);
 		const refresh_token = await jwt_refresh.sign(to_sign);

@@ -6,18 +6,26 @@ import { user_repository } from "../user/user.repository";
 import { Hasher } from "~/helpers/hasher";
 import { error_messages } from "~/data/error_messages";
 import { ServerError } from "~/classes/server_error";
-import type { user_select } from "../user/user.schema";
+import type { user_select, UserRole } from "../user/user.schema";
 
 type JwtDecorator = ReturnType<typeof jwt>["decorator"]["jwt"];
 
 export const auth_service = {
-	signup: async (
+	sign_up: async (
 		body: {
 			user: CreateUserDto,
 			profile: CreateProfileDto
-		}
+		},
+		role: UserRole = "customer"
 	) => {
-		return auth_repository.create_user(body) as unknown as user_select;
+		const existing_email = await user_repository.find_one({ email: body.user.email }, undefined, false);
+		if (existing_email) throw new ServerError(error_messages.email_in_use, 409);
+
+		const existing_username = await user_repository.find_one({ username: body.user.username }, undefined, false);
+		if (existing_username) throw new ServerError(error_messages.username_in_use, 409);
+
+		const password = await Hasher.hash_password(body.user.password);
+		return auth_repository.create_user({ ...body, user: { ...body.user, password, role } }) as unknown as user_select;
 	},
 
 	sign_in: async (email_or_username: string, password: string) => {
@@ -71,5 +79,5 @@ export const auth_service = {
 		await user_repository.set_chat_access(id, hashed_key);
 		return { chat_access: plain_key };
 	}
-	
+
 }
