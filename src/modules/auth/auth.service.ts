@@ -50,7 +50,7 @@ export const auth_service = {
 	},
 
 	get_authenticated_user: async (bearer: string, jwt: JwtDecorator) => {
-		const payload = await jwt.verify(bearer);
+		const payload = await jwt.verify(bearer) as user_select;
 		if (payload) {
 			return { user: payload };
 		} else {

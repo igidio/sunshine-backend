@@ -91,6 +91,9 @@ export const user_repository = {
 						chat_access: { eq: chat_access },
 					}
 				]
+			},
+			with: {
+				profile: true,
 			}
 		});
 		return user;

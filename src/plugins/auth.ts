@@ -10,6 +10,7 @@ import plugin_jwt from "~/plugins/jwt";
 export const plugin_auth = new Elysia()
 	.use(plugin_jwt)
 	.use(bearer())
+	.state('skip_email_check', false)
 	.derive({ as: 'scoped' }, async ({ jwt, bearer }) => {
 		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
 		const payload = await jwt.verify(bearer);
@@ -20,8 +21,19 @@ export const plugin_auth = new Elysia()
 		return { user };
 	})
 	.macro({
+		verified: (check: boolean) => ({
+			resolve: ({ store }) => {
+				store.skip_email_check = !check;
+			}
+		}),
+
 		auth: {
-			resolve: async ({ user }) => { user },
+			resolve: async ({ user, store }) => {
+				if (!store.skip_email_check && !user?.email_verified_at) {
+					throw new ServerError(error_messages.email_not_verified, 403);
+				}
+				return { user };
+			},
 		},
 
 		role: (allowed_roles: UserRole[]) => ({

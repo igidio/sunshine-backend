@@ -22,6 +22,7 @@ export const error_messages = {
 	user_not_found: "Usuario no encontrado. Por favor, verifica el ID del usuario e intenta nuevamente.",
 	user_forbidden: "No tienes permisos para acceder a este recurso. Por favor, verifica tus permisos e intenta nuevamente.",
 	user_disabled: "La cuenta ha sido deshabilitada. Por favor, contacta al soporte para más información.",
+	email_not_verified: "El correo electrónico no ha sido verificado. Por favor, verifica tu correo antes de continuar.",
 	email_in_use: "El correo electrónico ya está registrado. Por favor, utiliza otro correo o inicia sesión.",
 	username_in_use: "El nombre de usuario ya está en uso. Por favor, elige otro nombre de usuario.",
 	// supplier
