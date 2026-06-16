@@ -13,14 +13,14 @@ export const movement_routes = new Elysia({
 	.get("/", async ({ query }) => {
 		return await movement_service.get(query);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		query: ReadMovementDtoSchema,
 	})
 
 	.get("/:id", async ({ params }) => {
 		return await movement_service.get_one(params.id);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		params: IdSchema,
 	})
 

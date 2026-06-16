@@ -12,11 +12,11 @@ export const notification_routes = new Elysia({
 	.get("/", ({ query, user }) => {
 		return notification_service.get(user.id, query);
 	}, {
+		auth: { verified: false },
 		query: z.object({
 			limit: z.coerce.number().optional().default(10),
 			offset: z.coerce.number().optional().default(0),
 		}),
-		auth: true,
 	})
 
 	.delete("/:id", ({ params }) => {

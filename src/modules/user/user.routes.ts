@@ -1,6 +1,5 @@
 import Elysia from "elysia";
 import { plugin_auth } from "~/plugins/auth";
-import z from "zod";
 import { user_service } from "./user.service";
 import {
 	ReadUserDtoSchema,
@@ -18,14 +17,14 @@ export const user_routes = new Elysia({
 	.get("/", async ({ query }) => {
 		return await user_service.find(query);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		query: ReadUserDtoSchema,
 	})
 
 	.get("/:id", async ({ params }) => {
 		return await user_service.find_one(params.id);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		params: IdSchema,
 	})
 

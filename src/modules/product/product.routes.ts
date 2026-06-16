@@ -14,14 +14,15 @@ export const product_routes = new Elysia({
 	.get("/", async ({ query }) => {
 		return await product_service.find_all(query)
 	}, {
-		auth: true,
+		auth: { verified: false },
 		query: ReadProductDtoSchema
 	})
 
 	.get("/:id", async ({ params }) => {
 		return await product_service.find_one(params.id)
 	}, {
-		auth: true,
+		auth: { verified: false },
+		
 		params: IdSchema
 	})
 

@@ -12,14 +12,14 @@ export const wishlist_routes = new Elysia({
 	.get("/", async ({ query, user }) => {
 		return await wishlist_service.find_all(query, user);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		query: ReadWishlistDtoSchema
 	})
 
 	.get("/:id", async ({ params, user }) => {
 		return await wishlist_service.find_one(params.id, user);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		params: IdSchema
 	})
 

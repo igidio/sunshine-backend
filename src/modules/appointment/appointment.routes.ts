@@ -12,7 +12,7 @@ export const appointment_routes = new Elysia({
 	.get("/", async ({ query }) => {
 		return appointment_service.find(query);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		query: ReadAppointmentDtoSchema,
 	})
 
@@ -27,7 +27,7 @@ export const appointment_routes = new Elysia({
 	.get("/:id", async ({ params }) => {
 		return await appointment_service.find_one(params.id);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		params: IdSchema,
 	})
 

@@ -12,14 +12,14 @@ export const category_routes = new Elysia({
 	.get("/", async ({ query }) => {
 		return await category_service.get(query);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		query: ReadCategoryDtoSchema
 	})
 
 	.get("/:id", async ({ params }) => {
 		return await category_service.get_one(params.id);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		params: z.object({
 			id: z.coerce.number()
 		})

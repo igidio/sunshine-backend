@@ -13,7 +13,7 @@ export const sale_routes = new Elysia({
 	.get("/", async ({ query }) => {
 		return sale_service.find(query);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		role: ["superuser", "admin", "employer"],
 		query: ReadSaleDtoSchema,
 	})
@@ -30,7 +30,8 @@ export const sale_routes = new Elysia({
 	.get("/:id", async ({ params }) => {
 		return await sale_service.find_one(params.id);
 	}, {
-		auth: true,
+		auth: { verified: false },
+		
 		params: IdSchema,
 	})
 
@@ -60,6 +61,7 @@ export const sale_routes = new Elysia({
 		const sale = await sale_service.find_one(params.id);
 		return await bill_service.get(sale);
 	}, {
-		auth: true,
+		auth: { verified: false },
+		
 		params: IdSchema,
 	});

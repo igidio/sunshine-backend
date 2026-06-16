@@ -10,6 +10,6 @@ export const dashboard_routes = new Elysia({
 	.get("/", async () => {
 		return dashboard_service.get();
 	}, {
-		auth: true,
+		auth: { verified: false },
 		role: ["superuser", "admin", "employer"],
 	});

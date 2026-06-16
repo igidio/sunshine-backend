@@ -3,9 +3,6 @@ import { plugin_auth } from "~/plugins/auth";
 import { IdSchema } from "~/helpers/types";
 import { treatment_service } from "./treatment.service";
 import { CreateTreatmentDtoSchema, ReadTreatmentDtoSchema, ToggleDisabledTreatmentDtoSchema, UpdateTreatmentDtoSchema } from "./treatment.dto";
-import { ServerError } from "~/classes/server_error";
-import { error_messages } from "~/data/error_messages";
-import { user_service } from "../user/user.service";
 
 export const treatment_routes = new Elysia({
 	prefix: "/treatment",
@@ -15,14 +12,14 @@ export const treatment_routes = new Elysia({
 	.get("/", async ({ query }) => {
 		return await treatment_service.find(query);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		query: ReadTreatmentDtoSchema,
 	})
 
 	.get("/:id", async ({ params }) => {
 		return await treatment_service.find_one(params.id);
 	}, {
-		auth: true,
+		auth: { verified: false },
 		params: IdSchema,
 	})
 
