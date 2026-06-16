@@ -13,6 +13,7 @@ import { treatment_schema } from "~/modules/treatment/treatment.schema";
 import { user_schema } from "~/modules/user/user.schema";
 
 import { wishlist_schema } from "~/modules/wishlist/wishlist.schema";
+import { confirmation_schema } from "~/modules/confirmation/confirmation.schema";
 
 export {
   user_schema,
@@ -31,5 +32,6 @@ export {
   product_image_schema,
   notification_schema,
   wishlist_schema,
+  confirmation_schema,
 }
 

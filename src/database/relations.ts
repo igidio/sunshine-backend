@@ -18,6 +18,10 @@ export const relations = defineRelations(schemas, (r) => ({
       from: r.user_schema.profile_id,
       to: r.profile_schema.id
     }),
+    confirmations_invalidated: r.many.confirmation_schema({
+      from: r.user_schema.id,
+      to: r.confirmation_schema.invalidated_by,
+    }),
   },
   customer_schema: {
     profile: r.one.profile_schema({
@@ -152,6 +156,12 @@ export const relations = defineRelations(schemas, (r) => ({
     customer: r.one.customer_schema({
       from: r.wishlist_schema.customer_id,
       to: r.customer_schema.id,
+    }),
+  },
+  confirmation_schema: {
+    invalidated_by_user: r.one.user_schema({
+      from: r.confirmation_schema.invalidated_by,
+      to: r.user_schema.id,
     }),
   }
 }))
