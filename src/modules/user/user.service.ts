@@ -3,7 +3,7 @@ import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
 import type { permissions } from "~/data/permissions";
 import { Hasher } from "~/helpers/hasher";
-import type { ReadUserDto, UpdateUserDto, ToggleDisabledUserDto, SetPermissionsUserDto } from "./user.dto";
+import type { ReadUserDto, UpdateUserDto, ToggleDisabledUserDto, SetPermissionsUserDto, UpdateUserPasswordDto } from "./user.dto";
 import type { user_select } from "./user.schema";
 
 export const user_service = {
@@ -32,9 +32,6 @@ export const user_service = {
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
 
 		const update_data = { ...data };
-		if (update_data.password) {
-			update_data.password = await Hasher.hash_password(update_data.password);
-		}
 
 		const result = await user_repository.update(id, update_data);
 		if (!result || result.affectedRows === 0) {
@@ -43,6 +40,25 @@ export const user_service = {
 
 		return await user_service.find_one(id);
 	},
+
+	update_password: async (id: number, data: UpdateUserPasswordDto) => {
+		const current_user = await user_repository.find_one({ id }, undefined, false);
+		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);
+
+		const is_match = await Hasher.match_password(data.current_password, current_user.password);
+		if (!is_match) {
+			throw new ServerError(error_messages.invalid_current_password, 400);
+		}
+
+		const new_hashed_password = await Hasher.hash_password(data.new_password);
+		const result = await user_repository.update(id, { password: new_hashed_password });
+		if (!result || result.affectedRows === 0) {
+			throw new ServerError(error_messages.nothing_to_update, 400);
+		}
+
+		return await user_service.find_one(id);
+	},
+
 	toggle_disabled: async (id: number, data: ToggleDisabledUserDto) => {
 		const current_user = await user_repository.find_one({ id });
 		if (!current_user) throw new ServerError(error_messages.user_not_found, 404);

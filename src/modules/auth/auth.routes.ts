@@ -1,16 +1,14 @@
-
 import Elysia from "elysia";
 import z from "zod";
 import plugin_jwt from "~/plugins/jwt";
-import { CreateUserDtoSchema, UserLoginDtoSchema } from "../user/user.dto";
-import { CreateProfileDtoSchema } from "../profile/profile.dto";
+import { CreateUserDtoSchema, UserLoginDtoSchema, UpdateUserDtoSchema, UpdateUserPasswordDtoSchema } from "../user/user.dto";
+import { CreateProfileDtoSchema, UpdateProfileDtoSchema } from "../profile/profile.dto";
 import { auth_service } from "./auth.service";
 import bearer from "@elysia/bearer";
 import { error_messages } from "~/data/error_messages";
 import { user_service } from "../user/user.service";
 import { ServerError } from "~/classes/server_error";
-import { IdSchema } from "~/helpers/types";
-import { plugin_auth } from "~/plugins/auth";
+import { profile_service } from "../profile/profile.service";
 
 export const auth_routes = new Elysia({
 	prefix: "/auth"
@@ -76,4 +74,31 @@ export const auth_routes = new Elysia({
 		return await auth_service.generate_chat_access(auth_info.user.id);
 	})
 
-	;
+	.patch("/user", async ({ jwt, bearer, body }) => {
+		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
+		const auth_info = await auth_service.get_authenticated_user(bearer, jwt);
+		if (auth_info.user.disabled_at) throw new ServerError(error_messages.user_disabled, 403);
+		return await user_service.update(auth_info.user.id, body);
+	}, {
+		body: UpdateUserDtoSchema,
+	})
+
+	.patch("/profile", async ({ jwt, bearer, body }) => {
+		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
+		const auth_info = await auth_service.get_authenticated_user(bearer, jwt);
+		if (auth_info.user.disabled_at) throw new ServerError(error_messages.user_disabled, 403);
+		const user = await user_service.find_one(auth_info.user.id);
+		await profile_service.update_profile_by_id(user.profile_id, body);
+		return await user_service.find_one(auth_info.user.id);
+	}, {
+		body: UpdateProfileDtoSchema,
+	})
+
+	.patch("/password", async ({ jwt, bearer, body }) => {
+		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
+		const auth_info = await auth_service.get_authenticated_user(bearer, jwt);
+		if (auth_info.user.disabled_at) throw new ServerError(error_messages.user_disabled, 403);
+		return await user_service.update_password(auth_info.user.id, body);
+	}, {
+		body: UpdateUserPasswordDtoSchema,
+	});

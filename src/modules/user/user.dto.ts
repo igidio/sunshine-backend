@@ -28,9 +28,15 @@ export type ReadUserDto = z.infer<typeof ReadUserDtoSchema>;
 
 
 export const UpdateUserDtoSchema = CreateUserDtoSchema.partial().extend({
-	role: z.enum(user_roles).optional(),
-})
+	//role: z.enum(user_roles).optional(),
+}).omit({ password: true });
 export type UpdateUserDto = z.infer<typeof UpdateUserDtoSchema>;
+
+export const UpdateUserPasswordDtoSchema = z.object({
+	current_password: password,
+	new_password: password,
+});
+export type UpdateUserPasswordDto = z.infer<typeof UpdateUserPasswordDtoSchema>;
 
 export const ToggleDisabledUserDtoSchema = z.object({
 	disabled: z.boolean().optional(),

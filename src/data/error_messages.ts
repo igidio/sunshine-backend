@@ -25,6 +25,7 @@ export const error_messages = {
 	email_not_verified: "El correo electrónico no ha sido verificado. Por favor, verifica tu correo antes de continuar.",
 	email_in_use: "El correo electrónico ya está registrado. Por favor, utiliza otro correo o inicia sesión.",
 	username_in_use: "El nombre de usuario ya está en uso. Por favor, elige otro nombre de usuario.",
+	invalid_current_password: "La contraseña actual proporcionada es incorrecta. Por favor, verifica tu contraseña actual e intenta nuevamente.",
 	// supplier
 	supplier_not_found: "Proveedor no encontrado. Por favor, verifica el ID del proveedor e intenta nuevamente.",
 	supplier_image_too_large: "La imagen proporcionada es demasiado grande. Por favor, asegúrate de que la imagen sea menor a 500KB e intenta nuevamente.",
