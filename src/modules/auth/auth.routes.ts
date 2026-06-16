@@ -64,14 +64,16 @@ export const auth_routes = new Elysia({
 	.post("/chat-access", async ({ jwt, bearer }) => {
 		if (!bearer) throw new ServerError(error_messages.no_token_provided, 400);
 		const auth_info = await auth_service.get_authenticated_user(bearer, jwt);
-		if (auth_info.user.disabled_at) {
+		const user = await user_service.find_one(auth_info.user.id);
+
+		if (user.disabled_at) {
 			throw new ServerError(error_messages.user_disabled, 403);
 		}
-		if (!auth_info.user.email_verified_at) {
+		if (!user.email_verified_at) {
 			throw new ServerError(error_messages.email_not_verified, 403);
-		}		
+		}
 
-		return await auth_service.generate_chat_access(auth_info.user.id);
+		return await auth_service.generate_chat_access(user.id);
 	})
 
 	.patch("/user", async ({ jwt, bearer, body }) => {
