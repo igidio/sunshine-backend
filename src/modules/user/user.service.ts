@@ -24,6 +24,20 @@ export const user_service = {
 		if (!result) throw new ServerError(error_messages.user_not_found, 404);
 		return result;
 	},
+	find_by_email: async (email: string) => {
+		return await user_repository.find_one({ email }) as user_select | null;
+	},
+	verify_email: async (id: number) => {
+		await user_repository.update(id, { email_verified_at: new Date() });
+	},
+	reset_password: async (id: number, new_password: string) => {
+		const new_hashed_password = await Hasher.hash_password(new_password);
+		const result = await user_repository.update(id, { password: new_hashed_password });
+		if (!result || result.affectedRows === 0) {
+			throw new ServerError(error_messages.nothing_to_update, 400);
+		}
+		return await user_service.find_one(id);
+	},
 	update: async (id: number, data: UpdateUserDto) => {
 		const has_updates = Object.keys(data).length > 0;
 		if (!has_updates) throw new ServerError(error_messages.nothing_to_update, 400);

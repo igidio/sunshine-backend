@@ -9,6 +9,9 @@ import { error_messages } from "~/data/error_messages";
 import { user_service } from "../user/user.service";
 import { ServerError } from "~/classes/server_error";
 import { profile_service } from "../profile/profile.service";
+import { GenericTokenDtoSchema } from "../confirmation/confirmation.dto";
+import { confirmation_service } from "../confirmation/confirmation.service";
+import type { UserRole } from "../user/user.schema";
 
 export const auth_routes = new Elysia({
 	prefix: "/auth"
@@ -28,7 +31,20 @@ export const auth_routes = new Elysia({
 	})
 
 	.post("/signup", async ({ body, jwt, jwt_refresh }) => {
-		const user = await auth_service.sign_up(body);
+
+		let role: UserRole = 'customer';
+		let confirmation_id = null;
+
+		if (body.invite_token) {
+			const result = await confirmation_service.check_generic(body.invite_token);
+			role = result.role! as UserRole;
+			confirmation_id = result.id;
+		}
+
+		const user = await auth_service.sign_up(body, role);
+		if (body.invite_token && confirmation_id) {
+			await confirmation_service.mark_as_used(confirmation_id!);
+		}
 		const to_sign = { id: user.id, email: user.email, username: user.username };
 		const token = await jwt.sign(to_sign);
 		const refresh_token = await jwt_refresh.sign(to_sign);
@@ -37,6 +53,7 @@ export const auth_routes = new Elysia({
 		body: z.object({
 			user: CreateUserDtoSchema,
 			profile: CreateProfileDtoSchema,
+			invite_token: GenericTokenDtoSchema.shape.token.optional(),
 		})
 	})
 
