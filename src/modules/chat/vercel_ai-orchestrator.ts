@@ -1,19 +1,35 @@
 import { openai } from "@ai-sdk/openai";
 import { createUIMessageStream, generateId, generateText, stepCountIs, streamText } from "ai";
 import { envs } from "../../config/envs";
-import { mcpLocalhostTools, mcpLocalhostToolsWithClient } from "../../../mcps/localhost/mcp";
 import { SYSTEM_PROMPT } from "./chat-data";
-import { Client } from "@modelcontextprotocol/sdk/client";
+import { createMCPClient } from '@ai-sdk/mcp'
 
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
 export class VercelAiOrchestrator {
+
+	async create_mcp_client(headers?: Record<string, string>) {
+		const client = await createMCPClient({
+			transport: {
+				type: 'http',
+				url: 'http://localhost:3000/mcp',
+				headers: {
+					...headers,
+				}
+			}
+		});
+		return client;
+	}
+
 	async handle_chat(chat_history: ChatMessage[]) {
+		const http_client = await this.create_mcp_client();
+		const tools = await http_client.tools();
+
 		const result = await generateText({
 			model: openai.chat(envs.openai_language_model!),
 			system: SYSTEM_PROMPT,
 			messages: chat_history,
-			tools: mcpLocalhostTools,
+			tools,
 			stopWhen: stepCountIs(5),
 		});
 
@@ -21,6 +37,9 @@ export class VercelAiOrchestrator {
 	}
 
 	async handle_chat_stream(chat_history: ChatMessage[]) {
+		const http_client = await this.create_mcp_client();
+		const tools = await http_client.tools();
+
 		const stream = createUIMessageStream({
 			execute: async ({ writer }) => {
 				writer.write({ type: "start", messageId: generateId() });
@@ -29,16 +48,15 @@ export class VercelAiOrchestrator {
 					model: openai.chat(envs.openai_language_model!),
 					system: SYSTEM_PROMPT,
 					messages: chat_history,
-					
-					headers: {
-						bearer: "YOUR_AUTH_TOKEN"
-					},
-					tools: mcpLocalhostTools,
+					tools,
 					stopWhen: stepCountIs(5),
 				});
 
 				result.consumeStream();
 				writer.merge(result.toUIMessageStream());
+			},
+			onFinish: async () => {
+				await http_client.close();
 			}
 		});
 
