@@ -14,7 +14,7 @@ const plugin_jwt = new Elysia()
 	.use(jwt({
 		name: "jwt",
 		secret: envs.jwt_secret,
-		exp: "1h",
+		exp: "7d",
 		schema
 	}))
 	.use(jwt({
