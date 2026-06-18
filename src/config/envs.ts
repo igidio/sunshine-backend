@@ -6,6 +6,8 @@ interface Env_vars {
 	server_url?: string;
 	jwt_secret: string;
 	jwt_refresh: string;
+	server_encryption_key: string;
+	client_encryption_key: string;
 	openai_api_key?: string;
 	openai_base_url?: string;
 	openai_language_model?: string;
@@ -21,6 +23,8 @@ const env_schema = z.object({
 	server_url: z.string().url().optional(),
 	jwt_secret: z.string().min(1),
 	jwt_refresh: z.string().min(1),
+	server_encryption_key: z.string().min(1),
+	client_encryption_key: z.string().min(1),
 	openai_api_key: z.string().min(1).optional(),
 	openai_base_url: z.url().optional(),
 	openai_language_model: z.string().optional(),
@@ -36,6 +40,8 @@ const parseResult = env_schema.safeParse({
 	server_url: process.env.SERVER_URL,
 	jwt_secret: process.env.JWT_SECRET,
 	jwt_refresh: process.env.JWT_REFRESH,
+	server_encryption_key: process.env.SERVER_ENCRYPTION_KEY,
+	client_encryption_key: process.env.CLIENT_ENCRYPTION_KEY,
 	openai_api_key: process.env.OPENAI_API_KEY,
 	openai_base_url: process.env.OPENAI_BASE_URL,
 	openai_language_model: process.env.OPENAI_LANGUAGE_MODEL,
