@@ -19,6 +19,7 @@ import wishlist_routes from "./modules/wishlist/wishlist.routes";
 import { dashboard_routes } from "./modules/dashboard/dashboard.routes";
 import staticPlugin from "@elysiajs/static";
 import { setup_telegram_routes } from "./modules/telegram/telegram.routes";
+import confirmation_routes from "./modules/confirmation/confirmation.routes";
 const app = new Elysia()
   .error({ Error })
   .use(staticPlugin({
@@ -42,6 +43,7 @@ const app = new Elysia()
   .use(customer_routes)
   .use(wishlist_routes)
   .use(dashboard_routes)
+  .use(confirmation_routes)
   .get("/", () => "Hello Elysia").listen({
     port: envs.port
   });
