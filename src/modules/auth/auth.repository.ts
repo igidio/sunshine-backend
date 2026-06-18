@@ -1,5 +1,5 @@
 import db from "~/database"
-import { user_schema, type user_insert } from "../user/user.schema"
+import { user_schema, type user_insert, type user_select } from "../user/user.schema"
 import type { profile_insert } from "../profile/profile.schema"
 import { user_repository } from "../user/user.repository"
 import { profile_repository } from "../profile/profile.repository";
@@ -10,11 +10,11 @@ export const auth_repository = {
 	create_user: async (body: {
 		user: Optional<user_insert, 'profile_id'>,
 		profile: profile_insert
-	}) => {
+	}): Promise<user_select> => {
 		return await db.transaction(async (tx) => {
 
 			const profile = await profile_repository.create(body.profile, tx);
-			if (!profile[0] || !profile[0]) {
+			if (!profile[0]) {
 				throw new Error("Failed to create profile");
 			}
 
@@ -23,14 +23,19 @@ export const auth_repository = {
 				profile_id: profile[0].id,
 			};
 
-			const user = await user_repository.create(user_body, tx);
-			return { user, profile };
+			await user_repository.create(user_body, tx);
 
+			const new_user = await user_repository.find_one(
+				{ email: body.user.email },
+				tx,
+				false
+			);
+			if (!new_user) {
+				throw new Error("Failed to create user");
+			}
+
+			return new_user;
 		});
 	},
-	sign_in: async (email: string, password: string) => {
-		return await db.select()
-			.from(user_schema)
-			.where(and( eq(user_schema.email, email), eq(user_schema.password, password)))
-	}
-}
+	// ...
+};
