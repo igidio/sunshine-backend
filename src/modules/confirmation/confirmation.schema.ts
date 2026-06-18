@@ -1,7 +1,7 @@
 import { boolean, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 import { user_schema } from "../user/user.schema";
 
-export const confirmation_types = ["recovery", "confirmation", "add_staff", "add_admin", "reject_staff"] as const;
+export const confirmation_types = ["recovery", "verification", "add_admin"] as const;
 export type ConfirmationType = (typeof confirmation_types)[number];
 
 export const confirmation_schema = mysqlTable("confirmation", {
