@@ -62,4 +62,17 @@ export const error_messages = {
 	mcp_unauthorized: "El usuario no está autorizado para utilizar esta herramienta. Por favor, verifica tus credenciales e intenta nuevamente.",
 	// telegram
 	telegram_bot_token_not_defined: "El token del bot de Telegram no está definido. Por favor, asegúrate de que la variable de entorno esté configurada correctamente.",
+	// confirmation
+	confirmation_invalid_key: "La clave de confirmación no es válida.",
+	confirmation_not_found: "La clave de confirmación no existe o no es válida.",
+	confirmation_invalidated: "La clave de confirmación ha sido invalidada.",
+	confirmation_already_used: "La clave de confirmación ya ha sido utilizada.",
+	confirmation_expired: "La clave de confirmación ha expirado.",
+	confirmation_invalid_type: "La clave de confirmación no es válida para esta acción.",
+	confirmation_email_not_found: "No existe una cuenta con el correo electrónico indicado.",
+	confirmation_already_verified: "La cuenta ya ha sido verificada.",
+	confirmation_too_soon: "No puedes solicitar una nueva verificación tan pronto.",
+	confirmation_account_inactive: "La cuenta no está activa para realizar esto.",
+	confirmation_unsupported_type: "Tipo de confirmación no soportado.",
+	confirmation_admin_invite_not_allowed: "Los administradores no pueden invitar a otros administradores.",
 }
