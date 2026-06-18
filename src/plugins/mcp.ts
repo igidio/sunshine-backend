@@ -3,6 +3,17 @@ import Elysia from "elysia"
 import { mcp } from "elysia-mcp"
 import { registerCalculateTool } from "~/mcp/server"
 import { register_products_tools } from "~/modules/product/product.mcp"
+import { register_categories_tools } from "~/modules/category/category.mcp"
+import { register_confirmations_tools } from "~/modules/confirmation/confirmation.mcp"
+import { register_customers_tools } from "~/modules/customer/customer.mcp"
+import { register_dashboard_tools } from "~/modules/dashboard/dashboard.mcp"
+import { register_movements_tools } from "~/modules/movement/movement.mcp"
+import { register_profiles_tools } from "~/modules/profile/profile.mcp"
+import { register_sales_tools } from "~/modules/sale/sale.mcp"
+import { register_stock_tools } from "~/modules/stock/stock.mcp"
+import { register_suppliers_tools } from "~/modules/supplier/supplier.mcp"
+import { register_treatments_tools } from "~/modules/treatment/treatment.mcp"
+import { register_users_tools } from "~/modules/user/user.mcp"
 import plugin_jwt from "./jwt"
 import bearer from "@elysia/bearer"
 import { user_service } from "~/modules/user/user.service"
@@ -15,8 +26,10 @@ const mcp_auth_cache = create_cache<user_select>(20_000, 60_000);
 const plugin_mcp = new Elysia()
 	.use(plugin_jwt)
 	.use(bearer())
-	// .resolve(async ({ bearer, jwt, headers }) => {
+	.resolve(async ({ bearer, jwt, headers }) => {
 	// 	// let user: user_select | null = null;
+	console.log(headers);
+	
 
 	// 	// if (bearer) {
 	// 	// 	const cache_key = `jwt:${bearer}`;
@@ -46,7 +59,7 @@ const plugin_mcp = new Elysia()
 	// 	// 	}
 	// 	// }
 	// 	// return { user };
-	// })
+	})
 	.use(
 		mcp({
 			basePath: '/mcp',
@@ -60,7 +73,7 @@ const plugin_mcp = new Elysia()
 				prompts: {},
 				logging: {},
 			},
-			// authentication: async (context) => {
+			authentication: async (context) => {
 			// 	// const user = (context as any).user ?? null;
 
 			// 	// if (!user) {
@@ -75,16 +88,27 @@ const plugin_mcp = new Elysia()
 			// 	// return {
 			// 	// 	authInfo: user
 			// 	// }
-			// 	return {};
-			// },
+				//console.log(context);
+				
+				return {};
+			},
 			enableLogging: false,
 			enableJsonResponse: true,
 			setupServer: async (server: McpServer) => {
 				registerCalculateTool(server)
 				register_products_tools(server)
+				register_categories_tools(server)
+				register_confirmations_tools(server)
+				register_customers_tools(server)
+				register_dashboard_tools(server)
+				register_movements_tools(server)
+				register_profiles_tools(server)
+				register_sales_tools(server)
+				register_stock_tools(server)
+				register_suppliers_tools(server)
+				register_treatments_tools(server)
+				register_users_tools(server)
 			},
-
-
 		}))
 
 export default plugin_mcp;

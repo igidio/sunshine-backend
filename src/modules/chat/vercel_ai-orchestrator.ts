@@ -1,8 +1,9 @@
 import { openai } from "@ai-sdk/openai";
 import { createUIMessageStream, generateId, generateText, stepCountIs, streamText } from "ai";
 import { envs } from "../../config/envs";
-import { mcpLocalhostTools } from "../../../mcps/localhost/mcp";
+import { mcpLocalhostTools, mcpLocalhostToolsWithClient } from "../../../mcps/localhost/mcp";
 import { SYSTEM_PROMPT } from "./chat-data";
+import { Client } from "@modelcontextprotocol/sdk/client";
 
 export type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
@@ -28,6 +29,10 @@ export class VercelAiOrchestrator {
 					model: openai.chat(envs.openai_language_model!),
 					system: SYSTEM_PROMPT,
 					messages: chat_history,
+					
+					headers: {
+						bearer: "YOUR_AUTH_TOKEN"
+					},
 					tools: mcpLocalhostTools,
 					stopWhen: stepCountIs(5),
 				});
