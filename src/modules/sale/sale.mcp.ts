@@ -4,6 +4,7 @@ import { sale_service } from "~/modules/sale/sale.service";
 import { CreateSaleDtoSchema, UpdateSaleDtoSchema } from "./sale.dto";
 import { PaginationTypeSchema, IdsSchema } from "~/helpers/types";
 import { sale_payment_method } from "./sale.schema";
+import { require_auth } from "~/helpers/mcp_auth";
 
 const McpReadSaleDtoSchema = PaginationTypeSchema.extend({
 	customer_id: z.coerce.number().int().positive().optional(),
@@ -82,8 +83,11 @@ export const register_sales_tools = (server: McpServer) => {
 				'Se genera automáticamente la factura y se descuenta el stock de los productos.',
 			inputSchema: CreateSaleDtoSchema,
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "SALE", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				const sale = await sale_service.create(data);
 				return {
 					content: [
@@ -114,8 +118,11 @@ export const register_sales_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID de la venta a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "SALE", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				const sale = await sale_service.update(id, data);
 				return {
 					content: [

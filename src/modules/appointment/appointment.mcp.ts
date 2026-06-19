@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { appointment_service } from "~/modules/appointment/appointment.service";
 import { PaginationTypeSchema, BooleanPreprocess, IdsSchema } from "~/helpers/types";
+import { require_auth } from "~/helpers/mcp_auth";
 
 const appointment_time_schema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
 	message: "La hora proporcionada no es válida. Usa el formato HH:MM:SS.",
@@ -94,8 +95,11 @@ export const register_appointments_tools = (server: McpServer) => {
 				'que no haya conflictos con otras citas del mismo día y que el cliente y tratamiento existan.',
 			inputSchema: McpCreateAppointmentDtoSchema,
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "APPOINTMENT" });
+				if (auth_error) return auth_error;
+
 				const appointment = await appointment_service.create(data);
 				return {
 					content: [
@@ -126,8 +130,11 @@ export const register_appointments_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID de la cita a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "APPOINTMENT", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				const appointment = await appointment_service.update(id, data);
 				return {
 					content: [
@@ -156,8 +163,11 @@ export const register_appointments_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID de la cita a eliminar'),
 			},
 		},
-		async ({ id }) => {
+		async ({ id }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "APPOINTMENT", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				await appointment_service.delete(id);
 				return {
 					content: [
@@ -187,8 +197,11 @@ export const register_appointments_tools = (server: McpServer) => {
 				disabled: z.boolean().optional().describe('true para deshabilitar, false para habilitar. Si no se especifica, alterna el estado.'),
 			},
 		},
-		async ({ id, disabled }) => {
+		async ({ id, disabled }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "APPOINTMENT" });
+				if (auth_error) return auth_error;
+
 				await appointment_service.toggle_disabled(id, { disabled } as { disabled?: boolean });
 				const accion = disabled ? 'deshabilitada' : 'habilitada';
 				return {

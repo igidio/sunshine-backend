@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { customer_service } from "~/modules/customer/customer.service";
 import { ReadCustomerDtoSchema } from "./customer.dto";
+import { require_auth } from "~/helpers/mcp_auth";
 
 const McpCreateCustomerDtoSchema = z.object({
 	phone_number: z.string().max(10).optional().describe('Número de teléfono'),
@@ -75,8 +76,11 @@ export const register_customers_tools = (server: McpServer) => {
 				'Crea un nuevo cliente en el sistema. Se creará automáticamente el perfil asociado.',
 			inputSchema: McpCreateCustomerDtoSchema,
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "CUSTOMER" });
+				if (auth_error) return auth_error;
+
 				const customer = await customer_service.create({
 					...data,
 					birth_date: data.birth_date ?? "1970-01-01",
@@ -109,8 +113,11 @@ export const register_customers_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del cliente a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "CUSTOMER" });
+				if (auth_error) return auth_error;
+
 				const customer = await customer_service.update(id, {
 					...data,
 				});
@@ -142,8 +149,11 @@ export const register_customers_tools = (server: McpServer) => {
 				disabled: z.boolean().optional().describe('true para deshabilitar, false para habilitar. Si no se especifica, alterna el estado.'),
 			},
 		},
-		async ({ id, disabled }) => {
+		async ({ id, disabled }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "CUSTOMER" });
+				if (auth_error) return auth_error;
+
 				await customer_service.toggle_disabled(id, disabled);
 				const accion = disabled ? 'deshabilitado' : 'habilitado';
 				return {
@@ -173,8 +183,11 @@ export const register_customers_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del cliente a eliminar'),
 			},
 		},
-		async ({ id }) => {
+		async ({ id }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "CUSTOMER" });
+				if (auth_error) return auth_error;
+
 				await customer_service.delete(id);
 				return {
 					content: [

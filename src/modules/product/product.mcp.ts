@@ -2,8 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { product_service } from "~/modules/product/product.service";
 import { McpCreateProductSchema, McpUpdateProductSchema, ReadProductDtoSchema } from "./product.dto";
-import { check_auth_from_tool } from "~/plugins/auth";
-import type { user_select } from "../user/user.schema";
+import { require_auth } from "~/helpers/mcp_auth";
 
 const format_product = (p: Record<string, unknown>) => ({
 	id: p.id,
@@ -103,12 +102,8 @@ export const register_products_tools = (server: McpServer) => {
 		},
 		async (data, extra) => {
 			try {
-
-				const authError = await check_auth_from_tool({
-					user: extra.authInfo as unknown as user_select,
-					allowed_permission: "PRODUCT"
-				});
-				if (authError) return authError;
+				const auth_error = await require_auth(extra, { allowed_permission: "PRODUCT" });
+				if (auth_error) return auth_error;
 
 				const product = await product_service.create(data);
 				return {
@@ -137,8 +132,11 @@ export const register_products_tools = (server: McpServer) => {
 				'Actualiza los datos de un producto existente. Permite modificar nombre, descripción, precio, categoría y eliminar imágenes específicas.',
 			inputSchema: McpUpdateProductSchema,
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "PRODUCT" });
+				if (auth_error) return auth_error;
+
 				const product = await product_service.update(id, data);
 				return {
 					content: [
@@ -167,8 +165,11 @@ export const register_products_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del producto a eliminar'),
 			},
 		},
-		async ({ id }) => {
+		async ({ id }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "PRODUCT" });
+				if (auth_error) return auth_error;
+
 				await product_service.delete(id);
 				return {
 					content: [
@@ -198,8 +199,11 @@ export const register_products_tools = (server: McpServer) => {
 				disable: z.boolean().describe('true para deshabilitar, false para habilitar'),
 			},
 		},
-		async ({ id, disable }) => {
+		async ({ id, disable }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "PRODUCT" });
+				if (auth_error) return auth_error;
+
 				await product_service.toggle_disable(id, disable);
 				const accion = disable ? 'deshabilitado' : 'habilitado';
 				return {

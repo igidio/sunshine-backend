@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { category_service } from "~/modules/category/category.service";
 import { CreateCategoryDtoSchema, ReadCategoryDtoSchema } from "./category.dto";
+import { require_auth } from "~/helpers/mcp_auth";
 
 export const register_categories_tools = (server: McpServer) => {
 
@@ -63,8 +64,11 @@ export const register_categories_tools = (server: McpServer) => {
 			description: 'Crea una nueva categoría en el sistema.',
 			inputSchema: CreateCategoryDtoSchema,
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "CATEGORY" });
+				if (auth_error) return auth_error;
+
 				const category = await category_service.create(data);
 				return {
 					content: [
@@ -93,8 +97,11 @@ export const register_categories_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID de la categoría a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "CATEGORY" });
+				if (auth_error) return auth_error;
+
 				const category = await category_service.update(id, data);
 				return {
 					content: [
@@ -123,8 +130,11 @@ export const register_categories_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID de la categoría a eliminar'),
 			},
 		},
-		async ({ id }) => {
+		async ({ id }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "CATEGORY" });
+				if (auth_error) return auth_error;
+
 				await category_service.delete(id);
 				return {
 					content: [

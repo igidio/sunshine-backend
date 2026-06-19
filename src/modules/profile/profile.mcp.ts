@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { profile_service } from "~/modules/profile/profile.service";
+import { require_auth } from "~/helpers/mcp_auth";
 
 const McpUpdateProfileDtoSchema = z.object({
 	first_name: z.string().min(3).max(255).optional(),
@@ -22,8 +23,11 @@ export const register_profiles_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del perfil a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra);
+				if (auth_error) return auth_error;
+
 				await profile_service.update_profile_by_id(id, {
 					...data,
 				});

@@ -4,6 +4,7 @@ import { movement_service } from "~/modules/movement/movement.service";
 import { CreateMovementDtoSchema, ReadMovementDtoSchema, UpdateMovementDtoSchema } from "./movement.dto";
 import { PaginationTypeSchema } from "~/helpers/types";
 import { movement_type } from "./movement.schema";
+import { require_auth } from "~/helpers/mcp_auth";
 
 const McpReadMovementDtoSchema = PaginationTypeSchema.extend({
 	type: z.enum(movement_type).optional(),
@@ -79,8 +80,11 @@ export const register_movements_tools = (server: McpServer) => {
 				'Actualiza automáticamente la cantidad en stock.',
 			inputSchema: CreateMovementDtoSchema,
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "MOVEMENT" });
+				if (auth_error) return auth_error;
+
 				const movement = await movement_service.create(data);
 				return {
 					content: [
@@ -110,8 +114,11 @@ export const register_movements_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del movimiento a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "MOVEMENT" });
+				if (auth_error) return auth_error;
+
 				const movement = await movement_service.update(id, data);
 				return {
 					content: [
@@ -140,8 +147,11 @@ export const register_movements_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del movimiento a eliminar'),
 			},
 		},
-		async ({ id }) => {
+		async ({ id }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "MOVEMENT" });
+				if (auth_error) return auth_error;
+
 				await movement_service.delete(id);
 				return {
 					content: [

@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { supplier_service } from "~/modules/supplier/supplier.service";
 import { CreateSupplierDtoSchema, ReadSupplierDtoSchema, UpdateSupplierDtoSchema } from "./supplier.dto";
+import { require_auth } from "~/helpers/mcp_auth";
 
 export const register_suppliers_tools = (server: McpServer) => {
 
@@ -63,8 +64,11 @@ export const register_suppliers_tools = (server: McpServer) => {
 			description: 'Crea un nuevo proveedor en el sistema.',
 			inputSchema: CreateSupplierDtoSchema.omit({ image: true }),
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "SUPPLIER" });
+				if (auth_error) return auth_error;
+
 				const supplier = await supplier_service.create(data as Parameters<typeof supplier_service.create>[0]);
 				return {
 					content: [
@@ -94,8 +98,11 @@ export const register_suppliers_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del proveedor a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "SUPPLIER" });
+				if (auth_error) return auth_error;
+
 				const supplier = await supplier_service.update(id, data);
 				return {
 					content: [
@@ -124,8 +131,11 @@ export const register_suppliers_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del proveedor a eliminar'),
 			},
 		},
-		async ({ id }) => {
+		async ({ id }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "SUPPLIER" });
+				if (auth_error) return auth_error;
+
 				await supplier_service.delete(id);
 				return {
 					content: [
@@ -155,8 +165,11 @@ export const register_suppliers_tools = (server: McpServer) => {
 				disable: z.boolean().describe('true para deshabilitar, false para habilitar'),
 			},
 		},
-		async ({ id, disable }) => {
+		async ({ id, disable }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "SUPPLIER" });
+				if (auth_error) return auth_error;
+
 				await supplier_service.toggle_disable(id, disable);
 				const accion = disable ? 'deshabilitado' : 'habilitado';
 				return {

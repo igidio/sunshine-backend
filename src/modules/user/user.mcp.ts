@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { user_service } from "~/modules/user/user.service";
 import { ReadUserDtoSchema, UpdateUserDtoSchema, ToggleDisabledUserDtoSchema, SetPermissionsUserDtoSchema } from "./user.dto";
+import { require_auth } from "~/helpers/mcp_auth";
 
 export const register_users_tools = (server: McpServer) => {
 
@@ -67,8 +68,11 @@ export const register_users_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del usuario a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra);
+				if (auth_error) return auth_error;
+
 				const user = await user_service.update(id, data);
 				return {
 					content: [
@@ -97,8 +101,11 @@ export const register_users_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del usuario'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_roles: ["superuser", "admin"] });
+				if (auth_error) return auth_error;
+
 				await user_service.toggle_disabled(id, data);
 				const accion = data.disabled ? 'deshabilitado' : 'habilitado';
 				return {
@@ -128,8 +135,11 @@ export const register_users_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del usuario'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_roles: ["superuser", "admin"] });
+				if (auth_error) return auth_error;
+
 				const user = await user_service.set_permissions(id, data);
 				return {
 					content: [

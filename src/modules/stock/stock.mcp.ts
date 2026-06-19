@@ -1,6 +1,7 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { stock_service } from "~/modules/stock/stock.service";
+import { require_auth } from "~/helpers/mcp_auth";
 
 export const register_stock_tools = (server: McpServer) => {
 
@@ -76,8 +77,11 @@ export const register_stock_tools = (server: McpServer) => {
 				quantity: z.number().int().nonnegative().describe('Nueva cantidad de stock'),
 			},
 		},
-		async ({ id, quantity }) => {
+		async ({ id, quantity }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "MOVEMENT" });
+				if (auth_error) return auth_error;
+
 				const stock = await stock_service.update_quantity(id, quantity);
 				return {
 					content: [

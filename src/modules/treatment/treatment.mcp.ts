@@ -2,6 +2,7 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { treatment_service } from "~/modules/treatment/treatment.service";
 import { CreateTreatmentDtoSchema, ReadTreatmentDtoSchema, UpdateTreatmentDtoSchema } from "./treatment.dto";
+import { require_auth } from "~/helpers/mcp_auth";
 
 export const register_treatments_tools = (server: McpServer) => {
 
@@ -64,8 +65,11 @@ export const register_treatments_tools = (server: McpServer) => {
 				'Crea un nuevo tratamiento en el sistema con nombre, descripción, precio y duración en minutos.',
 			inputSchema: CreateTreatmentDtoSchema,
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "TREATMENT", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				const treatment = await treatment_service.create(data);
 				return {
 					content: [
@@ -94,8 +98,11 @@ export const register_treatments_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del tratamiento a actualizar'),
 			}),
 		},
-		async ({ id, ...data }) => {
+		async ({ id, ...data }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "TREATMENT", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				const treatment = await treatment_service.update(id, data);
 				return {
 					content: [
@@ -124,8 +131,11 @@ export const register_treatments_tools = (server: McpServer) => {
 				id: z.number().int().positive().describe('ID del tratamiento a eliminar'),
 			},
 		},
-		async ({ id }) => {
+		async ({ id }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "TREATMENT", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				await treatment_service.delete(id);
 				return {
 					content: [
@@ -155,8 +165,11 @@ export const register_treatments_tools = (server: McpServer) => {
 				disabled: z.boolean().optional().describe('true para deshabilitar, false para habilitar. Si no se especifica, alterna el estado.'),
 			},
 		},
-		async ({ id, disabled }) => {
+		async ({ id, disabled }, extra) => {
 			try {
+				const auth_error = await require_auth(extra, { allowed_permission: "TREATMENT", allowed_roles: ["superuser", "admin", "employer"] });
+				if (auth_error) return auth_error;
+
 				await treatment_service.toggle_disabled(id, { disabled } as { disabled?: boolean });
 				const accion = disabled ? 'deshabilitado' : 'habilitado';
 				return {
