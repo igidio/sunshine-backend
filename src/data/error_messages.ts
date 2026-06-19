@@ -65,6 +65,7 @@ export const error_messages = {
 	invalid_chat_access: "El código de acceso no es válido. Por favor, verifica el código e intenta nuevamente.",
 	telegram_id_already_linked: "Esta cuenta de Telegram ya está vinculada a otro usuario.",
 	telegram_not_linked: "Esta cuenta de Telegram no está vinculada a ningún usuario.",
+	user_chat_access_required: "El usuario no tiene un código de acceso configurado.",
 	// confirmation
 	confirmation_invalid_key: "La clave de confirmación no es válida.",
 	confirmation_not_found: "La clave de confirmación no existe o no es válida.",

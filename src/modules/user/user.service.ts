@@ -4,7 +4,7 @@ import { error_messages } from "~/data/error_messages";
 import type { permissions } from "~/data/permissions";
 import { Hasher } from "~/helpers/hasher";
 import type { ReadUserDto, UpdateUserDto, ToggleDisabledUserDto, SetPermissionsUserDto, UpdateUserPasswordDto } from "./user.dto";
-import type { user_select } from "./user.schema";
+import type { user_select, UserRole } from "./user.schema";
 
 export const user_service = {
 	find: async (params: ReadUserDto) => {
@@ -26,7 +26,7 @@ export const user_service = {
 	},
 	find_by_email: async (email: string) => {
 		return await user_repository.find_one({ email }) as user_select | null;
-	},	
+	},
 	verify_email: async (id: number) => {
 		await user_repository.update(id, { email_verified_at: new Date() });
 	},
@@ -106,6 +106,37 @@ export const user_service = {
 			throw new ServerError(error_messages.user_forbidden, 403);
 		const parsed_permissions = JSON.parse(user.permissions);
 		return parsed_permissions.includes(permission);
+	},
+	check_authenticated_user: async (
+		{ is_verified, is_disabled, has_telegram_id, has_chat_access, allowed_roles, user, user_id }: {
+			is_verified?: boolean;
+			is_disabled?: boolean;
+			has_telegram_id?: boolean;
+			has_chat_access?: boolean;
+			allowed_roles?: UserRole[];
+			user?: Partial<user_select>;
+			user_id?: number;
+		}
+	) => {
+		const target = user ?? (user_id ? await user_service.find_one(user_id) : null);
+		if (!target) throw new ServerError(error_messages.user_not_found, 404);
+
+		if (is_verified && !target.email_verified_at) {
+			throw new ServerError(error_messages.email_not_verified, 403);
+		}
+		if (is_disabled && target.disabled_at) {
+			throw new ServerError(error_messages.user_disabled, 403);
+		}
+		if (has_telegram_id && !target.telegram_id) {
+			throw new ServerError(error_messages.telegram_not_linked, 400);
+		}
+		if (has_chat_access && !target.chat_access) {
+			throw new ServerError(error_messages.user_chat_access_required, 400);
+		}
+		if (allowed_roles && allowed_roles.length > 0 && !allowed_roles.includes(target.role as UserRole)) {
+			throw new ServerError(error_messages.user_forbidden, 403);
+		}
+		return target;
 	},
 	find_by_chat_access: async (unhashed_key: string) => {
 		const hashed = Hasher.hash_token(unhashed_key);
