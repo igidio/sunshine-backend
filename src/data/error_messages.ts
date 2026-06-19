@@ -62,6 +62,9 @@ export const error_messages = {
 	mcp_unauthorized: "El usuario no está autorizado para utilizar esta herramienta. Por favor, verifica tus credenciales e intenta nuevamente.",
 	// telegram
 	telegram_bot_token_not_defined: "El token del bot de Telegram no está definido. Por favor, asegúrate de que la variable de entorno esté configurada correctamente.",
+	invalid_chat_access: "El código de acceso no es válido. Por favor, verifica el código e intenta nuevamente.",
+	telegram_id_already_linked: "Esta cuenta de Telegram ya está vinculada a otro usuario.",
+	telegram_not_linked: "Esta cuenta de Telegram no está vinculada a ningún usuario.",
 	// confirmation
 	confirmation_invalid_key: "La clave de confirmación no es válida.",
 	confirmation_not_found: "La clave de confirmación no existe o no es válida.",
