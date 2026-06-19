@@ -21,8 +21,8 @@ export class VercelAiOrchestrator {
 		return client;
 	}
 
-	async handle_chat(chat_history: ChatMessage[]) {
-		const http_client = await this.create_mcp_client();
+	async handle_chat(chat_history: ChatMessage[], headers?: Record<string, string>) {
+		const http_client = await this.create_mcp_client(headers);
 		const tools = await http_client.tools();
 
 		const result = await generateText({
@@ -36,8 +36,8 @@ export class VercelAiOrchestrator {
 		return result;
 	}
 
-	async handle_chat_stream(chat_history: ChatMessage[]) {
-		const http_client = await this.create_mcp_client();
+	async handle_chat_stream(chat_history: ChatMessage[], headers?: Record<string, string>) {
+		const http_client = await this.create_mcp_client(headers);
 		const tools = await http_client.tools();
 
 		const stream = createUIMessageStream({
