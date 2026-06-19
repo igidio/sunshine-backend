@@ -4,7 +4,7 @@ import { ServerError } from "~/classes/server_error";
 import { error_messages } from "~/data/error_messages";
 import type { permissions } from "~/data/permissions";
 import { user_service } from "~/modules/user/user.service";
-import type { UserRole } from "~/modules/user/user.schema";
+import type { user_select, UserRole } from "~/modules/user/user.schema";
 import plugin_jwt from "~/plugins/jwt";
 
 export const plugin_auth = new Elysia()
@@ -57,3 +57,25 @@ export const plugin_auth = new Elysia()
 			}
 		})
 	})
+
+export const check_auth_from_tool = async ({ user, allowed_roles, allowed_permission }: { user: user_select, allowed_roles?: UserRole[], allowed_permission?: typeof permissions[number] }) => {
+	try {
+		await user_service.check_authenticated_user({
+			user,
+			is_disabled: true,
+			is_verified: false,
+			allowed_roles,
+			allowed_permission
+		});
+	} catch {
+		return {
+			content: [
+				{
+					type: 'text' as const,
+					text: `El usuario no tiene los permisos para modificar esto.`
+				}
+			]
+		}
+	}
+	return null;
+}

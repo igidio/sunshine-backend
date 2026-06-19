@@ -2,6 +2,8 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp";
 import z from "zod";
 import { product_service } from "~/modules/product/product.service";
 import { McpCreateProductSchema, McpUpdateProductSchema, ReadProductDtoSchema } from "./product.dto";
+import { check_auth_from_tool } from "~/plugins/auth";
+import type { user_select } from "../user/user.schema";
 
 const format_product = (p: Record<string, unknown>) => ({
 	id: p.id,
@@ -39,11 +41,12 @@ export const register_products_tools = (server: McpServer) => {
 			inputSchema: ReadProductDtoSchema,
 		},
 		async (params, extra) => {
+
 			const result = await product_service.find_all(params)
 			return {
 				content: [
 					{
-						type: 'text',
+						type: 'text' as const,
 						text: JSON.stringify(
 							{
 								...result,
@@ -98,8 +101,15 @@ export const register_products_tools = (server: McpServer) => {
 				'Las imágenes deben subirse posteriormente a través del endpoint REST correspondiente.',
 			inputSchema: McpCreateProductSchema,
 		},
-		async (data) => {
+		async (data, extra) => {
 			try {
+
+				const authError = await check_auth_from_tool({
+					user: extra.authInfo as unknown as user_select,
+					allowed_permission: "PRODUCT"
+				});
+				if (authError) return authError;
+
 				const product = await product_service.create(data);
 				return {
 					content: [

@@ -1,7 +1,6 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp"
 import Elysia from "elysia"
 import { mcp } from "elysia-mcp"
-import { registerCalculateTool } from "~/mcp/server"
 import { register_products_tools } from "~/modules/product/product.mcp"
 import { register_categories_tools } from "~/modules/category/category.mcp"
 import { register_confirmations_tools } from "~/modules/confirmation/confirmation.mcp"
@@ -43,6 +42,7 @@ const plugin_mcp = new Elysia()
 					is_verified: true,
 					is_disabled: true,
 					user,
+					allowed_roles: ["superuser", "admin", "customer"],
 				}).catch(() => {
 					return { user: undefined };
 				});
@@ -87,7 +87,7 @@ const plugin_mcp = new Elysia()
 			basePath: '/mcp',
 			serverInfo: {
 				name: 'sushine-mcp-server',
-				version: '0.0.1',
+				version: '1.0.0',
 			},
 			capabilities: {
 				tools: {},
@@ -120,7 +120,6 @@ const plugin_mcp = new Elysia()
 			enableLogging: false,
 			enableJsonResponse: true,
 			setupServer: async (server: McpServer) => {
-				registerCalculateTool(server)
 				register_products_tools(server)
 				register_categories_tools(server)
 				register_confirmations_tools(server)

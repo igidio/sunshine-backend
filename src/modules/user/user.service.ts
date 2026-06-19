@@ -108,12 +108,13 @@ export const user_service = {
 		return parsed_permissions.includes(permission);
 	},
 	check_authenticated_user: async (
-		{ is_verified, is_disabled, has_telegram_id, has_chat_access, allowed_roles, user, user_id }: {
+		{ is_verified, is_disabled, has_telegram_id, has_chat_access, allowed_roles, user, user_id, allowed_permission }: {
 			is_verified?: boolean;
 			is_disabled?: boolean;
 			has_telegram_id?: boolean;
 			has_chat_access?: boolean;
 			allowed_roles?: UserRole[];
+			allowed_permission?: typeof permissions[number];
 			user?: Partial<user_select>;
 			user_id?: number;
 		}
@@ -136,6 +137,21 @@ export const user_service = {
 		if (allowed_roles && allowed_roles.length > 0 && !allowed_roles.includes(target.role as UserRole)) {
 			throw new ServerError(error_messages.user_forbidden, 403);
 		}
+
+		if (allowed_permission) {
+			if (["superuser", "admin"].includes(target.role as UserRole)) {
+			} else if (target.role === "customer") {
+				throw new ServerError(error_messages.user_forbidden, 403);
+			} else if (!target.permissions) {
+				throw new ServerError(error_messages.user_forbidden, 403);
+			} else {
+				const parsed = JSON.parse(target.permissions) as string[];
+				if (!parsed.includes(allowed_permission)) {
+					throw new ServerError(error_messages.user_forbidden, 403);
+				}
+			}
+		}
+
 		return target;
 	},
 	find_by_chat_access: async (unhashed_key: string) => {
