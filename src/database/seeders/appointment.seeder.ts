@@ -6,7 +6,7 @@ minDate.setDate(minDate.getDate() - 20);
 const maxDate = new Date(today);
 maxDate.setDate(maxDate.getDate() + 10);
 
-function randomWeekdayBetween(start: Date, end: Date): string {
+function random_weekday_between(start: Date, end: Date): string {
 	const startMs = start.getTime();
 	const endMs = end.getTime();
 
@@ -44,7 +44,7 @@ const baseAppointments: Omit<appointment_insert, "date">[] = [
 
 const data: appointment_insert[] = baseAppointments.map((a) => ({
 	...a,
-	date: randomWeekdayBetween(minDate, maxDate),
+	date: random_weekday_between(minDate, maxDate),
 }));
 
 export default {
