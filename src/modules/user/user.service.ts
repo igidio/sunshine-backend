@@ -26,7 +26,7 @@ export const user_service = {
 	},
 	find_by_email: async (email: string) => {
 		return await user_repository.find_one({ email }) as user_select | null;
-	},
+	},	
 	verify_email: async (id: number) => {
 		await user_repository.update(id, { email_verified_at: new Date() });
 	},
@@ -108,9 +108,29 @@ export const user_service = {
 		return parsed_permissions.includes(permission);
 	},
 	find_by_chat_access: async (unhashed_key: string) => {
-		console.log("find_by_chat_access", unhashed_key)
 		const hashed = Hasher.hash_token(unhashed_key);
-		console.log("Hashed key:", hashed);
 		return await user_repository.find_one({ chat_access: hashed }, undefined, false);
 	},
+	find_by_telegram_id: async (telegram_id: string) => {
+		return await user_repository.find_one({ telegram_id }, undefined, false);
+	},
+	link_telegram: async (chat_access_key: string, telegram_id: string) => {
+		const user = await user_service.find_by_chat_access(chat_access_key);
+		if (!user) throw new ServerError(error_messages.invalid_chat_access, 400);
+
+		const existing = await user_service.find_by_telegram_id(telegram_id);
+		if (existing && existing.id !== user.id) {
+			throw new ServerError(error_messages.telegram_id_already_linked, 400);
+		}
+
+		await user_repository.update(user.id, { telegram_id });
+		return await user_service.find_one(user.id);
+	},
+	unlink_telegram: async (telegram_id: string) => {
+		const user = await user_service.find_by_telegram_id(telegram_id);
+		if (!user) throw new ServerError(error_messages.telegram_not_linked, 400);
+
+		await user_repository.update(user.id, { telegram_id: null });
+		return await user_service.find_one(user.id);
+	}
 }

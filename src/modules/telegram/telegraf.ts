@@ -4,6 +4,8 @@ import { envs } from "~/config/envs";
 import { VercelAiOrchestrator } from "~/modules/chat/vercel_ai-orchestrator";
 import type { ChatMessage } from "../chat/vercel_ai-orchestrator";
 import { error_messages } from "~/data/error_messages";
+import { user_service } from "~/modules/user/user.service";
+import { ServerError } from "~/classes/server_error";
 
 const chat_histories = new Map<number, ChatMessage[]>();
 export function create_telegram_plugin() {
@@ -23,6 +25,8 @@ export function create_telegram_plugin() {
 	bot.help((ctx) => {
 		return ctx.reply(
 			"ℹEnvíame cualquier pregunta y usaré las herramientas disponibles para responderte.\n\n" +
+			"/link <código> — Vincular tu cuenta de Telegram con Sunshine\n" +
+			"/logout — Desvincular tu cuenta de Telegram\n" +
 			"/clear — Limpiar historial de conversación\n" +
 			"/start — Reiniciar el bot"
 		);
@@ -31,6 +35,38 @@ export function create_telegram_plugin() {
 	bot.command("clear", (ctx) => {
 		chat_histories.set(ctx.chat.id, []);
 		return ctx.reply("Historial limpiado.");
+	});
+
+	bot.command("link", async (ctx) => {
+		const chat_access_key = ctx.message.text.split(" ")[1];
+
+		if (!chat_access_key) {
+			return ctx.reply("Debes proporcionar un código de acceso. Ejemplo: /link abc123");
+		}
+
+		try {
+			const user = await user_service.link_telegram(chat_access_key, ctx.from.id.toString());
+			chat_histories.set(ctx.chat.id, []);
+			return ctx.reply(`¡Cuenta vinculada exitosamente! Bienvenido, ${user.username}.`);
+		} catch (error) {
+			if (error instanceof ServerError) {
+				return ctx.reply(`${error.message}`);
+			}
+			return ctx.reply("Hubo un error al vincular tu cuenta. Intenta de nuevo.");
+		}
+	});
+
+	bot.command("logout", async (ctx) => {
+		try {
+			const user = await user_service.unlink_telegram(ctx.from.id.toString());
+			chat_histories.set(ctx.chat.id, []);
+			return ctx.reply(`¡Cuenta desvinculada exitosamente! Hasta luego, ${user.username}.`);
+		} catch (error) {
+			if (error instanceof ServerError) {
+				return ctx.reply(`${error.message}`);
+			}
+			return ctx.reply("Hubo un error al desvincular tu cuenta. Intenta de nuevo.");
+		}
 	});
 
 	bot.on(message("text"), async (ctx) => {
@@ -47,7 +83,13 @@ export function create_telegram_plugin() {
 		try {
 			await ctx.sendChatAction("typing");
 
-			const result = await orchestrator.handle_chat(history);
+			const result = await orchestrator.handle_chat(
+				history,
+				{
+					"x-chat-source": "telegram",
+					"x-chat-id": chat_id.toString()
+				}
+			);
 			const reply = result.text;
 
 			history.push({ role: "assistant", content: reply });
