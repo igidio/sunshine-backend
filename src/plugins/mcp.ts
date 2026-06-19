@@ -27,57 +27,59 @@ const plugin_mcp = new Elysia()
 	.use(plugin_jwt)
 	.use(bearer())
 	.resolve(async ({ bearer, jwt, headers }) => {
-		let authenticated_user = undefined;
-
-		if (headers["x-chat-source"] === "telegram" && headers["x-chat-id"]) {
-			const cache_key = `telegram:${headers["x-chat-id"]}`;
+		const authenticate = async (
+			cache_key: string,
+			fetch_user: () => Promise<user_select | null | undefined>
+		): Promise<{ user: user_select | undefined }> => {
 			const cached = mcp_auth_cache.get(cache_key);
 			if (cached) return { user: cached };
-			const user = await user_service.find_by_telegram_id(headers["x-chat-id"]!)
 
-			if (user) {
+			try {
+				const user = await fetch_user();
+				if (!user) return { user: undefined };
+
+				await user_service.check_authenticated_user({
+					is_verified: true,
+					is_disabled: true,
+					user,
+				}).catch(() => {
+					return { user: undefined };
+				});
 				mcp_auth_cache.set(cache_key, user);
-				authenticated_user = user;
-				return { user: authenticated_user };
-			} else {
-				return { user: undefined }
+				return { user: user };
+			} catch {
+				return { user: undefined };
 			}
+		};
+
+		if (headers["x-chat-source"] === "telegram" && headers["x-chat-id"]) {
+			const chat_id = headers["x-chat-id"]!;
+			return authenticate(
+				`telegram:${headers["x-chat-id"]}`,
+				() => user_service.find_by_telegram_id(chat_id!)
+			);
 		}
 
 		if (headers["x-api-key"] && headers["x-api-key"].length >= 32) {
-			const cache_key = `apikey:${headers["x-api-key"]}`;
-			const cached = mcp_auth_cache.get(cache_key);
-			if (cached) return { user: cached };
-
-			const user = await user_service.find_by_chat_access(headers["x-api-key"]);
-			if (user) {
-				mcp_auth_cache.set(cache_key, user);
-				authenticated_user = user;
-				return { user: authenticated_user };
-			} else {
-				return { user: undefined }
-			}
+			const api_key = headers["x-api-key"]!;
+			return authenticate(
+				`apikey:${headers["x-api-key"]}`,
+				() => user_service.find_by_chat_access(api_key)
+			);
 		}
 
 		if (headers["authorization"] && bearer) {
-			const cache_key = `jwt:${bearer}`;
-			const cached = mcp_auth_cache.get(cache_key);
-			if (cached) return { user: cached };
-
-			const payload = await jwt.verify(bearer);
-			if (payload) {
-				const user = await user_service.find_one(payload.id);
-				if (user && !user.disabled_at) {
-					mcp_auth_cache.set(cache_key, user);
-					authenticated_user = user;
-					return { user: authenticated_user };
-				} else {
-					return { user: undefined }
+			return authenticate(
+				`jwt:${bearer}`,
+				async () => {
+					const payload = await jwt.verify(bearer);
+					if (!payload) return null;
+					return user_service.find_one(payload.id);
 				}
-			}
+			);
 		}
 
-		return { user: undefined }
+		return { user: undefined };
 	})
 	.use(
 		mcp({
