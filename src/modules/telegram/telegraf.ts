@@ -7,6 +7,7 @@ import { error_messages } from "~/data/error_messages";
 import { user_service } from "~/modules/user/user.service";
 import { ServerError } from "~/classes/server_error";
 
+const system_prompt = 'No vas a formatear el texto como si fuese Markdown ni nada, solo envíame la respuesta en texto plano. También si el uso de tools falla tienes que recordar al usuario que es posible que no esté autenticado y que debe usar el comando /link para vincular su cuenta de Telegram con Sunshine.'
 const chat_histories = new Map<number, ChatMessage[]>();
 export function create_telegram_plugin() {
 	if (!envs.telegram_bot_token) {
@@ -88,7 +89,8 @@ export function create_telegram_plugin() {
 				{
 					"x-chat-source": "telegram",
 					"x-chat-id": chat_id.toString()
-				}
+				},
+				system_prompt
 			);
 			const reply = result.text;
 

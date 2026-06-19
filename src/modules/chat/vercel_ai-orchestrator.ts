@@ -21,13 +21,13 @@ export class VercelAiOrchestrator {
 		return client;
 	}
 
-	async handle_chat(chat_history: ChatMessage[], headers?: Record<string, string>) {
+	async handle_chat(chat_history: ChatMessage[], headers?: Record<string, string>, system_prompt?: string) {
 		const http_client = await this.create_mcp_client(headers);
 		const tools = await http_client.tools();
 
 		const result = await generateText({
 			model: openai.chat(envs.openai_language_model!),
-			system: SYSTEM_PROMPT,
+			system: system_prompt ? SYSTEM_PROMPT + '. ' + system_prompt : SYSTEM_PROMPT,
 			messages: chat_history,
 			tools,
 			stopWhen: stepCountIs(5),
@@ -36,7 +36,7 @@ export class VercelAiOrchestrator {
 		return result;
 	}
 
-	async handle_chat_stream(chat_history: ChatMessage[], headers?: Record<string, string>) {
+	async handle_chat_stream(chat_history: ChatMessage[], headers?: Record<string, string>, system_prompt?: string) {
 		const http_client = await this.create_mcp_client(headers);
 		const tools = await http_client.tools();
 
@@ -46,7 +46,7 @@ export class VercelAiOrchestrator {
 
 				const result = streamText({
 					model: openai.chat(envs.openai_language_model!),
-					system: SYSTEM_PROMPT,
+					system: system_prompt ? SYSTEM_PROMPT + '. ' + system_prompt : SYSTEM_PROMPT,
 					messages: chat_history,
 					tools,
 					stopWhen: stepCountIs(5),
