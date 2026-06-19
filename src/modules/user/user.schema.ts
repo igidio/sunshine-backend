@@ -21,6 +21,7 @@ export const user_schema = mysqlTable("user", {
 	disabled_at: timestamp(),
 	permissions: text("permissions").notNull().default(""),
 	chat_access: varchar({ length: 255 }),
+	telegram_id: varchar({ length: 255 }).unique(),
 });
 
 export type user_insert = typeof user_schema.$inferInsert;
