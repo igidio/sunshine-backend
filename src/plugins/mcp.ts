@@ -6,6 +6,7 @@ import { register_products_tools } from "~/modules/product/product.mcp"
 import { register_categories_tools } from "~/modules/category/category.mcp"
 import { register_confirmations_tools } from "~/modules/confirmation/confirmation.mcp"
 import { register_customers_tools } from "~/modules/customer/customer.mcp"
+import { register_appointments_tools } from "~/modules/appointment/appointment.mcp"
 import { register_dashboard_tools } from "~/modules/dashboard/dashboard.mcp"
 import { register_movements_tools } from "~/modules/movement/movement.mcp"
 import { register_profiles_tools } from "~/modules/profile/profile.mcp"
@@ -124,6 +125,7 @@ const plugin_mcp = new Elysia()
 				register_categories_tools(server)
 				register_confirmations_tools(server)
 				register_customers_tools(server)
+				register_appointments_tools(server)
 				register_dashboard_tools(server)
 				register_movements_tools(server)
 				register_profiles_tools(server)
