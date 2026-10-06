@@ -26,62 +26,62 @@ const mcp_auth_cache = create_cache<user_select>(20_000, 60_000);
 const plugin_mcp = new Elysia()
 	.use(plugin_jwt)
 	.use(bearer())
-	.resolve(async ({ bearer, jwt, headers }) => {
-		const authenticate = async (
-			cache_key: string,
-			fetch_user: () => Promise<user_select | null | undefined>
-		): Promise<{ user: user_select | undefined }> => {
-			const cached = mcp_auth_cache.get(cache_key);
-			if (cached) return { user: cached };
+	// .resolve(async ({ bearer, jwt, headers }) => {
+	// 	const authenticate = async (
+	// 		cache_key: string,
+	// 		fetch_user: () => Promise<user_select | null | undefined>
+	// 	): Promise<{ user: user_select | undefined }> => {
+	// 		const cached = mcp_auth_cache.get(cache_key);
+	// 		if (cached) return { user: cached };
 
-			try {
-				const user = await fetch_user();
-				if (!user) return { user: undefined };
+	// 		try {
+	// 			const user = await fetch_user();
+	// 			if (!user) return { user: undefined };
 
-				await user_service.check_authenticated_user({
-					is_verified: true,
-					is_disabled: true,
-					user,
-					allowed_roles: ["superuser", "admin", "customer"],
-				}).catch(() => {
-					return { user: undefined };
-				});
-				mcp_auth_cache.set(cache_key, user);
-				return { user: user };
-			} catch {
-				return { user: undefined };
-			}
-		};
+	// 			await user_service.check_authenticated_user({
+	// 				is_verified: true,
+	// 				is_disabled: true,
+	// 				user,
+	// 				allowed_roles: ["superuser", "admin", "customer"],
+	// 			}).catch(() => {
+	// 				return { user: undefined };
+	// 			});
+	// 			mcp_auth_cache.set(cache_key, user);
+	// 			return { user: user };
+	// 		} catch {
+	// 			return { user: undefined };
+	// 		}
+	// 	};
 
-		if (headers["x-chat-source"] === "telegram" && headers["x-chat-id"]) {
-			const chat_id = headers["x-chat-id"]!;
-			return authenticate(
-				`telegram:${headers["x-chat-id"]}`,
-				() => user_service.find_by_telegram_id(chat_id!)
-			);
-		}
+	// 	if (headers["x-chat-source"] === "telegram" && headers["x-chat-id"]) {
+	// 		const chat_id = headers["x-chat-id"]!;
+	// 		return authenticate(
+	// 			`telegram:${headers["x-chat-id"]}`,
+	// 			() => user_service.find_by_telegram_id(chat_id!)
+	// 		);
+	// 	}
 
-		if (headers["x-api-key"] && headers["x-api-key"].length >= 32) {
-			const api_key = headers["x-api-key"]!;
-			return authenticate(
-				`apikey:${headers["x-api-key"]}`,
-				() => user_service.find_by_chat_access(api_key)
-			);
-		}
+	// 	if (headers["x-api-key"] && headers["x-api-key"].length >= 32) {
+	// 		const api_key = headers["x-api-key"]!;
+	// 		return authenticate(
+	// 			`apikey:${headers["x-api-key"]}`,
+	// 			() => user_service.find_by_chat_access(api_key)
+	// 		);
+	// 	}
 
-		if (headers["authorization"] && bearer) {
-			return authenticate(
-				`jwt:${bearer}`,
-				async () => {
-					const payload = await jwt.verify(bearer);
-					if (!payload) return null;
-					return user_service.find_one(payload.id);
-				}
-			);
-		}
+	// 	if (headers["authorization"] && bearer) {
+	// 		return authenticate(
+	// 			`jwt:${bearer}`,
+	// 			async () => {
+	// 				const payload = await jwt.verify(bearer);
+	// 				if (!payload) return null;
+	// 				return user_service.find_one(payload.id);
+	// 			}
+	// 		);
+	// 	}
 
-		return { user: undefined };
-	})
+	// 	return { user: undefined };
+	// })
 	.use(
 		mcp({
 			basePath: '/mcp',
@@ -95,28 +95,28 @@ const plugin_mcp = new Elysia()
 				prompts: {},
 				logging: {},
 			},
-			authentication: async (context) => {
-				if (["tools/list", "notifications/initialized", "ping", "initialize"].includes((context.body as any)?.method)) {
-					return {};
-				}
+			// authentication: async (context) => {
+			// 	if (["tools/list", "notifications/initialized", "ping", "initialize"].includes((context.body as any)?.method)) {
+			// 		return {};
+			// 	}
 
-				const user = (context as any).user ?? undefined;
+			// 	const user = (context as any).user ?? undefined;
 
-				const error_response = {
-					response: {
-						jsonrpc: "2.0",
-						id: null,
-						error: { code: -32600, message: error_messages.mcp_unauthorized }
-					}
-				}
+			// 	const error_response = {
+			// 		response: {
+			// 			jsonrpc: "2.0",
+			// 			id: null,
+			// 			error: { code: -32600, message: error_messages.mcp_unauthorized }
+			// 		}
+			// 	}
 
-				if (!user) {
-					return error_response;
-				}
-				return {
-					authInfo: user
-				}
-			},
+			// 	if (!user) {
+			// 		return error_response;
+			// 	}
+			// 	return {
+			// 		authInfo: user
+			// 	}
+			// },
 			enableLogging: false,
 			enableJsonResponse: true,
 			setupServer: async (server: McpServer) => {

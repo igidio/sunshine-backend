@@ -1,4 +1,3 @@
-import { log } from 'console';
 import type { SSEPayload } from 'elysia';
 import { EventEmitter } from 'events';
 export const global_events = new EventEmitter();

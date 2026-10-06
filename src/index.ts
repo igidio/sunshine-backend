@@ -50,7 +50,7 @@ const app = new Elysia()
 
 
 if (envs.server_url) {
-  app.use(setup_telegram_routes());
+  //app.use(setup_telegram_routes());
 }
 
 console.log(
