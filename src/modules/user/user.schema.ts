@@ -1,6 +1,6 @@
 import { int, mysqlTable, timestamp, varchar, mysqlEnum } from "drizzle-orm/mysql-core";
 import { profile_schema } from "../profile/profile.schema";
-import { text } from "drizzle-orm/mssql-core";
+import { text } from "drizzle-orm/mysql-core";
 
 export const user_roles = ["superuser", "admin", "employer", "customer"] as const;
 export type UserRole = (typeof user_roles)[number];
